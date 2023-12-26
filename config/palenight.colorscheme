@@ -8,12 +8,12 @@ Color=32,35,49
 
 [Color0]
 Bold=false
-Color=199,146,234
+Color=34,33,44
 
 
 [Color0Intense]
 Bold=false
-Color=199,146,234
+Color=98,114,164
 
 
 [Color1]
@@ -28,12 +28,12 @@ Color=255,88,116
 
 [Color2]
 Bold=false
-Color=96,215,158
+Color=188,236,126
 
 
 [Color2Intense]
 Bold=false
-Color=195,232,141
+Color=188,236,126
 
 
 [Color3]
