@@ -162,10 +162,10 @@ set timeout 10
 spawn aws configure
 
 expect {AWS Access Key ID \[*\]:}
-send "AKIA3LHDJPG2VUVAELEU\r"
+send "\r"
 
 expect {AWS Secret Access Key \[*\]:}
-send "zNczRSneouUJVb9vQ6D6jtgkAtKK8Ewm1rZLGwjc\r"
+send "\r"
 
 expect {Default region name \[*\]:}
 send "eu-north-1\r"
