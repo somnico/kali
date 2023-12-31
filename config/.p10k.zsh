@@ -191,8 +191,9 @@
 
   # The right end of right prompt.
   # typeset -g POWERLEVEL9K_RIGHT_PROMPT_LAST_SEGMENT_END_SYMBOL='\uE0B0'
-  typeset -g POWERLEVEL9K_RIGHT_PROMPT_LAST_SEGMENT_END_SYMBOL='%K{#cabb7f} %K{#948c6a} %K{#5e5d54} %k'
-
+  # typeset -g POWERLEVEL9K_RIGHT_PROMPT_LAST_SEGMENT_END_SYMBOL='%K{#cabb7f} %K{#948c6a} %K{#5e5d54} %k'
+  typeset -g POWERLEVEL9K_LEFT_PROMPT_FIRST_SEGMENT_START_SYMBOL='%K{#3f4c6e} %K{#556b9e} %K{#6c8bcf} %k'
+  
   # Left prompt terminator for lines without any segments.
   typeset -g POWERLEVEL9K_EMPTY_LINE_LEFT_PROMPT_LAST_SEGMENT_END_SYMBOL=
 
@@ -206,7 +207,7 @@
 
   # Custom
   function prompt_my_dir() {
-  local dir=${${(%):-%~}//\~/ }
+  local dir=${${(%):-%~}//\~/}
   local dir_without_slashes=${dir//\//  }
   p10k segment -b 4 -f 7 -t "${dir_without_slashes//\%/%%}"
   }
