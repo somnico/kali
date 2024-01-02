@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Icon=utilities-terminal
+Exec=qterminal
+Terminal=false
+Categories=Qt;System;TerminalEmulator;
+Actions=Dropdown;
+Name=QTerminal
+GenericName=Terminal emulator
+Comment=Terminal emulator
+X-XFCE-Source=file:///usr/share/applications/qterminal.desktop
