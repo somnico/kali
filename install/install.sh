@@ -4,7 +4,7 @@
 touch ~/.hushlogin
 
 # Update package information
-sudo apt update
+sudo apt-get update
 
 # Set debconf to noninteractive
 echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
@@ -17,10 +17,13 @@ echo "keyboard-configuration keyboard-configuration/variantcode string winkeys" 
 echo "wireshark-common wireshark-common/install-setuid boolean true" | sudo debconf-set-selections
 
 # Install Kali
-sudo apt install -y kali-desktop-xfce xfconf kali-defaults kali-tools-top10
+sudo apt-get install -y kali-desktop-xfce xfconf kali-defaults kali-tools-top10 
 
-# Install VNC server and expect tool
-sudo apt install -y tightvncserver expect
+# Install other tools
+sudo apt-get install -y neovim ghidra dirb
+
+# Install VNC server and expect
+sudo apt-get install -y tightvncserver expect
 
 # Start VNC server
 expect << 'EOF'
@@ -55,19 +58,30 @@ xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/workspace0/last-imag
 
 # Various settings
 xfconf-query --create --channel thunar --property /last-show-hidden --type bool --set true
+xfconf-query -c xsettings -p /Net/PreferredApplications/TextEditor -n -t string -s "org.xfce.mousepad.desktop"
+
 xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-home -s false
+xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-filesystem -s false
 xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-trash -s false
-xfconf-query -c xfce4-desktop -p /desktop-icons/gravity -s 1 
-sudo curl -o /home/kali/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml https://raw.githubusercontent.com/somnico/kali/master/config/xfce4-panel.xml
-# xfdesktop -Q && xfdesktop &
-# pkill xfce4-panel && xfce4-panel &
+
+sudo mkdir -p /home/kali/.config/xfce4/panel/launcher-5/
+sudo mkdir -p /home/kali/.config/xfce4/panel/launcher-6/
+sudo mkdir -p /home/kali/.config/xfce4/panel/launcher-7/
+
+sudo curl -o /home/kali/.config/xfce4/panel/launcher-5/launcher-5.desktop https://raw.githubusercontent.com/somnico/kali/master/configs/launcher-5.desktop
+sudo curl -o /home/kali/.config/xfce4/panel/launcher-6/launcher-6.desktop https://raw.githubusercontent.com/somnico/kali/master/configs/launcher-6.desktop
+sudo curl -o /home/kali/.config/xfce4/panel/launcher-7/launcher-7.desktop https://raw.githubusercontent.com/somnico/kali/master/configs/launcher-7.desktop
+sudo curl -o /home/kali/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml https://raw.githubusercontent.com/somnico/kali/master/configs/xfce4-panel.xml
+
+# Run this in the terminal in VNC to update panel
+# xfce4-panel -r
 
 # Install fonts
 git clone --depth=1 --branch=master https://github.com/ryanoasis/nerd-fonts.git nerd-fonts
 sudo cp -r nerd-fonts/patched-fonts/DejaVuSansMono /usr/share/fonts/truetype/dejavu
 ./nerd-fonts/install.sh DejaVuSansMono
 
-# Change font
+# Change global font
 xfconf-query -c xsettings -p /Gtk/FontName -s "DejaVuSansM Nerd Font Mono 11"
 xfconf-query -c xsettings -p /Gtk/MonospaceFontName -s "DejaVuSansM Nerd Font Mono 10"
 
@@ -79,10 +93,10 @@ mkdir -p /home/kali/.config/qt5ct/
 touch /home/kali/.config/qt5ct/qt5ct.conf
 
 sudo chmod a+w /usr/share/qtermwidget5/color-schemes/
-sudo curl -o /usr/share/qtermwidget5/color-schemes/Palenight.colorscheme https://raw.githubusercontent.com/somnico/kali/master/config/palenight.colorscheme
+sudo curl -o /usr/share/qtermwidget5/color-schemes/Palenight.colorscheme https://raw.githubusercontent.com/somnico/kali/master/configs/palenight.colorscheme
 
-sudo curl -o /home/kali/.config/qterminal.org/qterminal.ini https://raw.githubusercontent.com/somnico/kali/master/config/qterminal.ini
-sudo curl -o /home/kali/.config/qt5ct/qt5ct.conf https://raw.githubusercontent.com/somnico/kali/master/config/qt5ct.conf
+sudo curl -o /home/kali/.config/qterminal.org/qterminal.ini https://raw.githubusercontent.com/somnico/kali/master/configs/qterminal.ini
+sudo curl -o /home/kali/.config/qt5ct/qt5ct.conf https://raw.githubusercontent.com/somnico/kali/master/configs/qt5ct.conf
 
 
 # Install Oh My Zsh
@@ -125,35 +139,61 @@ echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> ~/.zshrc
 echo 'unsetopt PROMPT_SP' >> ~/.zshrc
 
 # Install dconf-cli
-sudo apt install -y dconf-cli
+sudo apt-get install -y dconf-cli
 
 # Powerlevel configuration
-curl https://gist.githubusercontent.com/somnico/b71f23f21f931d6d9c2445719c571ab5/raw/0d96bcc6a9f849aa8ac414e199ac415f6f2f5b4b/.p10k.zsh > ~/.p10k.zsh
+curl https://gist.githubusercontent.com/somnico/b71f23f21f931d6d9c2445719c571ab5/raw/ > ~/.p10k.zsh
+
+
+# Add to PATH
+echo 'export PATH=$PATH:/home/kali/.local/bin' >> ~/.zshrc
+
+# Install gdb
+sudo apt-get install -y gdb
+
+# Install pwntools
+sudo apt-get install -y python3 python3-pip python3-dev git libssl-dev libffi-dev build-essential
+python3 -m pip install --upgrade pip
+python3 -m pip install --upgrade pwntools
+
+# Download peda
+git clone https://github.com/longld/peda.git ~/peda
+echo "source ~/peda/peda.py" >> ~/.gdbinit
+
+# Helper script for gdb
+curl -O https://raw.githubusercontent.com/somnico/kali/master/scripts/gdb_pid.sh
+sudo chmod +x gdb_pid.sh
 
 
 # Install helpers
-sudo apt install -y nodejs npm
+sudo apt-get install -y nodejs npm
 sudo npm install -g tldr
-sudo apt install -y fzf
+sudo apt-get install -y fzf
 
 
 # Install a bunch of random stuff
-sudo apt install -y fortune cowsay lolcat boxes cmatrix sl libaa-bin pv jp2a neofetch oneko scdoc pkg-config
+sudo apt-get install -y fortune cowsay lolcat boxes neofetch cmatrix moreutils sl libaa-bin pv jp2a oneko scdoc pkg-config
 
-sudo apt install -y figlet 
+yes | sudo sh -c "$(curl https://codeberg.org/anhsirk0/fetch-master-6000/raw/branch/main/install.sh)"
+
+sudo apt-get install -y figlet 
 git clone https://github.com/hIMEI29A/FigletFonts.git
 cd FigletFonts
 sudo make
 cd ..
 
-sudo apt install -y libncursesw5-dev
+sudo apt-get install -y libncursesw5-dev
 git clone https://gitlab.com/jallbrit/cbonsai
 cd cbonsai
 sudo make install
 cd ..
 
-echo 'echo KALI | figlet -f Georgia11 -c -t | boxes -d twisted -a hcvc -p h4v0 | lolcat -a -d 1 -S 19' >> ~/.zshrc
+sudo curl -o /etc/boxes/boxes-config https://raw.githubusercontent.com/somnico/kali/master/configs/boxes-config
+sudo curl -o /usr/share/figlet/fraktur.flf https://raw.githubusercontent.com/somnico/kali/master/configs/fraktur.flf
 
+cat << 'EOF' >> ~/.zshrc
+echo "kali" | figlet -f fraktur | boxes -d twisted -a hcvc -p h6v1 | awk -v cols=$(tput cols) '{ printf "%*s\n", (cols + length) / 2, $0 }' | lolcat -f -a -d 1 -p 5 -F 0.03 -S 75
+EOF
 
 # Setup AWS CLI
 expect << 'EOF'
@@ -162,10 +202,10 @@ set timeout 10
 spawn aws configure
 
 expect {AWS Access Key ID \[*\]:}
-send "\r"
+send "your_id_here\r"
 
 expect {AWS Secret Access Key \[*\]:}
-send "\r"
+send "your_key_here\r"
 
 expect {Default region name \[*\]:}
 send "eu-north-1\r"
@@ -192,12 +232,19 @@ exec zsh
 
 # Notes
 
+# Run the script 
+# sh -c "$(curl -fsSL https://github.com/somnico/kali/raw/master/install/install.sh)"
+
 # Consistent gist links
-# gistlink/raw or gistlink/raw/filename 
+# gistusercontent/raw or gistusercontent/raw/filename 
  
 # More backgrounds
 # sudo mkdir -p /usr/share/backgrounds/windows
 # sudo curl -o /usr/share/backgrounds/windows/windows-wallpaper-1.jpg https://raw.githubusercontent.com/somnico/kali/master/images/windows-wallpaper-1.jpg
+
+# GUI updates
+# xfdesktop -Q && xfdesktop &
+# pkill xfce4-panel && xfce4-panel &
 
 # Install only one font family 
 # sudo apt-get install -y subversion
@@ -223,12 +270,9 @@ exec zsh
 
 # Various docks
 # sudo apt-get install -y cairo-dock
-
 # sudo apt-get install -y plank
-
-# sudo apt update && sudo apt upgrade
-# sudo apt install -y intltool libx11-dev libxext-dev libxrender-dev libxtst-dev pkg-config libglib2.0-dev libgtk-3-dev libwnck-3-dev libxfce4ui-2-dev libxfce4panel-2.0-dev 
-# sudo apt install -y wget xorg-dev libglib2.0-cil-dev golang-gir-gio-2.0-dev libgtk-3-dev libwnck-3-dev libxfce4ui-2-dev libxfce4panel-2.0-dev intltool
+# sudo apt-get install -y intltool libx11-dev libxext-dev libxrender-dev libxtst-dev pkg-config libglib2.0-dev libgtk-3-dev libwnck-3-dev libxfce4ui-2-dev libxfce4panel-2.0-dev 
+# sudo apt-get install -y wget xorg-dev libglib2.0-cil-dev golang-gir-gio-2.0-dev libgtk-3-dev libwnck-3-dev libxfce4ui-2-dev libxfce4panel-2.0-dev intltool
 # wget https://archive.xfce.org/src/panel-plugins/xfce4-docklike-plugin/0.4/xfce4-docklike-plugin-0.4.0.tar.bz2
 # tar -xvjf xfce4-docklike-plugin-0.4.0.tar.bz2 && cd xfce4-docklike-plugin-0.4.0
 # ./configure
@@ -236,7 +280,24 @@ exec zsh
 # sudo make install
 
 # Various 
+# xfconf-query -c xfce4-desktop -p /desktop-icons/gravity --create -t int -s 1 
 # xfdesktop -A  
+
+# Greetings
+# fortune | cowsay -f calvin | boxes -d columns -a c | awk -v cols=$(tput cols) '{ printf "%*s\n", (cols + length) / 2, $0 }' | lolcat -a -d 1 -S 20
+# fm6000 -dog -l 50 -say "$(echo "KALI" | figlet -f big)" | lolcat -a -d 1 -S 19
+# fortune | cowsay -f "$(ls /usr/share/cowsay/cows | sort -R | head -1)" | while IFS= read -r line; do printf "%s" "$line" | while IFS= read -n1 -r char; do printf "%s" "$char"; sleep 0.0001; done; echo; done;
+
+# Alternative fonts
+# 3d_diagonal Big_Money-ne Chiseled cosmike doubleshorts Elite doubleshorts fraktur Georgia11 ghost henry3d lildevil larry3d lineblocks
+
+# Remove VNC settings
+# sudo rm -rf ~/.vnc/passwd ~/.vnc/xstartup
+# sudo rm -rf /tmp/.X*-lock /tmp/.X11-unix/X*
+# sudo kill -9 $(ps aux | grep '[X]tightvnc' | awk '{print $2}')
+
+# Xfconf reference
+# for channel in $( xfconf-query --list | tail --lines=+2 | sort ); do printf -- '\n\e[1;36m%s\e[m\n' "${channel}"; xfconf-query --list --verbose --channel "${channel}"; done
 
 # Color reference
 # for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$'\n'}; done
