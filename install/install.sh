@@ -43,9 +43,6 @@ send "n\r"
 expect eof
 EOF
 
-touch ~/.Xauthority
-tightvncserver -geometry 1280x720
-
 
 # Set password
 echo -e "kalikali\nkalikali" | sudo passwd kali
@@ -67,6 +64,7 @@ xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-trash -s false
 sudo mkdir -p /home/kali/.config/xfce4/panel/launcher-5/
 sudo mkdir -p /home/kali/.config/xfce4/panel/launcher-6/
 sudo mkdir -p /home/kali/.config/xfce4/panel/launcher-7/
+sudo touch /home/kali/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml
 
 sudo curl -o /home/kali/.config/xfce4/panel/launcher-5/launcher-5.desktop https://raw.githubusercontent.com/somnico/kali/master/configs/launcher-5.desktop
 sudo curl -o /home/kali/.config/xfce4/panel/launcher-6/launcher-6.desktop https://raw.githubusercontent.com/somnico/kali/master/configs/launcher-6.desktop
@@ -226,14 +224,15 @@ complete -C '/usr/libexec/aws_completer' aws" >> ~/.zshrc
 # Reset debconf
 unset DEBIAN_FRONTEND
 
+# Start VNC server
+touch ~/.Xauthority
+tightvncserver -geometry 1280x720
+
 # Update terminal
 exec zsh
 
 
 # Notes
-
-# Run the script 
-# sh -c "$(curl -fsSL https://github.com/somnico/kali/raw/master/install/install.sh)"
 
 # Consistent gist links
 # gistusercontent/raw or gistusercontent/raw/filename 
