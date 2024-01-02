@@ -2,5 +2,5 @@
 
 ### Installation
 ```
-sudo sh -c "$(curl -fsSL https://github.com/somnico/kali/raw/master/install/install.sh)"
+sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/somnico/kali/master/install/install.sh)"
 ```
