@@ -130,17 +130,17 @@
     </property>
     <property name="plugin-5" type="string" value="launcher">
       <property name="items" type="array">
-        <value type="string" value="17040594911.desktop"/>
+        <value type="string" value="launcher-5.desktop"/>
       </property>
     </property>
     <property name="plugin-6" type="string" value="launcher">
       <property name="items" type="array">
-        <value type="string" value="17040597233.desktop"/>
+        <value type="string" value="launcher-6.desktop"/>
       </property>
     </property>
     <property name="plugin-7" type="string" value="launcher">
       <property name="items" type="array">
-        <value type="string" value="17040601663.desktop"/>
+        <value type="string" value="launcher-7.desktop"/>
       </property>
       <property name="move-first" type="bool" value="false"/>
     </property>
