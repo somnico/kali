@@ -14,14 +14,26 @@
         <value type="int" value="5"/>
         <value type="int" value="6"/>
         <value type="int" value="7"/>
+        <value type="int" value="10"/>
         <value type="int" value="11"/>
         <value type="int" value="12"/>
-        <value type="int" value="10"/>
+        <value type="int" value="3"/>
         <value type="int" value="13"/>
+        <value type="int" value="4"/>
       </property>
       <property name="position" type="string" value="p=6;x=0;y=0"/>
       <property name="position-locked" type="bool" value="true"/>
-      <property name="size" type="uint" value="34"/>
+      <property name="size" type="int" value="36"/>
+      <property name="icon-size" type="int" value="20"/>
+      <property name="background-style" type="int" value="1"/>
+      <property name="background-rgba" type="array">
+        <value type="double" value="0.16078400000000001"/>
+        <value type="double" value="0.17647099999999999"/>
+        <value type="double" value="0.24313699999999999"/>
+        <value type="double" value="1"/>
+      </property>
+      <property name="nrows" type="uint" value="1"/>
+      <property name="length-adjust" type="bool" value="true"/>
     </property>
   </property>
   <property name="plugins" type="empty">
@@ -56,7 +68,7 @@
         <value type="double" value="1"/>
         <value type="double" value="0"/>
       </property>
-      <property name="bars" type="int" value="1"/>
+      <property name="bars" type="int" value="0"/>
       <property name="bars-color" type="array">
         <value type="double" value="0"/>
         <value type="double" value="1"/>
@@ -113,7 +125,7 @@
       <property name="load-threshold" type="int" value="0"/>
       <property name="mode" type="int" value="1"/>
       <property name="per-core" type="int" value="0"/>
-      <property name="per-core-spacing" type="int" value="1"/>
+      <property name="per-core-spacing" type="int" value="0"/>
       <property name="size" type="int" value="128"/>
       <property name="smt-issues" type="int" value="0"/>
       <property name="smt-issues-color" type="array">
@@ -143,6 +155,14 @@
         <value type="string" value="launcher-7.desktop"/>
       </property>
       <property name="move-first" type="bool" value="false"/>
+    </property>
+    <property name="plugin-3" type="string" value="separator">
+      <property name="style" type="uint" value="0"/>
+      <property name="expand" type="bool" value="false"/>
+    </property>
+    <property name="plugin-4" type="string" value="separator">
+      <property name="style" type="uint" value="0"/>
+      <property name="expand" type="bool" value="false"/>
     </property>
   </property>
 </channel>
