@@ -55,7 +55,6 @@ xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/workspace0/last-imag
 
 # Various settings
 xfconf-query --create --channel thunar --property /last-show-hidden --type bool --set true
-xfconf-query -c xsettings -p /Net/PreferredApplications/TextEditor -n -t string -s "org.xfce.mousepad.desktop"
 
 xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-home -s false
 xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-filesystem -s false
@@ -72,7 +71,7 @@ sudo curl -o /home/kali/.config/xfce4/panel/launcher-7/launcher-7.desktop https:
 sudo curl -o /home/kali/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml https://raw.githubusercontent.com/somnico/kali/master/configs/xfce4-panel.xml
 
 xfconf-query -c xfce4-panel -p /panels/panel-1/icon-size -n -t int -s 20 
-xfconf-query -c xfce4-panel -p /panels/panel-1/size -n -t int -s 36 
+xfconf-query -c xfce4-panel -p /panels/panel-1/size -n -t int -s 36
 xfconf-query -c xfce4-panel -p /panels/panel-1/background-style -n -t int -s 1
 xfconf-query -c xfce4-panel -p /panels/panel-1/background-rgba -n -t double -t double -t double -t double -s 0.160784 -s 0.176471 -s 0.243137 -s 1
 
@@ -279,7 +278,8 @@ tightvncserver -geometry 1600x900
 # sudo make install
 
 # Various 
-# xfconf-query -c xfce4-desktop -p /desktop-icons/gravity --create -t int -s 1 
+# xfconf-query -c xfce4-desktop -p /desktop-icons/gravity --create -t int -s 1
+# xfconf-query -c xsettings -p /Net/PreferredApplications/TextEditor -n -t string -s "org.xfce.mousepad.desktop" 
 # xfdesktop -A  
 
 # Greetings
