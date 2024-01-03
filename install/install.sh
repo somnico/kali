@@ -25,7 +25,7 @@ sudo apt-get install -y neovim ghidra dirb
 # Install VNC server and expect
 sudo apt-get install -y tightvncserver expect
 
-# Start VNC server
+# Set VNC paswword
 expect << 'EOF'
 set timeout 10
 
@@ -64,22 +64,24 @@ xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-trash -s false
 sudo mkdir -p /home/kali/.config/xfce4/panel/launcher-5/
 sudo mkdir -p /home/kali/.config/xfce4/panel/launcher-6/
 sudo mkdir -p /home/kali/.config/xfce4/panel/launcher-7/
-sudo touch /home/kali/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml
+sudo mkdir -p /home/kali/.config/xfce4/xfconf/xfce-perchannel-xml/
 
 sudo curl -o /home/kali/.config/xfce4/panel/launcher-5/launcher-5.desktop https://raw.githubusercontent.com/somnico/kali/master/configs/launcher-5.desktop
 sudo curl -o /home/kali/.config/xfce4/panel/launcher-6/launcher-6.desktop https://raw.githubusercontent.com/somnico/kali/master/configs/launcher-6.desktop
 sudo curl -o /home/kali/.config/xfce4/panel/launcher-7/launcher-7.desktop https://raw.githubusercontent.com/somnico/kali/master/configs/launcher-7.desktop
 sudo curl -o /home/kali/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml https://raw.githubusercontent.com/somnico/kali/master/configs/xfce4-panel.xml
 
-# Run this in the terminal in VNC to update panel
-# xfce4-panel -r
+xfconf-query -c xfce4-panel -p /panels/panel-1/icon-size -n -t int -s 20 
+xfconf-query -c xfce4-panel -p /panels/panel-1/size -n -t int -s 36 
+xfconf-query -c xfce4-panel -p /panels/panel-1/background-style -n -t int -s 1
+xfconf-query -c xfce4-panel -p /panels/panel-1/background-rgba -n -t double -t double -t double -t double -s 0.160784 -s 0.176471 -s 0.243137 -s 1
 
 # Install fonts
 git clone --depth=1 --branch=master https://github.com/ryanoasis/nerd-fonts.git nerd-fonts
 sudo cp -r nerd-fonts/patched-fonts/DejaVuSansMono /usr/share/fonts/truetype/dejavu
 ./nerd-fonts/install.sh DejaVuSansMono
 
-# Change global font
+# Change global fonts
 xfconf-query -c xsettings -p /Gtk/FontName -s "DejaVuSansM Nerd Font Mono 11"
 xfconf-query -c xsettings -p /Gtk/MonospaceFontName -s "DejaVuSansM Nerd Font Mono 10"
 
@@ -123,7 +125,7 @@ sudo sed -i 's+plugins=(git)+plugins=(\
   zsh-autosuggestions\
   zsh-syntax-highlighting\
   history\
-  #dirhistory\
+  dirhistory\
 )+' ~/.zshrc
 
 sudo sed -i '/source $ZSH\/oh-my-zsh.sh/i\
@@ -133,8 +135,8 @@ preexec() {\
 ' ~/.zshrc
 
 echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> ~/.zshrc
-
 echo 'unsetopt PROMPT_SP' >> ~/.zshrc
+echo 'export PATH=$PATH:/home/kali/.local/bin' >> ~/.zshrc
 
 # Install dconf-cli
 sudo apt-get install -y dconf-cli
@@ -143,22 +145,19 @@ sudo apt-get install -y dconf-cli
 curl https://gist.githubusercontent.com/somnico/b71f23f21f931d6d9c2445719c571ab5/raw/ > ~/.p10k.zsh
 
 
-# Add to PATH
-echo 'export PATH=$PATH:/home/kali/.local/bin' >> ~/.zshrc
-
 # Install gdb
 sudo apt-get install -y gdb
 
 # Install pwntools
 sudo apt-get install -y python3 python3-pip python3-dev git libssl-dev libffi-dev build-essential
-python3 -m pip install --upgrade pip
-python3 -m pip install --upgrade pwntools
+python3 -m pip install --upgrade pip --no-warn-script-location
+python3 -m pip install --upgrade pwntools --no-warn-script-location
 
 # Download peda
 git clone https://github.com/longld/peda.git ~/peda
 echo "source ~/peda/peda.py" >> ~/.gdbinit
 
-# Helper script for gdb
+# PID script for gdb
 curl -O https://raw.githubusercontent.com/somnico/kali/master/scripts/gdb_pid.sh
 sudo chmod +x gdb_pid.sh
 
@@ -190,8 +189,9 @@ sudo curl -o /etc/boxes/boxes-config https://raw.githubusercontent.com/somnico/k
 sudo curl -o /usr/share/figlet/fraktur.flf https://raw.githubusercontent.com/somnico/kali/master/configs/fraktur.flf
 
 cat << 'EOF' >> ~/.zshrc
-echo "kali" | figlet -f fraktur | boxes -d twisted -a hcvc -p h6v1 | awk -v cols=$(tput cols) '{ printf "%*s\n", (cols + length) / 2, $0 }' | lolcat -f -a -d 1 -p 5 -F 0.03 -S 75
+echo "kali" | figlet -f fraktur | boxes -d ian_jones -a hcvc -p h6v1 | lolcat -f -a -d 1 -p 5 -F 0.03 -S 30
 EOF
+
 
 # Setup AWS CLI
 expect << 'EOF'
@@ -224,12 +224,12 @@ complete -C '/usr/libexec/aws_completer' aws" >> ~/.zshrc
 # Reset debconf
 unset DEBIAN_FRONTEND
 
-# Start VNC server
-touch ~/.Xauthority
-tightvncserver -geometry 1280x720
-
 # Update terminal
 exec zsh
+
+# Start VNC server
+touch ~/.Xauthority
+tightvncserver -geometry 1600x900
 
 
 # Notes
@@ -283,12 +283,14 @@ exec zsh
 # xfdesktop -A  
 
 # Greetings
+# echo "kali" | figlet -f fraktur | boxes -d twisted -a hcvc -p h6v1 | awk -v cols=$(tput cols) '{ printf "%*s\n", (cols + length) / 2, $0 }' | lolcat -f -a -d 1 -p 5 -F 0.03 -S 30
 # fortune | cowsay -f calvin | boxes -d columns -a c | awk -v cols=$(tput cols) '{ printf "%*s\n", (cols + length) / 2, $0 }' | lolcat -a -d 1 -S 20
 # fm6000 -dog -l 50 -say "$(echo "KALI" | figlet -f big)" | lolcat -a -d 1 -S 19
 # fortune | cowsay -f "$(ls /usr/share/cowsay/cows | sort -R | head -1)" | while IFS= read -r line; do printf "%s" "$line" | while IFS= read -n1 -r char; do printf "%s" "$char"; sleep 0.0001; done; echo; done;
 
-# Alternative fonts
-# 3d_diagonal Big_Money-ne Chiseled cosmike doubleshorts Elite doubleshorts fraktur Georgia11 ghost henry3d lildevil larry3d lineblocks
+# Alternatives
+# 3d_diagonal, Big_Money-ne, Chiseled, cosmike, doubleshorts, Elite, doubleshorts, fraktur, Georgia11, ghost, henry3d, lildevil, larry3d, lineblocks
+# columns, ian_jones, twisted
 
 # Remove VNC settings
 # sudo rm -rf ~/.vnc/passwd ~/.vnc/xstartup
