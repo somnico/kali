@@ -1,6 +1,6 @@
 # Setup files for Kali in AWS
 
-### Installation (not yet)
+### Installation (does'nt work)
 ```
 sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/somnico/kali/master/install/install.sh)"
 ```
