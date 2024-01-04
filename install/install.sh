@@ -61,8 +61,8 @@ sudo cp -r nerd-fonts/patched-fonts/DejaVuSansMono /usr/share/fonts/truetype/dej
 ./nerd-fonts/install.sh DejaVuSansMono
 
 # Change global fonts
-xfconf-query -c xsettings -p /Gtk/FontName -s "DejaVuSansM Nerd Font Mono 11"
-xfconf-query -c xsettings -p /Gtk/MonospaceFontName -s "DejaVuSansM Nerd Font Mono 10"
+xfconf-query -c xsettings -p /Gtk/FontName -s "FiraCode Nerd Font Mono 11"
+xfconf-query -c xsettings -p /Gtk/MonospaceFontName -s "FiraCode Nerd Font Mono 10"
 
 # Change terminal settings 
 mkdir -p /home/kali/.config/qterminal.org/
@@ -206,7 +206,7 @@ unset DEBIAN_FRONTEND
 # Update terminal
 exec zsh
 
-# Run this manually when finished
+# Run this when finished
 # tightvncserver -geometry 1600x900
 
 
