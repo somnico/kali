@@ -20,28 +20,7 @@ echo "wireshark-common wireshark-common/install-setuid boolean true" | sudo debc
 sudo apt-get install -y kali-desktop-xfce xfconf kali-defaults kali-tools-top10 
 
 # Install other tools
-sudo apt-get install -y neovim ghidra dirb
-
-# Install VNC server and expect
-sudo apt-get install -y tightvncserver expect
-
-# Set VNC paswword
-expect << 'EOF'
-set timeout 10
-
-spawn vncpasswd
-
-expect {Password:}
-send "kalikali\r"
-
-expect {Verify:}
-send "kalikali\r"
-
-expect {Would you like to enter a view-only password (y/n)?}
-send "n\r"
-
-expect eof
-EOF
+sudo apt-get install -y neovim ghidra dirb tightvncserver expect
 
 
 # Set password
@@ -70,10 +49,11 @@ sudo curl -o /home/kali/.config/xfce4/panel/launcher-6/launcher-6.desktop https:
 sudo curl -o /home/kali/.config/xfce4/panel/launcher-7/launcher-7.desktop https://raw.githubusercontent.com/somnico/kali/master/configs/launcher-7.desktop
 sudo curl -o /home/kali/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml https://raw.githubusercontent.com/somnico/kali/master/configs/xfce4-panel.xml
 
-xfconf-query -c xfce4-panel -p /panels/panel-1/icon-size -n -t int -s 20 
+xfconf-query -c xfce4-panel -p /panels/panel-1/icon-size -n -t int -s 22 
 xfconf-query -c xfce4-panel -p /panels/panel-1/size -n -t int -s 36
 xfconf-query -c xfce4-panel -p /panels/panel-1/background-style -n -t int -s 1
 xfconf-query -c xfce4-panel -p /panels/panel-1/background-rgba -n -t double -t double -t double -t double -s 0.160784 -s 0.176471 -s 0.243137 -s 1
+
 
 # Install fonts
 git clone --depth=1 --branch=master https://github.com/ryanoasis/nerd-fonts.git nerd-fonts
@@ -109,7 +89,7 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 
 # Set theme to powerlevel10k
-sudo sed -i 's+ZSH_THEME="robbyrussell"+ZSH_THEME="powerlevel10k/powerlevel10k"+' .zshrc
+sudo sed -i 's+ZSH_THEME="robbyrussell"+ZSH_THEME="powerlevel10k/powerlevel10k"+' ~/.zshrc
 
 
 # Customization
@@ -160,11 +140,11 @@ echo "source ~/peda/peda.py" >> ~/.gdbinit
 curl -O https://raw.githubusercontent.com/somnico/kali/master/scripts/gdb_pid.sh
 sudo chmod +x gdb_pid.sh
 
-
 # Install helpers
 sudo apt-get install -y nodejs npm
 sudo npm install -g tldr
-sudo apt-get install -y fzf
+sudo apt-get install -y fzf ripgrep
+sudo updatedb
 
 
 # Install a bunch of random stuff
@@ -181,7 +161,7 @@ cd ..
 sudo apt-get install -y libncursesw5-dev
 git clone https://gitlab.com/jallbrit/cbonsai
 cd cbonsai
-sudo make install
+sudo make install 2> /dev/null
 cd ..
 
 sudo curl -o /etc/boxes/boxes-config https://raw.githubusercontent.com/somnico/kali/master/configs/boxes-config
@@ -226,9 +206,8 @@ unset DEBIAN_FRONTEND
 # Update terminal
 exec zsh
 
-# Start VNC server
-touch ~/.Xauthority
-tightvncserver -geometry 1600x900
+# Run this manually when finished
+# tightvncserver -geometry 1600x900
 
 
 # Notes
@@ -239,6 +218,10 @@ tightvncserver -geometry 1600x900
 # More backgrounds
 # sudo mkdir -p /usr/share/backgrounds/windows
 # sudo curl -o /usr/share/backgrounds/windows/windows-wallpaper-1.jpg https://raw.githubusercontent.com/somnico/kali/master/images/windows-wallpaper-1.jpg
+
+# More icons
+# sudo mkdir -p /usr/share/icons/Flat-Remix-Blue-Dark/apps/scalable/
+# sudo curl -o /usr/share/icons/Flat-Remix-Blue-Dark/apps/scalable/utilities-terminal.svg https://raw.githubusercontent.com/somnico/kali/master/images/utilities-terminal.svg
 
 # GUI updates
 # xfdesktop -Q && xfdesktop &
