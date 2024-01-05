@@ -23,14 +23,17 @@ sudo apt-get install -y kali-desktop-xfce xfconf kali-defaults kali-tools-top10
 sudo apt-get install -y neovim ghidra dirb tightvncserver expect
 
 
-# Set password
-echo -e "kalikali\nkalikali" | sudo passwd kali
-
 # Install wallpapers
 sudo apt install -y kali-wallpapers-all
 
 # Change wallpaper 
 xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/workspace0/last-image --create -t string -s /usr/share/backgrounds/kali-16x9/kali-layers.png
+
+# Change icons
+sudo mkdir -p /usr/share/icons/Flat-Remix-Blue-Dark/apps/scalable/
+sudo curl -o /usr/share/icons/Flat-Remix-Blue-Dark/apps/scalable/firefox-esr.svg https://raw.githubusercontent.com/somnico/kali/master/images/icons/firefox-esr.svg
+sudo curl -o /usr/share/icons/Flat-Remix-Blue-Dark/apps/scalable/org.xfce.filemanager.svg https://raw.githubusercontent.com/somnico/kali/master/images/icons/org.xfce.filemanager.svg
+sudo curl -o /usr/share/icons/Flat-Remix-Blue-Dark/apps/scalable/utilities-terminal.svg https://raw.githubusercontent.com/somnico/kali/master/images/icons/utilities-terminal.svg
 
 # Various settings
 xfconf-query --create --channel thunar --property /last-show-hidden --type bool --set true
@@ -49,16 +52,15 @@ sudo curl -o /home/kali/.config/xfce4/panel/launcher-6/launcher-6.desktop https:
 sudo curl -o /home/kali/.config/xfce4/panel/launcher-7/launcher-7.desktop https://raw.githubusercontent.com/somnico/kali/master/configs/launcher-7.desktop
 sudo curl -o /home/kali/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml https://raw.githubusercontent.com/somnico/kali/master/configs/xfce4-panel.xml
 
-xfconf-query -c xfce4-panel -p /panels/panel-1/icon-size -n -t int -s 22 
+xfconf-query -c xfce4-panel -p /panels/panel-1/icon-size -n -t int -s 22
 xfconf-query -c xfce4-panel -p /panels/panel-1/size -n -t int -s 36
 xfconf-query -c xfce4-panel -p /panels/panel-1/background-style -n -t int -s 1
 xfconf-query -c xfce4-panel -p /panels/panel-1/background-rgba -n -t double -t double -t double -t double -s 0.160784 -s 0.176471 -s 0.243137 -s 1
 
-
 # Install fonts
 git clone --depth=1 --branch=master https://github.com/ryanoasis/nerd-fonts.git nerd-fonts
-sudo cp -r nerd-fonts/patched-fonts/DejaVuSansMono /usr/share/fonts/truetype/dejavu
-./nerd-fonts/install.sh DejaVuSansMono
+sudo cp -r nerd-fonts/patched-fonts/FiraCode/Regular /usr/share/fonts/truetype/firanerd
+./nerd-fonts/install.sh FiraCode
 
 # Change global fonts
 xfconf-query -c xsettings -p /Gtk/FontName -s "FiraCode Nerd Font Mono 11"
@@ -206,8 +208,11 @@ unset DEBIAN_FRONTEND
 # Update terminal
 exec zsh
 
-# Run this when finished
-# tightvncserver -geometry 1600x900
+################################################################
+# Run these when finished, the expect scripts were unreliable  #
+# sudo passwd kali                                             #
+# tightvncserver -geometry 1600x900                            #
+################################################################
 
 
 # Notes
@@ -215,13 +220,21 @@ exec zsh
 # Consistent gist links
 # gistusercontent/raw or gistusercontent/raw/filename 
  
+# Set password
+# echo -e "kalikali\nkalikali" | sudo passwd kali
+
+# Commands for file sharing
+# sudo -v ; curl https://rclone.org/install.sh | sudo bash
+# Web application instead of Desktop app in Google Credentials
+# rclone lsd/ls Drive:
+# rclone copy Drive:Linux/AWS/ /home/kali/files/
+
+# pip install gdown
+# curl -L -o name.type "https://drive.google.com/uc?id=id_here"
+
 # More backgrounds
 # sudo mkdir -p /usr/share/backgrounds/windows
-# sudo curl -o /usr/share/backgrounds/windows/windows-wallpaper-1.jpg https://raw.githubusercontent.com/somnico/kali/master/images/windows-wallpaper-1.jpg
-
-# More icons
-# sudo mkdir -p /usr/share/icons/Flat-Remix-Blue-Dark/apps/scalable/
-# sudo curl -o /usr/share/icons/Flat-Remix-Blue-Dark/apps/scalable/utilities-terminal.svg https://raw.githubusercontent.com/somnico/kali/master/images/utilities-terminal.svg
+# sudo curl -o /usr/share/backgrounds/windows/windows-wallpaper-1.jpg https://raw.githubusercontent.com/somnico/kali/master/images/backgrounds/kali-actiniaria.png
 
 # GUI updates
 # xfdesktop -Q && xfdesktop &
@@ -260,11 +273,6 @@ exec zsh
 # make
 # sudo make install
 
-# Various 
-# xfconf-query -c xfce4-desktop -p /desktop-icons/gravity --create -t int -s 1
-# xfconf-query -c xsettings -p /Net/PreferredApplications/TextEditor -n -t string -s "org.xfce.mousepad.desktop" 
-# xfdesktop -A  
-
 # Greetings
 # echo "kali" | figlet -f fraktur | boxes -d twisted -a hcvc -p h6v1 | awk -v cols=$(tput cols) '{ printf "%*s\n", (cols + length) / 2, $0 }' | lolcat -f -a -d 1 -p 5 -F 0.03 -S 30
 # fortune | cowsay -f calvin | boxes -d columns -a c | awk -v cols=$(tput cols) '{ printf "%*s\n", (cols + length) / 2, $0 }' | lolcat -a -d 1 -S 20
@@ -279,6 +287,11 @@ exec zsh
 # sudo rm -rf ~/.vnc/passwd ~/.vnc/xstartup
 # sudo rm -rf /tmp/.X*-lock /tmp/.X11-unix/X*
 # sudo kill -9 $(ps aux | grep '[X]tightvnc' | awk '{print $2}')
+
+# Various 
+# xfconf-query -c xfce4-desktop -p /desktop-icons/gravity --create -t int -s 1
+# xfconf-query -c xsettings -p /Net/PreferredApplications/TextEditor -n -t string -s "org.xfce.mousepad.desktop" 
+# xfdesktop -A  
 
 # Xfconf reference
 # for channel in $( xfconf-query --list | tail --lines=+2 | sort ); do printf -- '\n\e[1;36m%s\e[m\n' "${channel}"; xfconf-query --list --verbose --channel "${channel}"; done
