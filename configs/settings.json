@@ -1,11 +1,9 @@
 {
     "$help": "https://aka.ms/terminal-documentation",
     "$schema": "https://aka.ms/terminal-profiles-schema",
-    "actions": 
-    [
+    "actions": [
         {
-            "command": 
-            {
+            "command": {
                 "action": "copy",
                 "singleLine": false
             },
@@ -16,8 +14,7 @@
             "keys": "ctrl+v"
         },
         {
-            "command": 
-            {
+            "command": {
                 "action": "splitPane",
                 "split": "auto",
                 "splitMode": "duplicate"
@@ -29,32 +26,28 @@
             "keys": "ctrl+shift+f"
         }
     ],
+    "centerOnLaunch": true,
     "copyFormatting": "none",
     "copyOnSelect": false,
     "defaultProfile": "{2c4de342-38b7-51cf-b940-2309a097f518}",
-    "newTabMenu": 
-    [
+    "newTabMenu": [
         {
             "type": "remainingProfiles"
         }
     ],
-    "profiles": 
-    {
-        "defaults": 
-        {
+    "profiles": {
+        "defaults": {
             "bellStyle": "none",
-            "colorScheme": "Dracula",
+            "colorScheme": "Dracula Palenight",
             "experimental.retroTerminalEffect": false,
-            "font": 
-            {
+            "font": {
                 "size": 10.0
             },
             "opacity": 100,
             "tabColor": "#292D3E",
             "useAcrylic": false
         },
-        "list": 
-        [
+        "list": [
             {
                 "commandline": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
                 "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
@@ -116,11 +109,11 @@
             },
             {
                 "colorScheme": "Dracula Palenight",
-                "commandline": "C:\\WINDOWS\\system32\\wsl.exe -d Ubuntu ssh -i /home/nicolafs/Kali.pem kali@16.171.129.52",
+                "commandline": "C:\\WINDOWS\\system32\\wsl.exe -d Ubuntu ssh -o StrictHostKeyChecking=no -i Kali.pem kali@16.171.181.244",
                 "elevate": true,
-                "font": 
-                {
-                    "face": "CaskaydiaCove Nerd Font Mono"
+                "font": {
+                    "face": "Consolas NF",
+                    "size": 9.0
                 },
                 "guid": "{2a784ac7-8ec7-44e5-a0fc-8e6a6185f26e}",
                 "hidden": true,
@@ -137,8 +130,7 @@
             }
         ]
     },
-    "schemes": 
-    [
+    "schemes": [
         {
             "background": "#0C0C0C",
             "black": "#0C0C0C",
@@ -215,7 +207,7 @@
             "brightBlack": "#A1A6BD",
             "brightBlue": "#82AAFF",
             "brightCyan": "#89DDFF",
-            "brightGreen": "#6EE37D",
+            "brightGreen": "#7EDCF9",
             "brightPurple": "#B686D6",
             "brightRed": "#F07178",
             "brightWhite": "#292D3E",
@@ -223,7 +215,7 @@
             "cursorColor": "#FFFFFF",
             "cyan": "#7EDCF9",
             "foreground": "#ECEFFF",
-            "green": "#79FA8A",
+            "green": "#7EDCF9",
             "name": "Dracula Palenight",
             "purple": "#7E58BF",
             "red": "#F85871",
@@ -488,5 +480,6 @@
     "showTabsInTitlebar": true,
     "theme": "dark",
     "themes": [],
-    "useAcrylicInTabRow": false
+    "useAcrylicInTabRow": false,
+    "windowingBehavior": "useAnyExisting"
 }
