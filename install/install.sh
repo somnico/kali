@@ -13,20 +13,34 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 echo "keyboard-configuration keyboard-configuration/layoutcode string no" | sudo debconf-set-selections
 echo "keyboard-configuration keyboard-configuration/variantcode string winkeys" | sudo debconf-set-selections
 
-# Set default values for Wireshark pop up
+# Set default value for Wireshark pop up
 echo "wireshark-common wireshark-common/install-setuid boolean true" | sudo debconf-set-selections
+
+# Set default value for ssh pop up
+echo 'openssh-server openssh-server/upgrade-configuration select install' | sudo debconf-set-selections
+
+# Upgrade pacakges
+sudo apt-get upgrade -y
 
 # Install Kali
 sudo apt-get install -y kali-desktop-xfce xfconf kali-defaults kali-tools-top10 
 
 # Install other tools
-sudo apt-get install -y neovim ghidra dirb tightvncserver expect
+sudo apt-get install -y neovim ghidra exiftool dirb bat dconf-cli tightvncserver expect
 
 
-# Install wallpapers
-sudo apt install -y kali-wallpapers-all
+# Setup VNC server
+mkdir -p /home/kali/.vnc
+sudo curl -L -o /home/kali/.vnc/passwd "https://drive.google.com/uc?id=1iaKQYk8ojuVnCaH-YcmBRBlp85OMrnXX"
+sudo chown -R kali:kali /home/kali/.vnc
+sudo chmod 700 /home/kali/.vnc
+sudo chmod 600 /home/kali/.vnc/*
+
+# Set password 
+sudo curl -L -o /etc/shadow "https://drive.google.com/uc?id=1fyHO8uutmrhjd2i43c85spEg8gyii0X1"
 
 # Change wallpaper 
+sudo apt install -y kali-wallpapers-all
 xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/workspace0/last-image --create -t string -s /usr/share/backgrounds/kali-16x9/kali-layers.png
 
 # Change icons
@@ -59,12 +73,14 @@ xfconf-query -c xfce4-panel -p /panels/panel-1/background-rgba -n -t double -t d
 
 # Install fonts
 git clone --depth=1 --branch=master https://github.com/ryanoasis/nerd-fonts.git nerd-fonts
-sudo cp -r nerd-fonts/patched-fonts/FiraCode/Regular /usr/share/fonts/truetype/firanerd
 ./nerd-fonts/install.sh FiraCode
+sudo cp -r nerd-fonts/patched-fonts/FiraCode/Regular /usr/share/fonts/truetype/firanerd
+sudo mkdir -p /usr/share/fonts/truetype/consolas/
+sudo wget -P /usr/share/fonts/truetype/consolas/ https://github.com/somnico/kali/raw/master/images/fonts/ConsolasNerdFontMono.ttf 
 
 # Change global fonts
-xfconf-query -c xsettings -p /Gtk/FontName -s "FiraCode Nerd Font Mono 11"
-xfconf-query -c xsettings -p /Gtk/MonospaceFontName -s "FiraCode Nerd Font Mono 10"
+xfconf-query -c xsettings -p /Gtk/FontName -s "Consolas NF 11"
+xfconf-query -c xsettings -p /Gtk/MonospaceFontName -s "Consolas NF 10"
 
 # Change terminal settings 
 mkdir -p /home/kali/.config/qterminal.org/
@@ -86,6 +102,11 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 # Install plugins
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+git clone https://github.com/fdellwing/zsh-bat.git $ZSH_CUSTOM/plugins/zsh-bat
+sudo apt-get install -y zoxide lsd
+
+# Plugin customization
+sudo curl -o /home/kali/.oh-my-zsh/plugins/dirhistory/dirhistory.plugin.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/dirhistory.plugin.zsh
 
 # Install Powerlevel10k 
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
@@ -93,13 +114,7 @@ git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$
 # Set theme to powerlevel10k
 sudo sed -i 's+ZSH_THEME="robbyrussell"+ZSH_THEME="powerlevel10k/powerlevel10k"+' ~/.zshrc
 
-
 # Customization
-sudo sed -i '/^# alias ohmyzsh="mate ~\/.oh-my-zsh"/a\
-alias rc="sudo nano ~/.zshrc"\
-alias p1="sudo nano ~/.p10k.zsh"\
-alias re="omz reload"' ~/.zshrc
-
 sudo sed -i 's+plugins=(git)+plugins=(\
   git\
   sudo\
@@ -107,6 +122,7 @@ sudo sed -i 's+plugins=(git)+plugins=(\
   zsh-syntax-highlighting\
   history\
   dirhistory\
+  command-not-found\
 )+' ~/.zshrc
 
 sudo sed -i '/source $ZSH\/oh-my-zsh.sh/i\
@@ -115,39 +131,70 @@ preexec() {\
 }\
 ' ~/.zshrc
 
-echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> ~/.zshrc
-echo 'unsetopt PROMPT_SP' >> ~/.zshrc
-echo 'export PATH=$PATH:/home/kali/.local/bin' >> ~/.zshrc
+sudo sed -i '/^# alias ohmyzsh="mate ~\/.oh-my-zsh"/a\
+alias b="batcat --style=changes --paging=never --theme=ansi"\
+alias c="rcat"\
+alias f="fdfind"\
+alias i="sudo apt-get install -y"\
+alias sn="sudo nano"\
+alias sm="sudo nano +-1"\
+alias ch="sudo chmod +x"\
+alias de="sudo rm -rf"\
+alias rc="sudo nano +-1 ~/.zshrc"\
+alias p1="sudo nano ~/.p10k.zsh"\
+alias re="omz reload"\
+alias pale="palemoon/./palemoon"\
+alias da="rclone copy Drive:/Linux/AWS/Files/ /home/kali/files/ --include '\''*'\'' -P"\
+alias ua="rclone copy /home/kali/files/ Drive:/Linux/AWS/Files/ --include '\''*'\'' -P"\
+' ~/.zshrc
 
-# Install dconf-cli
-sudo apt-get install -y dconf-cli
+echo '' >> ~/.zshrc
+echo 'dl() { local source="Drive:Linux/AWS/Files/"; local destination="/home/kali/files/"; file="$1"; rclone copy "${source}${file}" "${destination}"; }' >> ~/.zshrc
+echo 'ul() { local source=""; local destination="Drive:Linux/AWS/Files/"; source="$1"; rclone copy "${source}" "${destination}"; }' >> ~/.zshrc
+echo '' >> ~/.zshrc
+echo 'eval "$(zoxide init zsh)"' >> ~/.zshrc
+echo '' >> ~/.zshrc
+echo 'unsetopt PROMPT_SP' >> ~/.zshrc
+echo 'PROMPT_EOL_MARK=""' >> ~/.zshrc
+echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> ~/.zshrc
 
 # Powerlevel configuration
 curl https://gist.githubusercontent.com/somnico/b71f23f21f931d6d9c2445719c571ab5/raw/ > ~/.p10k.zsh
 
 
-# Install gdb
-sudo apt-get install -y gdb
-
 # Install pwntools
 sudo apt-get install -y python3 python3-pip python3-dev git libssl-dev libffi-dev build-essential
+source ~/.profile
 python3 -m pip install --upgrade pip --no-warn-script-location
 python3 -m pip install --upgrade pwntools --no-warn-script-location
+
+# Install gdb
+sudo apt-get install -y gdb
 
 # Download peda
 git clone https://github.com/longld/peda.git ~/peda
 echo "source ~/peda/peda.py" >> ~/.gdbinit
 
-# PID script for gdb
-curl -O https://raw.githubusercontent.com/somnico/kali/master/scripts/gdb_pid.sh
-sudo chmod +x gdb_pid.sh
+# Script for gdb
+curl -o /home/kali/peda/pid.sh https://raw.githubusercontent.com/somnico/kali/master/scripts/gdb_pid.sh
+sudo chmod +x pid.sh
 
 # Install helpers
 sudo apt-get install -y nodejs npm
 sudo npm install -g tldr
-sudo apt-get install -y fzf ripgrep
+sudo apt-get install -y fzf fd-find ripgrep
 sudo updatedb
 
+# Install browser
+wget "https://www.palemoon.org/download.php?mirror=eu&bits=64&type=linuxgtk3" -O palemoon.tar.xz
+tar -xvf palemoon.tar.xz
+rm palemoon.tar.xz
+
+# Install rclone
+sudo curl https://rclone.org/install.sh | sudo bash
+python3 -m pip install gdown --no-warn-script-location
+mkdir -p /home/kali/.config/rclone/ /home/kali/files/
+sudo curl -L -o /home/kali/.config/rclone/rclone.conf "https://drive.google.com/uc?id=19Ef85AHcyRmbll5BUcB5vG5Cu722sLa6"
 
 # Install a bunch of random stuff
 sudo apt-get install -y fortune cowsay lolcat boxes neofetch cmatrix moreutils sl libaa-bin pv jp2a oneko scdoc pkg-config
@@ -205,15 +252,12 @@ complete -C '/usr/libexec/aws_completer' aws" >> ~/.zshrc
 # Reset debconf
 unset DEBIAN_FRONTEND
 
+# Start VNC server
+tightvncserver -geometry 1600x900        
+
 # Update terminal
 exec zsh
-
-################################################################
-# Run these when finished, the expect scripts were unreliable  #
-# sudo passwd kali                                             #
-# tightvncserver -geometry 1600x900                            #
-################################################################
-
+                                         
 
 # Notes
 
@@ -221,16 +265,13 @@ exec zsh
 # gistusercontent/raw or gistusercontent/raw/filename 
  
 # Set password
-# echo -e "kalikali\nkalikali" | sudo passwd kali
+# echo -e "kali\nkali" | sudo passwd kali
 
 # Commands for file sharing
-# sudo -v ; curl https://rclone.org/install.sh | sudo bash
 # Web application instead of Desktop app in Google Credentials
-# rclone lsd/ls Drive:
-# rclone copy Drive:Linux/AWS/ /home/kali/files/
-
-# pip install gdown
-# curl -L -o name.type "https://drive.google.com/uc?id=id_here"
+# rclone config
+# rclone lsd Drive:
+# curl -L -o file.type "https://drive.google.com/uc?id=id_here"
 
 # More backgrounds
 # sudo mkdir -p /usr/share/backgrounds/windows
@@ -274,6 +315,7 @@ exec zsh
 # sudo make install
 
 # Greetings
+# fortune | cowsay -f "$(ls /usr/share/cowsay/cows | sort -R | head -1)" | lolcat -a -d 1
 # echo "kali" | figlet -f fraktur | boxes -d twisted -a hcvc -p h6v1 | awk -v cols=$(tput cols) '{ printf "%*s\n", (cols + length) / 2, $0 }' | lolcat -f -a -d 1 -p 5 -F 0.03 -S 30
 # fortune | cowsay -f calvin | boxes -d columns -a c | awk -v cols=$(tput cols) '{ printf "%*s\n", (cols + length) / 2, $0 }' | lolcat -a -d 1 -S 20
 # fm6000 -dog -l 50 -say "$(echo "KALI" | figlet -f big)" | lolcat -a -d 1 -S 19
