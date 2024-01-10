@@ -37,7 +37,7 @@ sudo chmod 700 /home/kali/.vnc
 sudo chmod 600 /home/kali/.vnc/*
 
 # Set password "kali"
-sudo wget -N -P /etc/ -O shadow https://raw.githubusercontent.com/somnico/kali/master/configs/shadow
+sudo wget -P /etc/ -O shadow https://raw.githubusercontent.com/somnico/kali/master/configs/shadow
 
 # Set time
 sudo timedatectl set-timezone Europe/Oslo
