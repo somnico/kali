@@ -2,7 +2,7 @@
 
 ### Installation (doesn't work)
 ```
-curl -sSL https://raw.githubusercontent.com/somnico/kali/master/install/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/somnico/kali/master/install/install.sh | sh
 ```
 
 
