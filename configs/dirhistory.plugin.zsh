@@ -131,6 +131,7 @@ for keymap in emacs vicmd viins; do
   # dirhistory_back
   bindkey -M $keymap "\e[2B" dirhistory_zle_dirhistory_back    # xterm in normal mode
   bindkey -M $keymap "\e[1;2B" dirhistory_zle_dirhistory_back  # xterm in normal mode
+  # bindkey -M $keymap "\e[1;3B" dirhistory_zle_dirhistory_back  # xterm in normal mode
   bindkey -M $keymap "\e\e[B" dirhistory_zle_dirhistory_back   # Putty
   bindkey -M $keymap "\eO2B" dirhistory_zle_dirhistory_back    # GNU screen
 
@@ -146,6 +147,7 @@ for keymap in emacs vicmd viins; do
   # dirhistory_future
   bindkey -M $keymap "\e[2A" dirhistory_zle_dirhistory_future    # xterm in normal mode
   bindkey -M $keymap "\e[1;2A" dirhistory_zle_dirhistory_future  # xterm in normal mode
+  # bindkey -M $keymap "\e[1;3A" dirhistory_zle_dirhistory_future  # xterm in normal mode
   bindkey -M $keymap "\e\e[A" dirhistory_zle_dirhistory_future   # Putty
   bindkey -M $keymap "\eO2A" dirhistory_zle_dirhistory_future    # GNU screen
 
@@ -194,6 +196,7 @@ for keymap in emacs vicmd viins; do
   # dirhistory_up
   bindkey -M $keymap "\e[2D" dirhistory_zle_dirhistory_up    # xterm in normal mode
   bindkey -M $keymap "\e[1;2D" dirhistory_zle_dirhistory_up  # xterm in normal mode
+  # bindkey -M $keymap "\e[1;3D" dirhistory_zle_dirhistory_up  # xterm in normal mode
   bindkey -M $keymap "\e\e[D" dirhistory_zle_dirhistory_up   # Putty
   bindkey -M $keymap "\eO2D" dirhistory_zle_dirhistory_up    # GNU screen
 
@@ -209,6 +212,7 @@ for keymap in emacs vicmd viins; do
   # dirhistory_down
   bindkey -M $keymap "\e[2C" dirhistory_zle_dirhistory_down    # xterm in normal mode
   bindkey -M $keymap "\e[1;2C" dirhistory_zle_dirhistory_down  # xterm in normal mode
+  # bindkey -M $keymap "\e[1;3C" dirhistory_zle_dirhistory_down  # xterm in normal mode
   bindkey -M $keymap "\e\e[C" dirhistory_zle_dirhistory_down   # Putty
   bindkey -M $keymap "\e02C" dirhistory_zle_dirhistory_down    # GNU screen
 
