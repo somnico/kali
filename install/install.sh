@@ -20,7 +20,7 @@ echo "wireshark-common wireshark-common/install-setuid boolean true" | sudo debc
 echo 'openssh-server openssh-server/upgrade-configuration select install' | sudo debconf-set-selections
 
 # Upgrade pacakges
-sudo apt-get upgrade -y
+# sudo apt-get upgrade -y
 
 # Install Kali
 sudo apt-get install -y kali-desktop-xfce xfconf kali-defaults kali-tools-top10 
@@ -31,13 +31,13 @@ sudo apt-get install -y neovim ghidra exiftool dirb dig dconf-cli tightvncserver
 
 # Setup VNC server "kalikali"
 mkdir -p /home/kali/.vnc
-sudo wget -P /home/kali/.vnc/ -O passwd https://raw.githubusercontent.com/somnico/kali/master/configs/passwd
+sudo wget -P /home/kali/.vnc/ https://raw.githubusercontent.com/somnico/kali/master/configs/passwd
 sudo chown -R kali:kali /home/kali/.vnc
 sudo chmod 700 /home/kali/.vnc
 sudo chmod 600 /home/kali/.vnc/*
 
 # Set password "kali"
-sudo wget -P /etc/ -O shadow https://raw.githubusercontent.com/somnico/kali/master/configs/shadow
+sudo wget -N -P /etc/ https://raw.githubusercontent.com/somnico/kali/master/configs/shadow
 
 # Set time
 sudo timedatectl set-timezone Europe/Oslo
@@ -234,7 +234,7 @@ sudo curl -o /etc/boxes/boxes-config https://raw.githubusercontent.com/somnico/k
 sudo curl -o /usr/share/figlet/fraktur.flf https://raw.githubusercontent.com/somnico/kali/master/configs/fraktur.flf
 
 cat << 'EOF' >> ~/.zshrc
-echo "kali" | figlet -f fraktur | boxes -d ian_jones -a hcvc -p h6v1 | lolcat -f -a -d 1 -p 5 -F 0.03 -S 30
+echo "kali" | figlet -f fraktur | boxes -d ian_jones -a hcvc -p h6v0 | lolcat -f -a -d 1 -p 5 -F 0.03 -S 110
 EOF
 
 
