@@ -31,13 +31,13 @@ sudo apt-get install -y neovim ghidra exiftool dirb dig dconf-cli tightvncserver
 
 # Setup VNC server "kalikali"
 mkdir -p /home/kali/.vnc
-sudo wget -P /home/kali/.vnc/ https://raw.githubusercontent.com/somnico/kali/master/configs/passwd
+sudo wget -P /home/kali/.vnc/ -O passwd https://raw.githubusercontent.com/somnico/kali/master/configs/passwd
 sudo chown -R kali:kali /home/kali/.vnc
 sudo chmod 700 /home/kali/.vnc
 sudo chmod 600 /home/kali/.vnc/*
 
 # Set password "kali"
-sudo wget -N -P /etc/ https://raw.githubusercontent.com/somnico/kali/master/configs/shadow
+sudo wget -N -P /etc/ -O shadow https://raw.githubusercontent.com/somnico/kali/master/configs/shadow
 
 # Set time
 sudo timedatectl set-timezone Europe/Oslo
