@@ -29,7 +29,7 @@ sudo apt-get install -y kali-desktop-xfce xfconf kali-defaults kali-tools-top10
 sudo apt-get install -y neovim ghidra exiftool dirb dnsutils dconf-cli tightvncserver expect
 
 
-# Setup VNC server "kalikali"
+# Set VNC password "kalikali"
 mkdir -p /home/kali/.vnc
 sudo wget -P /home/kali/.vnc/ https://raw.githubusercontent.com/somnico/kali/master/configs/passwd
 sudo chown -R kali:kali /home/kali/.vnc
