@@ -20,13 +20,13 @@ echo "wireshark-common wireshark-common/install-setuid boolean true" | sudo debc
 echo 'openssh-server openssh-server/upgrade-configuration select install' | sudo debconf-set-selections
 
 # Upgrade pacakges
-# sudo apt-get upgrade -y
+sudo apt-get upgrade -y
 
 # Install Kali
 sudo apt-get install -y kali-desktop-xfce xfconf kali-defaults kali-tools-top10 
 
 # Install other tools
-sudo apt-get install -y neovim ghidra exiftool dirb dig dconf-cli tightvncserver expect
+sudo apt-get install -y neovim ghidra exiftool dirb dnsutils dconf-cli tightvncserver expect
 
 
 # Setup VNC server "kalikali"
@@ -99,6 +99,18 @@ sudo curl -o /home/kali/.config/qt5ct/qt5ct.conf https://raw.githubusercontent.c
 # Install Oh My Zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
+# Install Powerlevel10k 
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+
+# Set theme to powerlevel10k
+sudo sed -i 's+ZSH_THEME="robbyrussell"+ZSH_THEME="powerlevel10k/powerlevel10k"+' ~/.zshrc
+
+# Powerlevel configuration
+curl https://gist.githubusercontent.com/somnico/b71f23f21f931d6d9c2445719c571ab5/raw/ > ~/.p10k.zsh
+
+# Keybinds
+sudo curl -o /home/kali/.oh-my-zsh/lib/key-bindings.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/key-bindings.zsh
+
 # Install plugins
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
@@ -107,15 +119,6 @@ sudo apt-get install -y bat zoxide lsd
 
 # Plugin customization
 sudo curl -o /home/kali/.oh-my-zsh/plugins/dirhistory/dirhistory.plugin.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/dirhistory.plugin.zsh
-
-# Install Powerlevel10k 
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-
-# Set theme to powerlevel10k
-sudo sed -i 's+ZSH_THEME="robbyrussell"+ZSH_THEME="powerlevel10k/powerlevel10k"+' ~/.zshrc
-
-# Keybinds
-sudo curl -o /home/kali/.oh-my-zsh/lib/key-bindings.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/key-bindings.zsh
 
 # Customization
 sudo sed -i 's+plugins=(git)+plugins=(\
@@ -174,9 +177,6 @@ echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> ~/.zshrc
 echo '' >> ~/.zshrc
 echo 'export PATH=$PATH:/home/kali/.local/bin' >> ~/.zshrc
 echo '' >> ~/.zshrc
-
-# Powerlevel configuration
-curl https://gist.githubusercontent.com/somnico/b71f23f21f931d6d9c2445719c571ab5/raw/ > ~/.p10k.zsh
 
 
 # Install pwntools
