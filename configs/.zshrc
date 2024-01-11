@@ -1,10 +1,3 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -83,7 +76,8 @@ plugins=(
   zsh-autosuggestions
   zsh-syntax-highlighting
   history
-  #dirhistory
+  dirhistory
+  command-not-found
 )
 
 preexec() {
@@ -91,6 +85,11 @@ preexec() {
 }
 
 source $ZSH/oh-my-zsh.sh
+
+[[ -r ~/.oh-my-zsh/plugins/znap/znap.zsh ]] || git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git ~/.oh-my-zsh/plugins/znap
+source ~/.oh-my-zsh/plugins/znap/znap.zsh
+znap source marlonrichert/zsh-autocomplete
+ .accept-linenuselect
 
 # User configuration
 
@@ -113,14 +112,42 @@ source $ZSH/oh-my-zsh.sh
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
-#
+
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias rc="sudo nano ~/.zshrc"
+alias b="batcat --paging=never --theme=ansi"
+alias ba="batcat --paging=never --theme=ansi --style=changes"
+alias c="rcat"
+alias f="fdfind"
+alias i="sudo apt-get install -y"
+alias sn="sudo nano"
+alias sm="sudo nano +-1"
+alias ch="sudo chmod +x"
+alias de="sudo rm -rf"
+alias rc="sudo nano +-1 ~/.zshrc"
 alias p1="sudo nano ~/.p10k.zsh"
 alias re="omz reload"
+alias pale="palemoon/./palemoon"
+alias da="rclone copy Drive:/Linux/AWS/Files/ /home/kali/files/ --include '*' -P"
+alias ua="rclone copy /home/kali/files/ Drive:/Linux/AWS/Files/ --include '*' -P"
 
+dl() { local source="Drive:Linux/AWS/Files/"; local destination="/home/kali/files/"; file="$1"; rclone copy "${source}${file}" "${destination}"; }
+ul() { local source=""; local destination="Drive:Linux/AWS/Files/"; source="$1"; rclone copy "${source}" "${destination}"; }
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+WORDCHARS="_.;~-=*^|!?&#$%[](){}<>"
+PROMPT_EOL_MARK=""
+unsetopt PROMPT_SP
+
+eval "$(zoxide init zsh)"
+
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+export PATH=$PATH:/home/kali/.local/bin
+
+echo "kali" | figlet -f fraktur | boxes -d ian_jones -a hcvc -p h6v0 | lolcat -f -a -d 1 -p 5 -F 0.03 -S 110
+
+export PATH=/usr/libexec/:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+autoload bashcompinit && bashcompinit
+autoload -Uz compinit && compinit
+complete -C '/usr/libexec/aws_completer' aws
