@@ -2,7 +2,7 @@
 
 ### Installation
 ```
-curl https://raw.githubusercontent.com/somnico/kali/master/install/install.sh -o in.sh && chmod +x in.sh && ./in.sh
+curl https://raw.githubusercontent.com/somnico/kali/master/install/install.sh > in.sh && chmod +x in.sh && sh in.sh
 ```
 
 
