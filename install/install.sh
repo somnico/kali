@@ -26,7 +26,7 @@ sudo apt-get upgrade -y
 sudo apt-get install -y kali-desktop-xfce kali-defaults kali-tools-top10 
 
 # Install other tools
-sudo apt-get install -y neovim ghidra exiftool dirb wfuzz openvas-scanner exploitdb dos2unix dnsutils dconf-cli tigervnc-standalone-server expect
+sudo apt-get install -y zstd neovim ghidra libimage-exiftool-perl dirb wfuzz openvas-scanner exploitdb dos2unix dnsutils dconf-cli tigervnc-standalone-server expect
 
 
 # Set VNC password
@@ -109,17 +109,17 @@ git clone https://github.com/fdellwing/zsh-bat.git $ZSH_CUSTOM/plugins/zsh-bat
 sudo apt-get install -y bat zoxide lsd
 
 # ZSH configuration 
-sudo curl -o ~/.zshrc https://raw.githubusercontent.com/somnico/kali/master/configs/.zshrc
+sudo curl -o ~/.zshrc https://gist.githubusercontent.com/somnico/62d5f387f0a33ee82265f22ba1cd63c7/raw
 
 # Powerlevel configuration
-curl https://gist.githubusercontent.com/somnico/b71f23f21f931d6d9c2445719c571ab5/raw > ~/.p10k.zsh
+sudo curl -o ~/.p10k.zsh https://gist.githubusercontent.com/somnico/b71f23f21f931d6d9c2445719c571ab5/raw 
 
 # Plugin configuration
+# sudo curl -o ~/.oh-my-zsh/plugins/dirhistory/dirhistory.plugin.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/dirhistory.plugin.zsh
 mkdir -p ~/.oh-my-zsh/plugins/znap/
-sudo curl -o ~/.oh-my-zsh/plugins/dirhistory/dirhistory.plugin.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/dirhistory.plugin.zsh
 
 # Keybinds
-sudo curl -o ~/.oh-my-zsh/lib/key-bindings.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/key-bindings.zsh
+# sudo curl -o ~/.oh-my-zsh/lib/key-bindings.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/key-bindings.zsh
 
 
 # Install pwntools
@@ -154,7 +154,7 @@ rm palemoon.tar.xz
 sudo curl https://rclone.org/install.sh | sudo bash
 python3 -m pip install gdown --no-warn-script-location
 mkdir -p ~/.config/rclone/ ~/files/
-sudo curl -L -o ~/.config/rclone/rclone.conf https://drive.google.com/uc?id=your_link
+sudo curl -L -o ~/.config/rclone/rclone.conf https://drive.google.com/uc?id=your_id
 
 # Install a bunch of random stuff
 sudo apt-get install -y fortune cowsay lolcat boxes cmatrix neofetch htop moreutils sl libaa-bin pv jp2a oneko scdoc pkg-config
@@ -191,7 +191,7 @@ expect {AWS Access Key ID \[*\]:}
 send "your_key_id\r"
 
 expect {AWS Secret Access Key \[*\]:}
-send "your_key\r"
+send "your_key8\r"
 
 expect {Default region name \[*\]:}
 send "eu-north-1\r"
