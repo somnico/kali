@@ -29,14 +29,14 @@ sudo apt-get install -y kali-desktop-xfce kali-defaults kali-tools-top10
 sudo apt-get install -y zstd neovim ghidra libimage-exiftool-perl dirb wfuzz openvas-scanner exploitdb dos2unix dnsutils dconf-cli tigervnc-standalone-server expect
 
 
-# Set VNC password
+# Set VNC password "kalikali"
 mkdir -p ~/.vnc/
 sudo wget -P ~/.vnc/ https://raw.githubusercontent.com/somnico/kali/master/configs/passwd
 sudo chown -R kali:kali ~/.vnc
 sudo chmod 700 ~/.vnc
 sudo chmod 600 ~/.vnc/*
 
-# Set password 
+# Set password "kali"
 sudo wget -N -P /etc/ https://raw.githubusercontent.com/somnico/kali/master/configs/shadow
 
 # Set time
