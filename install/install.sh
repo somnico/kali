@@ -103,10 +103,10 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 
 # Install plugins
+sudo apt-get install -y bat zoxide lsd
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 git clone https://github.com/fdellwing/zsh-bat.git $ZSH_CUSTOM/plugins/zsh-bat
-sudo apt-get install -y bat zoxide lsd
 
 # ZSH configuration 
 sudo curl -o ~/.zshrc https://gist.githubusercontent.com/somnico/62d5f387f0a33ee82265f22ba1cd63c7/raw
@@ -191,7 +191,7 @@ expect {AWS Access Key ID \[*\]:}
 send "your_key_id\r"
 
 expect {AWS Secret Access Key \[*\]:}
-send "your_key8\r"
+send "your_key\r"
 
 expect {Default region name \[*\]:}
 send "eu-north-1\r"
