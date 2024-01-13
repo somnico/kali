@@ -23,20 +23,20 @@ echo 'openssh-server openssh-server/upgrade-configuration select install' | sudo
 sudo apt-get upgrade -y
 
 # Install Kali
-sudo apt-get install -y kali-desktop-xfce xfconf kali-defaults kali-tools-top10 
+sudo apt-get install -y kali-desktop-xfce kali-defaults kali-tools-top10 
 
 # Install other tools
-sudo apt-get install -y neovim ghidra exiftool dirb dnsutils dconf-cli tightvncserver expect
+sudo apt-get install -y neovim ghidra exiftool dirb wfuzz openvas-scanner exploitdb dos2unix dnsutils dconf-cli tigervnc-standalone-server expect
 
 
-# Set VNC password "kalikali"
-mkdir -p /home/kali/.vnc
-sudo wget -P /home/kali/.vnc/ https://raw.githubusercontent.com/somnico/kali/master/configs/passwd
-sudo chown -R kali:kali /home/kali/.vnc
-sudo chmod 700 /home/kali/.vnc
-sudo chmod 600 /home/kali/.vnc/*
+# Set VNC password
+mkdir -p ~/.vnc/
+sudo wget -P ~/.vnc/ https://raw.githubusercontent.com/somnico/kali/master/configs/passwd
+sudo chown -R kali:kali ~/.vnc
+sudo chmod 700 ~/.vnc
+sudo chmod 600 ~/.vnc/*
 
-# Set password "kali"
+# Set password 
 sudo wget -N -P /etc/ https://raw.githubusercontent.com/somnico/kali/master/configs/shadow
 
 # Set time
@@ -59,15 +59,15 @@ xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-home -s false
 xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-filesystem -s false
 xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-trash -s false
 
-sudo mkdir -p /home/kali/.config/xfce4/panel/launcher-5/
-sudo mkdir -p /home/kali/.config/xfce4/panel/launcher-6/
-sudo mkdir -p /home/kali/.config/xfce4/panel/launcher-7/
-sudo mkdir -p /home/kali/.config/xfce4/xfconf/xfce-perchannel-xml/
+sudo mkdir -p ~/.config/xfce4/panel/launcher-5/
+sudo mkdir -p ~/.config/xfce4/panel/launcher-6/
+sudo mkdir -p ~/.config/xfce4/panel/launcher-7/
+sudo mkdir -p ~/.config/xfce4/xfconf/xfce-perchannel-xml/
 
-sudo curl -o /home/kali/.config/xfce4/panel/launcher-5/launcher-5.desktop https://raw.githubusercontent.com/somnico/kali/master/configs/launcher-5.desktop
-sudo curl -o /home/kali/.config/xfce4/panel/launcher-6/launcher-6.desktop https://raw.githubusercontent.com/somnico/kali/master/configs/launcher-6.desktop
-sudo curl -o /home/kali/.config/xfce4/panel/launcher-7/launcher-7.desktop https://raw.githubusercontent.com/somnico/kali/master/configs/launcher-7.desktop
-sudo curl -o /home/kali/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml https://raw.githubusercontent.com/somnico/kali/master/configs/xfce4-panel.xml
+sudo curl -o ~/.config/xfce4/panel/launcher-5/launcher-5.desktop https://raw.githubusercontent.com/somnico/kali/master/configs/launcher-5.desktop
+sudo curl -o ~/.config/xfce4/panel/launcher-6/launcher-6.desktop https://raw.githubusercontent.com/somnico/kali/master/configs/launcher-6.desktop
+sudo curl -o ~/.config/xfce4/panel/launcher-7/launcher-7.desktop https://raw.githubusercontent.com/somnico/kali/master/configs/launcher-7.desktop
+sudo curl -o ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml https://raw.githubusercontent.com/somnico/kali/master/configs/xfce4-panel.xml
 
 xfconf-query -c xfce4-panel -p /panels/panel-1/icon-size -n -t int -s 22
 xfconf-query -c xfce4-panel -p /panels/panel-1/size -n -t int -s 36
@@ -83,17 +83,17 @@ xfconf-query -c xsettings -p /Gtk/FontName -s "Consolas NF 11"
 xfconf-query -c xsettings -p /Gtk/MonospaceFontName -s "Consolas NF 10"
 
 # Change terminal settings 
-mkdir -p /home/kali/.config/qterminal.org/
-touch /home/kali/.config/qterminal.org/qterminal.ini
+mkdir -p ~/.config/qterminal.org/
+touch ~/.config/qterminal.org/qterminal.ini
 
-mkdir -p /home/kali/.config/qt5ct/
-touch /home/kali/.config/qt5ct/qt5ct.conf
+mkdir -p ~/.config/qt5ct/
+touch ~/.config/qt5ct/qt5ct.conf
 
 sudo chmod a+w /usr/share/qtermwidget5/color-schemes/
 sudo curl -o /usr/share/qtermwidget5/color-schemes/Palenight.colorscheme https://raw.githubusercontent.com/somnico/kali/master/configs/palenight.colorscheme
 
-sudo curl -o /home/kali/.config/qterminal.org/qterminal.ini https://raw.githubusercontent.com/somnico/kali/master/configs/qterminal.ini
-sudo curl -o /home/kali/.config/qt5ct/qt5ct.conf https://raw.githubusercontent.com/somnico/kali/master/configs/qt5ct.conf
+sudo curl -o ~/.config/qterminal.org/qterminal.ini https://raw.githubusercontent.com/somnico/kali/master/configs/qterminal.ini
+sudo curl -o ~/.config/qt5ct/qt5ct.conf https://raw.githubusercontent.com/somnico/kali/master/configs/qt5ct.conf
 
 
 # Install Oh My Zsh
@@ -102,81 +102,24 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 # Install Powerlevel10k 
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 
-# Set theme to powerlevel10k
-sudo sed -i 's+ZSH_THEME="robbyrussell"+ZSH_THEME="powerlevel10k/powerlevel10k"+' ~/.zshrc
-
-# Powerlevel configuration
-curl https://gist.githubusercontent.com/somnico/b71f23f21f931d6d9c2445719c571ab5/raw/ > ~/.p10k.zsh
-
-# Keybinds
-sudo curl -o /home/kali/.oh-my-zsh/lib/key-bindings.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/key-bindings.zsh
-
 # Install plugins
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 git clone https://github.com/fdellwing/zsh-bat.git $ZSH_CUSTOM/plugins/zsh-bat
 sudo apt-get install -y bat zoxide lsd
 
-# Plugin customization
-sudo curl -o /home/kali/.oh-my-zsh/plugins/dirhistory/dirhistory.plugin.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/dirhistory.plugin.zsh
+# ZSH configuration 
+sudo curl -o ~/.zshrc https://raw.githubusercontent.com/somnico/kali/master/configs/.zshrc
 
-# Customization
-sudo sed -i 's+plugins=(git)+plugins=(\
-  git\
-  sudo\
-  zsh-autosuggestions\
-  zsh-syntax-highlighting\
-  history\
-  dirhistory\
-  command-not-found\
-)+' ~/.zshrc
+# Powerlevel configuration
+curl https://gist.githubusercontent.com/somnico/b71f23f21f931d6d9c2445719c571ab5/raw > ~/.p10k.zsh
 
+# Plugin configuration
 mkdir -p ~/.oh-my-zsh/plugins/znap/
-sudo sed -i '/source $ZSH\/oh-my-zsh.sh/a\
-\
-[[ -r ~/.oh-my-zsh/plugins/znap/znap.zsh ]] || git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git ~/.oh-my-zsh/plugins/znap\
-source ~/.oh-my-zsh/plugins/znap/znap.zsh\
-znap source marlonrichert/zsh-autocomplete\
-bindkey -M menuselect '\\r' .accept-line
-' ~/.zshrc
+sudo curl -o ~/.oh-my-zsh/plugins/dirhistory/dirhistory.plugin.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/dirhistory.plugin.zsh
 
-sudo sed -i '/source $ZSH\/oh-my-zsh.sh/i\
-preexec() {\
-  echo\
-}\
-' ~/.zshrc
-
-sudo sed -i '/^# alias ohmyzsh="mate ~\/.oh-my-zsh"/a\
-alias b="batcat --paging=never --theme=ansi"\
-alias ba="batcat --paging=never --theme=ansi --style=changes"\
-alias c="rcat"\
-alias f="fdfind"\
-alias i="sudo apt-get install -y"\
-alias sn="sudo nano"\
-alias sm="sudo nano +-1"\
-alias ch="sudo chmod +x"\
-alias de="sudo rm -rf"\
-alias rc="sudo nano +-1 ~/.zshrc"\
-alias p1="sudo nano ~/.p10k.zsh"\
-alias re="omz reload"\
-alias pale="palemoon/./palemoon"\
-alias da="rclone copy Drive:/Linux/AWS/Files/ /home/kali/files/ --include '\''*'\'' -P"\
-alias ua="rclone copy /home/kali/files/ Drive:/Linux/AWS/Files/ --include '\''*'\'' -P"\
-' ~/.zshrc
-
-echo 'dl() { local source="Drive:Linux/AWS/Files/"; local destination="/home/kali/files/"; file="$1"; rclone copy "${source}${file}" "${destination}"; }' >> ~/.zshrc
-echo 'ul() { local source=""; local destination="Drive:Linux/AWS/Files/"; source="$1"; rclone copy "${source}" "${destination}"; }' >> ~/.zshrc
-echo '' >> ~/.zshrc
-echo 'WORDCHARS="_.;~-=*^|!?&#$%[](){}<>"'>> ~/.zshrc
-echo 'PROMPT_EOL_MARK=""' >> ~/.zshrc
-echo 'unsetopt PROMPT_SP' >> ~/.zshrc
-echo '' >> ~/.zshrc
-echo 'eval "$(zoxide init zsh)"' >> ~/.zshrc
-echo '' >> ~/.zshrc
-echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> ~/.zshrc
-echo '' >> ~/.zshrc
-echo 'export PATH=$PATH:/home/kali/.local/bin' >> ~/.zshrc
-echo '' >> ~/.zshrc
+# Keybinds
+sudo curl -o ~/.oh-my-zsh/lib/key-bindings.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/key-bindings.zsh
 
 
 # Install pwntools
@@ -193,7 +136,7 @@ git clone https://github.com/longld/peda.git ~/peda
 echo "source ~/peda/peda.py" >> ~/.gdbinit
 
 # Script for gdb
-curl -o /home/kali/peda/pid.sh https://raw.githubusercontent.com/somnico/kali/master/scripts/gdb_pid.sh
+curl -o ~/peda/pid.sh https://raw.githubusercontent.com/somnico/kali/master/scripts/gdb_pid.sh
 sudo chmod +x pid.sh
 
 # Install helpers
@@ -210,13 +153,17 @@ rm palemoon.tar.xz
 # Install rclone
 sudo curl https://rclone.org/install.sh | sudo bash
 python3 -m pip install gdown --no-warn-script-location
-mkdir -p /home/kali/.config/rclone/ /home/kali/files/
-# sudo curl -L -o /home/kali/.config/rclone/rclone.conf "your_link"
+mkdir -p ~/.config/rclone/ ~/files/
+sudo curl -L -o ~/.config/rclone/rclone.conf https://drive.google.com/uc?id=your_link
 
 # Install a bunch of random stuff
-sudo apt-get install -y fortune cowsay lolcat boxes neofetch cmatrix moreutils sl libaa-bin pv jp2a oneko scdoc pkg-config
+sudo apt-get install -y fortune cowsay lolcat boxes cmatrix neofetch htop moreutils sl libaa-bin pv jp2a oneko scdoc pkg-config
 
 yes | sudo sh -c "$(curl https://codeberg.org/anhsirk0/fetch-master-6000/raw/branch/main/install.sh)"
+
+git clone --depth 1 https://github.com/cjbassi/gotop /tmp/gotop
+/tmp/gotop/scripts/download.sh
+sudo mv gotop /usr/bin
 
 sudo apt-get install -y figlet 
 git clone https://github.com/hIMEI29A/FigletFonts.git
@@ -233,10 +180,6 @@ cd ..
 sudo curl -o /etc/boxes/boxes-config https://raw.githubusercontent.com/somnico/kali/master/configs/boxes-config
 sudo curl -o /usr/share/figlet/fraktur.flf https://raw.githubusercontent.com/somnico/kali/master/configs/fraktur.flf
 
-cat << 'EOF' >> ~/.zshrc
-echo "kali" | figlet -f fraktur | boxes -d ian_jones -a hcvc -p h6v0 | lolcat -f -a -d 1 -p 5 -F 0.03 -S 110
-EOF
-
 
 # Setup AWS CLI
 expect << 'EOF'
@@ -245,10 +188,10 @@ set timeout 10
 spawn aws configure
 
 expect {AWS Access Key ID \[*\]:}
-send "your_id_here\r"
+send "your_key_id\r"
 
 expect {AWS Secret Access Key \[*\]:}
-send "your_key_here\r"
+send "your_key\r"
 
 expect {Default region name \[*\]:}
 send "eu-north-1\r"
@@ -259,50 +202,61 @@ send "\r"
 expect eof
 EOF
 
-# Add AWS CLI autocompletion
-echo '' >> ~/.zshrc
-echo "export PATH=/usr/libexec/:$PATH
-autoload bashcompinit && bashcompinit
-autoload -Uz compinit && compinit
-complete -C '/usr/libexec/aws_completer' aws" >> ~/.zshrc
-
 
 # Reset debconf
 unset DEBIAN_FRONTEND
 
 # Start VNC server
-tightvncserver -geometry 1600x900        
+vncserver -geometry 1600x900
+sleep 5        
 
 # Update terminal
 exec zsh
                                          
 
 # Notes
-
-# Consistent gist links
-# gistusercontent/raw or gistusercontent/raw/filename 
  
-# Set password
-# echo -e "kali\nkali" | sudo passwd kali
+# Establish SSH connection
+# sudo chmod 400 ~/Kali.pem
+# ssh -o StrictHostKeyChecking=no -i Kali.pem kali@ip
+# ssh -L 5901:localhost:5901 -N -f -i kali.pem kali@ip
+
+# SSH connectivity issues
+# ipconfig /flushdns
 
 # Commands for file sharing
 # Web application instead of Desktop app in Google Credentials
 # rclone config
 # rclone lsd Drive:
-# curl -L -o file.type "https://drive.google.com/uc?id=id_here"
+# curl -L -o file.type https://drive.google.com/uc?id=id_here
+
+# Remove VNC settings
+# vncserver -list
+# vncserver -kill :1
+# sudo rm -rf ~/.vnc/passwd ~/.vnc/xstartup
+# sudo rm -rf /tmp/.X*-lock /tmp/.X11-unix/X*
+# sudo kill -9 $(ps aux | grep '[X]tightvnc' | awk '{print $2}')
+
+# Setup RDP
+# Add inbound RDP rule and reboot
+# sudo apt-get install -y xrdp
+# sudo systemctl enable xrdp
+
+# Setup NX
+# Add inbound custom TCP rule for port 4000 and reboot
+# curl -O https://download.nomachine.com/download/8.10/Linux/nomachine_8.10.1_1_amd64.deb
+# sudo apt-get install -y cups
+# sudo dpkg -i nomachine_*.deb
 
 # More backgrounds
-# sudo mkdir -p /usr/share/backgrounds/windows
+# sudo mkdir -p /usr/share/backgrounds/windows/
 # sudo curl -o /usr/share/backgrounds/windows/windows-wallpaper-1.jpg https://raw.githubusercontent.com/somnico/kali/master/images/backgrounds/kali-actiniaria.png
 
 # More fonts
 # git clone --depth=1 --branch=master https://github.com/ryanoasis/nerd-fonts.git nerd-fonts
 # ./nerd-fonts/install.sh FiraCode
 # sudo cp -r nerd-fonts/patched-fonts/FiraCode/Regular /usr/share/fonts/truetype/firanerd
-
-# GUI updates
-# xfdesktop -Q && xfdesktop &
-# pkill xfce4-panel && xfce4-panel &
+# sudo apt-get install -y fonts-powerline
 
 # Install only one font family 
 # sudo apt-get install -y subversion
@@ -312,13 +266,12 @@ exec zsh
 # cd ..
 # sudo cp -r patched-fonts/DejaVuSansMono/Regular/DejaVuSansMNerdFontMono-Regular.ttf /usr/share/fonts/truetype/dejavu
 
-# Various fonts
-# sudo apt-get install -y fonts-powerline
+# GUI updates
+# xfdesktop -Q && xfdesktop &
+# pkill xfce4-panel && xfce4-panel &
 
 # Individual entries for qterminal 
-# sudo sed -i 's/\(colorScheme=\).*/\1Palenight/' /home/kali/.config/qterminal.org/qterminal.ini
-# sudo sed -i 's/\(guiStyle=\).*/\1qt5ct-style/' /home/kali/.config/qterminal.org/qterminal.ini
-# sudo sed -i 's/\(fontFamily=\).*/\1DejaVuSansM Nerd Font Mono/' /home/kali/.config/qterminal.org/qterminal.ini
+# sudo sed -i 's/\(fontFamily=\).*/\1DejaVuSansM Nerd Font Mono/' ~/.config/qterminal.org/qterminal.ini
 
 # Change syntax highlighting theme
 # git clone https://github.com/dracula/zsh-syntax-highlighting.git
@@ -343,18 +296,19 @@ exec zsh
 # fortune | cowsay -f calvin | boxes -d columns -a c | awk -v cols=$(tput cols) '{ printf "%*s\n", (cols + length) / 2, $0 }' | lolcat -a -d 1 -S 20
 # fm6000 -dog -l 50 -say "$(echo "KALI" | figlet -f big)" | lolcat -a -d 1 -S 19
 # fortune | cowsay -f "$(ls /usr/share/cowsay/cows | sort -R | head -1)" | while IFS= read -r line; do printf "%s" "$line" | while IFS= read -n1 -r char; do printf "%s" "$char"; sleep 0.0001; done; echo; done;
-
-# Display clock
-# while sleep 1;do tput sc;tput cup 0 $(($(tput cols)-29));date;tput rc;done &
+# neofetch --ascii ~/.config/neofetch/custom.txt
 
 # Alternatives
 # 3d_diagonal, Big_Money-ne, Chiseled, cosmike, doubleshorts, Elite, doubleshorts, fraktur, Georgia11, ghost, henry3d, lildevil, larry3d, lineblocks
 # columns, ian_jones, twisted
 
-# Remove VNC settings
-# sudo rm -rf ~/.vnc/passwd ~/.vnc/xstartup
-# sudo rm -rf /tmp/.X*-lock /tmp/.X11-unix/X*
-# sudo kill -9 $(ps aux | grep '[X]tightvnc' | awk '{print $2}')
+# Display clock
+# while sleep 1;do tput sc;tput cup 0 $(($(tput cols)-29));date;tput rc;done &
+
+# AWS alternative
+# mkdir -p ~/.aws/
+# sudo curl -L -o ~/.aws/config https://drive.google.com/uc?id=
+# sudo curl -L -o ~/.aws/credentials https://drive.google.com/uc?id=
 
 # Various 
 # xfconf-query -c xfce4-desktop -p /desktop-icons/gravity --create -t int -s 1
@@ -366,10 +320,13 @@ exec zsh
 
 # Keybind reference
 # https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html#Standard-Widgets
-# /home/kali/.oh-my-zsh/lib/key-bindings.zsh
+# ~/.oh-my-zsh/lib/key-bindings.zsh
 # bindkey 
 # showkey --ascii
 # man ascii
+
+# Consistent gist links
+# gistusercontent/raw or gistusercontent/raw/filename 
 
 # Color reference
 # for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$'\n'}; done
