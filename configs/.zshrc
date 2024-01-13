@@ -1,5 +1,8 @@
 export ZSH="$HOME/.oh-my-zsh"
 
+zstyle ':omz:update' mode auto
+zstyle ':omz:update' frequency 14
+
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
 plugins=(git sudo zsh-autosuggestions zsh-syntax-highlighting history dirhistory command-not-found)
@@ -30,9 +33,9 @@ alias rc="sudo nano +-1 ~/.zshrc"
 alias p1="sudo nano ~/.p10k.zsh"
 alias re="omz reload"
 alias pale="palemoon/./palemoon"
-alias da="rclone copy Drive:/Linux/AWS/Files/ /home/kali/files/ --include '*' -P"
-alias ua="rclone copy /home/kali/files/ Drive:/Linux/AWS/Files/ --include '*' -P"
-dl() {local source="Drive:Linux/AWS/Files/"; local destination="/home/kali/files/"; file="$1"; rclone copy "${source}${file}" "${destination}";}
+alias da="rclone copy Drive:/Linux/AWS/Files/ ~/files/ --include '*' -P"
+alias ua="rclone copy ~/files/ Drive:/Linux/AWS/Files/ --include '*' -P"
+dl() {local source="Drive:Linux/AWS/Files/"; local destination="~/files/"; file="$1"; rclone copy "${source}${file}" "${destination}";}
 ul() {local source=""; local destination="Drive:Linux/AWS/Files/"; source="$1"; rclone copy "${source}" "${destination}";}
 bindkey -s "^[-" "~/"
 
@@ -47,4 +50,4 @@ autoload bashcompinit && bashcompinit
 autoload -Uz compinit && compinit
 complete -C '/usr/libexec/aws_completer' aws
 
-export PATH=$PATH:/home/kali/.local/bin
+export PATH=$PATH:~/.local/bin
