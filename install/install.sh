@@ -20,7 +20,7 @@ echo "wireshark-common wireshark-common/install-setuid boolean true" | sudo debc
 echo 'openssh-server openssh-server/upgrade-configuration select install' | sudo debconf-set-selections
 
 # Upgrade pacakges
-sudo apt-get upgrade -y
+sudo apt-get full-upgrade -y
 
 # Install Kali
 sudo apt-get install -y kali-desktop-xfce kali-defaults kali-tools-top10 
@@ -275,20 +275,14 @@ exec zsh
 
 # Change syntax highlighting theme
 # git clone https://github.com/dracula/zsh-syntax-highlighting.git
-# sudo sed -i '/# ZSH_CUSTOM=\/path\/to\/new-custom-folder/a\
+# sudo sed -i '/ZSH_THEME="powerlevel10k\/powerlevel10k"/a\
 # \
+# # Set Syntax Highlighting theme\
 # source ~/zsh-syntax-highlighting/zsh-syntax-highlighting.sh' ~/.zshrc
 
 # Various docks
 # sudo apt-get install -y cairo-dock
 # sudo apt-get install -y plank
-# sudo apt-get install -y intltool libx11-dev libxext-dev libxrender-dev libxtst-dev pkg-config libglib2.0-dev libgtk-3-dev libwnck-3-dev libxfce4ui-2-dev libxfce4panel-2.0-dev 
-# sudo apt-get install -y wget xorg-dev libglib2.0-cil-dev golang-gir-gio-2.0-dev libgtk-3-dev libwnck-3-dev libxfce4ui-2-dev libxfce4panel-2.0-dev intltool
-# wget https://archive.xfce.org/src/panel-plugins/xfce4-docklike-plugin/0.4/xfce4-docklike-plugin-0.4.0.tar.bz2
-# tar -xvjf xfce4-docklike-plugin-0.4.0.tar.bz2 && cd xfce4-docklike-plugin-0.4.0
-# ./configure
-# make
-# sudo make install
 
 # Greetings
 # fortune | cowsay -f "$(ls /usr/share/cowsay/cows | sort -R | head -1)" | lolcat -a -d 1
