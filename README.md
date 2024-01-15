@@ -1,4 +1,4 @@
-# Setup files for Kali in AWS
+# Setup files for Kali
 
 ### Installation
 ```
