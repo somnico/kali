@@ -154,7 +154,7 @@ rm palemoon.tar.xz
 sudo curl https://rclone.org/install.sh | sudo bash
 python3 -m pip install gdown --no-warn-script-location
 mkdir -p ~/.config/rclone/ ~/files/
-sudo curl -L -o ~/.config/rclone/rclone.conf https://drive.google.com/uc?id=your_id
+# sudo curl -L -o ~/.config/rclone/rclone.conf https://drive.google.com/uc?id=your_id
 
 # Install a bunch of random stuff
 sudo apt-get install -y fortune cowsay lolcat boxes cmatrix neofetch htop moreutils sl libaa-bin pv jp2a oneko scdoc pkg-config
@@ -185,22 +185,22 @@ sudo curl -o /usr/share/figlet/fraktur.flf https://raw.githubusercontent.com/som
 expect << 'EOF'
 set timeout 10
 
-spawn aws configure
+# spawn aws configure
 
-expect {AWS Access Key ID \[*\]:}
-send "your_key_id\r"
+# expect {AWS Access Key ID \[*\]:}
+# send "your_key_id\r"
 
-expect {AWS Secret Access Key \[*\]:}
-send "your_key\r"
+# expect {AWS Secret Access Key \[*\]:}
+# send "your_key\r"
 
-expect {Default region name \[*\]:}
-send "eu-north-1\r"
+# expect {Default region name \[*\]:}
+# send "eu-north-1\r"
 
-expect {Default output format \[*\]:}
-send "\r"
+# expect {Default output format \[*\]:}
+# send "\r"
 
-expect eof
-EOF
+# expect eof
+# EOF
 
 
 # Reset debconf
