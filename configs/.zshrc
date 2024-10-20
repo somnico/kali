@@ -9,7 +9,7 @@ zstyle ':omz:update' frequency 14
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Plugins
-plugins=(git sudo zsh-autosuggestions zsh-syntax-highlighting history dirhistory command-not-found)
+plugins=(git sudo jq zsh-autosuggestions zsh-syntax-highlighting history dirhistory command-not-found)
 
 # Blank line
 preexec() {echo}
@@ -62,6 +62,11 @@ complete -C '/usr/libexec/aws_completer' aws
 WORDCHARS="_.;~-=*^|!?&#$%[](){}<>"
 PROMPT_EOL_MARK=""
 unsetopt PROMPT_SP
+
+# Bold
+LS_COLORS=$(echo $LS_COLORS | sed "s/01;/00;/g")
+export LS_COLORS
+ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=red'
 
 # PATH
 export PATH=$PATH:~/.local/bin
