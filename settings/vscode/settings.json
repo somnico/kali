@@ -1,0 +1,316 @@
+{
+    "editor.tokenColorCustomizations": {
+        "[Palenight Theme]": {
+            "textMateRules": [
+                {
+                    "scope": "entity.name.tag.html",
+                    "settings": {
+                        "foreground": "#8873c2"
+                    }
+                },
+                {
+                    "scope": "variable.other.readwrite.js",
+                    "settings": {
+                        // "foreground": "#80CBC4"
+                        "foreground": "#9CDCFE"
+                    }
+                },
+                {
+                    "scope": "variable.other.object.js",
+                    "settings": {
+                        // "foreground": "#8f7fd8"
+                        "foreground": "#9CDCFE"
+                    }
+                },
+                {
+                    "scope": "constant.numeric.decimal.js",
+                    "settings": {
+                        // "foreground": "#FFEB95"
+                        "foreground": "#d1ca8d"
+                    }
+                },
+                {
+                    "scope": "storage.type.js",
+                    "settings": {
+                        "foreground": "#569CD6"
+                    }
+                },
+                {
+                    "scope": "keyword.operator.assignment.js",
+                    "settings": {
+                        "foreground": "#ffffff"
+                    }
+                },
+                {
+                    "scope": "punctuation.accessor.js",
+                    "settings": {
+                        "foreground": "#ffffff"
+                    }
+                },
+                {
+                    "scope": "entity.name.function.js",
+                    "settings": {
+                        "foreground": "#80CBC4"
+                    }
+                },
+                {
+                    "scope": "string.quoted.single.js",
+                    "settings": {
+                        // "foreground": "#C3E88D",
+                        "foreground": "#aee88d"
+                    }
+                }
+            ]
+        },
+        "[Bearded Themanopia (Experimental)]": {
+            "textMateRules": [
+                {
+                    "scope": "entity.other.attribute-name.js.jsx",
+                    "settings": {
+                        "foreground": "#73c283"
+                    }
+                }
+            ]
+        },
+        "[Tokyo Night Storm]": {
+            "textMateRules": [
+                {
+                    "scope": "editor.findMatchHighlightBorder",
+                    "settings": {
+                        "foreground": "#ffffff00"
+                    }
+                },
+                {
+                    "scope": "entity.other.attribute-name.js",
+                    "settings": {
+                        // "foreground": "#c2b073"
+                    }
+                },
+                {
+                    "scope": "entity.name.tag.tsx, support.class.component.tsx, support.class.component.js",
+                    "settings": {
+                        "foreground": "#F7768E"
+                    }
+                },
+                {
+                    "scope": [
+                        "string.quoted.double.json.comments",
+                        "string.quoted.double.html",
+                        "string.quoted.double.js",
+                        "string.quoted.double.tsx",
+                        "string.quoted.double.css",
+                        "string.quoted.single",
+                        "entity.other.attribute-name.class.css",
+                        "support.constant.font-name.css"
+                    ],
+                    "settings": {
+                        // "foreground": "#F5DEC1"
+                        "foreground": "#7dccff"
+                    }
+                },
+                {
+                    "scope": [
+                        "storage.type.js",
+                        "storage.type.tsx",
+                        "keyword.control.flow.js",
+                        "keyword.control.flow.tsx",
+                        "storage.modifier.typeset.shell",
+                        "storage.modifier.local.shell"
+                    ],
+                    "settings": {
+                        "fontStyle": ""
+                    }
+                }
+            ]
+        }
+    },
+    "workbench.colorCustomizations": {
+        "editorBracketHighlight.foreground1": "#a681e9",
+        "editorBracketHighlight.foreground2": "#8a9af1",
+        "editorBracketHighlight.foreground3": "#8ed4e9",
+        "editorBracketHighlight.foreground4": "#b9fcce",
+        "editorBracketHighlight.foreground5": "#f3fcb9",
+        "editorBracketHighlight.foreground6": "#fcb9b9",
+        "editorBracketHighlight.unexpectedBracket.foreground": "#ff2121d3",
+        "editorBracketMatch.border": "#292d3e",
+        "editorBracketMatch.background": "#292d3e",
+        // "editor.selectionBackground": "default",
+        // "editor.selectionHighlightBackground": "#00d0fffc",
+        // "editor.lineHighlightBackground": "#4e4a5e3c",
+        "editor.wordHighlightBackground": "#28253600",
+        "editor.hoverHighlightBackground": "#28232f00"
+        // "terminal.background": "#00000000",
+        // "terminal.selectionBackground": "#56566c8e"
+    },
+    "indentRainbow.colors": [
+        // "#23273A",
+        // "#222638",
+        // "#202437",
+        // "#1F2335",
+        // "#202437",
+        // "#222638",
+        "#23273A",
+        "#24283B"
+    ],
+    "indentRainbow.errorColor": "#191d2d",
+    "vscode_custom_css.policy": true,
+    "vscode_custom_css.imports": ["file:///C:/Users/nfs/custom.css"],
+    "workbench.colorTheme": "Tokyo Night Storm",
+    "editor.fontFamily": "Consolas NF",
+    "terminal.integrated.fontFamily": "Consolas NF",
+    "editor.fontWeight": "100",
+    "editor.lineHeight": 19,
+    "editor.letterSpacing": 0,
+    "workbench.iconTheme": "vscode-icons",
+    "workbench.editor.tabSizing": "shrink",
+    "vsicons.dontShowNewVersionMessage": true,
+    "vsicons.associations.folderDefault.root_folder_light": {},
+    "liveServer.settings.donotShowInfoMsg": true,
+    "liveServer.settings.donotVerifyTags": true,
+    "workbench.settings.applyToAllProfiles": ["workbench.colorCustomizations"],
+    "window.titleBarStyle": "custom",
+    "editor.cursorBlinking": "phase",
+    "prettier.tabWidth": 4,
+    "prettier.trailingComma": "none",
+    "terminal.integrated.copyOnSelection": true,
+    "terminal.integrated.hideOnStartup": "whenEmpty",
+    "terminal.integrated.cursorBlinking": true,
+    "terminal.integrated.cursorStyle": "line",
+    "terminal.integrated.cursorStyleInactive": "none",
+    "terminal.integrated.cursorWidth": 2,
+    "terminal.integrated.fontWeightBold": "normal",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": false,
+    "files.autoSave": "afterDelay",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "always",
+        "source.addMissingImports": "always"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[html]": {
+        "editor.defaultFormatter": "vscode.html-language-features"
+    },
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.autopep8",
+        "editor.formatOnSave": true
+    },
+    "autopep8.args": ["--max-line-length=120"],
+    "editor.guides.bracketPairs": "active",
+    "editor.bracketPairColorization.enabled": true,
+    "security.workspace.trust.untrustedFiles": "open",
+    "vscode-pets.petSize": "large",
+    "vscode-pets.petColor": "black",
+    "vscode-pets.position": "explorer",
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "editor.guides.highlightActiveBracketPair": false,
+    "editor.inlineSuggest.enabled": true,
+    "quokka.lightTheme.log.decorationAttachmentRenderOptions": {
+        "border": null,
+        "borderColor": null,
+        "fontStyle": null,
+        "fontWeight": null,
+        "textDecoration": null,
+        "color": "#0000ff",
+        "backgroundColor": null,
+        "margin": "1.2em",
+        "width": null,
+        "height": null
+    },
+    "terminal.integrated.fastScrollSensitivity": 1,
+    "terminal.integrated.mouseWheelScrollSensitivity": 0.6,
+    "output.smartScroll.enabled": false,
+    "supermaven.enableFixWithSupermaven": true,
+    "continue.showInlineTip": false,
+    "continue.enableTabAutocomplete": false,
+    "github.copilot.editor.enableAutoCompletions": false,
+    "github.copilot.enable": {
+        "*": true,
+        "yaml": false,
+        "plaintext": true,
+        "markdown": false
+    },
+    "cloudcode.duetAI.project": "project-408500",
+    "cloudcode.yaml.schemas": {},
+    "cloudcode.project": "project-408500",
+    "cloudcode.duetAI.inlineSuggestions.enableAuto": false,
+    "rift.openaiKey": "",
+    "rift.codeEditModel": "openai:gpt-3.5-turbo",
+    "tabnine.experimentalAutoImports": true,
+    "tabnine.codeLensEnabled": false,
+    "window.zoomLevel": -1,
+    "remote.SSH.remotePlatform": {
+        "51.120.14.219": "linux"
+    },
+    "redhat.telemetry.enabled": false,
+    "vs-kubernetes": {
+        "vscode-kubernetes.helm-path-windows": "C:\\Users\\nfs\\.vs-kubernetes\\tools\\helm\\windows-amd64\\helm.exe",
+        "vscode-kubernetes.minikube-path-windows": "C:\\Users\\nfs\\.vs-kubernetes\\tools\\minikube\\windows-amd64\\minikube.exe"
+    },
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.profiles.windows": {
+        "PowerShell": {
+            "source": "PowerShell",
+            "icon": "terminal-powershell",
+            "args": ["-nologo"]
+        },
+        "Command Prompt": {
+            "path": [
+                "${env:windir}\\Sysnative\\cmd.exe",
+                "${env:windir}\\System32\\cmd.exe"
+            ],
+            "args": [],
+            "icon": "terminal-cmd"
+        },
+        "Git Bash": {
+            "source": "Git Bash"
+        }
+        // "Windows PowerShell": {
+        //     "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        //     "icon": "terminal-powershell",
+        //     "args": ["-nologo"]
+        // }
+    },
+    "code-runner.runInTerminal": true,
+    "explorer.compactFolders": false,
+    "bookmarks.gutterIconBorderColor": "#1f2335",
+    "bookmarks.gutterIconFillColor": "#1f2335",
+    "editor.linkedEditing": true,
+    "vscode-edge-devtools.webhintInstallNotification": true,
+    "css.lint.unknownAtRules": "ignore",
+    "gitlens.codeLens.enabled": false,
+    "git.openRepositoryInParentFolders": "never",
+    "git.decorations.enabled": false,
+    "security.allowedUNCHosts": ["wsl.localhost"],
+    "editor.colorDecoratorsActivatedOn": "hover",
+    "JSON-zain.json.autorefresh": true,
+    "JSON-zain.author.ZainChen": "Welcome",
+    "files.associations": {
+        "*.css": "css"
+    },
+    "editor.quickSuggestions": {
+        "strings": "on"
+    },
+    "tailwindCSS.includeLanguages": {
+        "plaintext": "html"
+    },
+    "importCost.largePackageDarkColor": "#41496b",
+    "importCost.mediumPackageDarkColor": "#41496b",
+    "importCost.smallPackageDarkColor": "#41496b",
+    "importCost.timeout": 2000,
+    "reactSnippets.settings.prettierEnabled": true,
+    "notebook.defaultFormatter": "esbenp.prettier-vscode",
+    "react-native-tools.showUserTips": false,
+    "workbench.startupEditor": "newUntitledFile",
+    "codeQL.telemetry.enableTelemetry": false,
+    "AHK++.compiler": {
+        "compilerPath": "C:\\Program Files\\AutoHotkey\\v2\\AutoHotkey.exe"
+    },
+    "find-it-faster.general.batTheme": "Dracula",
+    "find-it-faster.general.useTerminalInEditor": true,
+    "find-it-faster.general.restoreFocusTerminal": true,
+    "find-it-faster.general.killTerminalAfterUse": true,
+    "editor.cursorSmoothCaretAnimation": "off",
+    "security.promptForRemoteFileProtocolHandling": false
+}
