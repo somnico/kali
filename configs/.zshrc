@@ -60,7 +60,7 @@ setopt hist_ignore_dups
 setopt hist_find_no_dups
 
 # Aliases
-alias f="fzf --multi --layout=reverse --info=inline --border --height=80% --preview 'batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}' --preview-window 'right,50%' --bind 'right:preview-down,left:preview-up,pgdn:preview-page-down,pgup:preview-page-up' --bind 'ctrl-n:execute([ -f {} ] && nano {})+abort'"  
+alias f="fzf --multi --layout=reverse --info=inline --border --height=70% --preview 'batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}' --preview-window 'right,50%' --bind 'right:preview-down,left:preview-up,pgdn:preview-page-down,pgup:preview-page-up' --bind 'ctrl-n:execute([ -f {} ] && nano {})+abort'"  
 alias k="ps aux | fzf --multi | awk '{print \$2}' | xargs -r sudo kill -15"
 alias b="batcat --paging=never --theme=ansi-dark"
 alias ba="batcat --paging=never --theme=ansi-dark --style=changes"
@@ -113,7 +113,16 @@ ff() {
       --bind 'enter:become(sudo nano -Y sh $(for f in {+}; do echo "+$(cut -d: -f2 <<< $f) $(cut -d: -f1 <<< $f)"; done))'
 }
 
-# History search
+# Fuzzy search
+function fzf_widget() {
+  fzf --multi --layout=reverse --info=inline --border --height=70% \
+      --preview 'batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}' \
+      --preview-window 'right,50%' \
+      --bind 'right:preview-down,left:preview-up,pgdn:preview-page-down,pgup:preview-page-up' \
+      --bind 'ctrl-n:execute([ -f {} ] && nano {})+abort'
+}
+
+# Fuzzy history search
 fzf-history-widget() {
   local selected_cmd temp_cmd
 
@@ -152,7 +161,7 @@ fzf-history-widget() {
   fi
 }
 
-# Change directory
+# Fuzzy change directory
 fzf-cd-widget() {
   local dir="${1:-$PWD}"
   local temp_dir
@@ -175,6 +184,9 @@ fzf-cd-widget() {
 }
 
 # Activate widgets
+zle -N fzf_widget
+bindkey '^F' fzf_widget
+
 zle -N fzf-history-widget
 bindkey "${key[Up]}" fzf-history-widget
 
