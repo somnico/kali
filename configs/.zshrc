@@ -124,8 +124,9 @@ fzf-find-widget() {
       --preview 'batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}' \
       --preview-window 'right,50%' \
       --bind 'pgdn:page-down,pgup:page-up' \
-      --bind 'ctrl-n:execute([ -f {} ] && clear && nano "$dir/{}")+abort' \
-      --bind "shift-left:reload({ find / -type f -name '.*' -printf '%P\n' 2>/dev/null | sort; find / -type f ! -name '.*' -printf '%P\n' 2>/de>      --bind "shift-right:reload({ find '$dir' -type f -name '.*' -printf '%P\n' 2>/dev/null | sort; find '$dir' -type f ! -name '.*' -printf '>
+      --bind 'ctrl-n:become(sudo nano {+})' \
+      --bind "shift-left:reload(find / -type f -printf '%P\n' 2>/dev/null | sort)" \
+      --bind "shift-right:reload(find '$dir' -type f -printf '%P\n' 2>/dev/null | sort)"
 
   echo -e "\r"
   zle redisplay
