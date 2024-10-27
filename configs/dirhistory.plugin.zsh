@@ -226,4 +226,21 @@ for keymap in emacs vicmd viins; do
   fi
 done
 
+# Function to go to the home directory
+function dirhistory_home() {
+  cd ~ || return 1
+}
+
+function dirhistory_zle_dirhistory_home() {
+  zle .kill-buffer
+  dirhistory_home
+  zle .accept-line
+}
+
+zle -N dirhistory_zle_dirhistory_home
+
+for keymap in emacs vicmd viins; do
+  bindkey -M $keymap "H" dirhistory_zle_dirhistory_home
+done
+
 unset keymap
