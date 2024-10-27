@@ -114,12 +114,21 @@ ff() {
 }
 
 # Fuzzy search
-function fzf-widget() {
-  fzf --multi --layout=reverse --info=inline --border --height=70% \
+fzf-find-widget() {
+  local dir="${1:-$PWD}"
+
+  find "$dir" -type f -printf "%d %P\n" 2>/dev/null | \
+  sort -k1,1n -k2 | \
+  awk '{$1=""; print substr($0,2)}' | \
+  fzf --multi --layout=reverse --info=default --border --height=70% \
       --preview 'batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}' \
       --preview-window 'right,50%' \
-      --bind 'right:preview-down,left:preview-up,pgdn:preview-page-down,pgup:preview-page-up' \
-      --bind 'ctrl-n:execute([ -f {} ] && nano {})+abort'
+      --bind 'pgdn:page-down,pgup:page-up' \
+      --bind 'ctrl-n:execute([ -f {} ] && clear && nano "$dir/{}")+abort' \
+      --bind "shift-left:reload({ find / -type f -name '.*' -printf '%P\n' 2>/dev/null | sort; find / -type f ! -name '.*' -printf '%P\n' 2>/de>      --bind "shift-right:reload({ find '$dir' -type f -name '.*' -printf '%P\n' 2>/dev/null | sort; find '$dir' -type f ! -name '.*' -printf '>
+
+  echo -e "\r"
+  zle redisplay
 }
 
 # Fuzzy history search
@@ -128,18 +137,18 @@ fzf-history-widget() {
 
   temp_cmd=$(fc -rln 1 | tac | fzf +s --height=60% --exact --tac --query "$LBUFFER" \
     --bind 'enter:accept' \
-    --bind 'left:execute-silent(echo {} > ~/.fzf_left_arrow_cmd)+abort' \
+    --bind 'right:execute-silent(echo {} > ~/.fzf_right_arrow_cmd)+abort' \
     --bind 'ctrl-a:execute-silent(echo {} > ~/.fzf_ctrl_a_cmd)+abort' \
-    --bind 'right:execute-silent(echo "$(echo {} | sed "s/[^ ]* *$//")" > ~/.fzf_remove_word_cmd)+abort' \
+    --bind 'left:execute-silent(echo "$(echo {} | sed "s/[^ ]* *$//")" > ~/.fzf_left_arrow_cmd)+abort' \
     --bind 'ctrl-c:abort')
 
   if [[ $? -eq 0 ]]; then
     BUFFER=$temp_cmd
     zle accept-line
 
-  elif [[ -f ~/.fzf_left_arrow_cmd ]]; then
-    BUFFER="$(<~/.fzf_left_arrow_cmd) "
-    rm ~/.fzf_left_arrow_cmd
+  elif [[ -f ~/.fzf_right_arrow_cmd ]]; then
+    BUFFER="$(<~/.fzf_right_arrow_cmd) "
+    rm ~/.fzf_right_arrow_cmd
     CURSOR=$#BUFFER
     zle redisplay
 
@@ -149,14 +158,14 @@ fzf-history-widget() {
     CURSOR=0
     zle redisplay
 
-  elif [[ -f ~/.fzf_remove_word_cmd ]]; then
-    BUFFER="$(<~/.fzf_remove_word_cmd)"
-    rm ~/.fzf_remove_word_cmd
+  elif [[ -f ~/.fzf_left_arrow_cmd ]]; then
+    BUFFER="$(<~/.fzf_left_arrow_cmd)"
+    rm ~/.fzf_left_arrow_cmd
     CURSOR=$#BUFFER
     zle redisplay
 
   else
-    BUFFER=""  # Clear buffer if Ctrl+C is pressed
+    BUFFER=""
     zle redisplay
   fi
 }
@@ -184,8 +193,8 @@ fzf-cd-widget() {
 }
 
 # Activate widgets
-zle -N fzf-widget
-bindkey '^F' fzf-widget
+zle -N fzf-find-widget
+bindkey '^F' fzf-find-widget
 
 zle -N fzf-history-widget
 bindkey "${key[Up]}" fzf-history-widget
