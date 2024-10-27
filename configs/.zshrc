@@ -114,7 +114,7 @@ ff() {
 }
 
 # Fuzzy search
-function fzf_widget() {
+function fzf-widget() {
   fzf --multi --layout=reverse --info=inline --border --height=70% \
       --preview 'batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}' \
       --preview-window 'right,50%' \
@@ -184,8 +184,8 @@ fzf-cd-widget() {
 }
 
 # Activate widgets
-zle -N fzf_widget
-bindkey '^F' fzf_widget
+zle -N fzf-widget
+bindkey '^F' fzf-widget
 
 zle -N fzf-history-widget
 bindkey "${key[Up]}" fzf-history-widget
