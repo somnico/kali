@@ -39,13 +39,6 @@ znap source marlonrichert/zsh-autocomplete
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 eval "$(zoxide init --cmd cd zsh)"
 
-# Completion styling
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
-
 # History
 HISTSIZE=10000
 HISTFILE=~/.zsh_history
@@ -60,7 +53,7 @@ setopt hist_ignore_dups
 setopt hist_find_no_dups
 
 # Aliases
-alias f="fzf --multi --layout=reverse --info=inline --border --height=70% --preview 'batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}' --preview-window 'right,50%' --bind 'right:preview-down,left:preview-up,pgdn:preview-page-down,pgup:preview-page-up' --bind 'ctrl-n:execute([ -f {} ] && nano {})+abort'"  
+# alias f="fzf --multi --layout=reverse --info=default --border --height=70% --preview 'batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}' --preview-window 'right,50%' --bind 'pgdn:page-down,pgup:page-up' --bind 'ctrl-n:become(sudo nano {+})'"  
 alias k="ps aux | fzf --multi | awk '{print \$2}' | xargs -r sudo kill -15"
 alias b="batcat --paging=never --theme=ansi-dark"
 alias ba="batcat --paging=never --theme=ansi-dark --style=changes"
@@ -71,7 +64,7 @@ alias sn="sudo nano"
 alias sm="sudo nano +-1"
 alias ch="sudo chmod +x"
 alias de="sudo rm -rf"
-alias rc="sudo nano +-1 ~/.zshrc"
+alias rc="sudo nano +-1 ~/.zshrc && re"
 alias p1="sudo nano ~/.p10k.zsh"
 alias re="omz reload"
 alias pale="palemoon/./palemoon"
@@ -98,6 +91,33 @@ if [[ "$TERM_PROGRAM" == "vscode" ]]; then
   export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --color=bg:#1f2335,preview-bg:#1f2335,gutter:#1f2335"
 fi
 
+# Fuzzy search
+f() {
+  fzf --multi --exact --layout=reverse --info=default --border --height=70% \
+      --preview 'batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}' \
+      --preview-window 'right,50%' \
+      --bind 'pgdn:page-down,pgup:page-up' \
+      --bind 'ctrl-n:become(sudo nano {+})' \
+      --bind 'ctrl-x:execute(trash {+})+reload(find . -type f)'
+}
+
+# Custom fuzzy search
+fzf-find-widget() {
+  local dir="${1:-$PWD}"
+
+  locate "$dir" | awk -v dir="$dir" '$0 ~ dir {sub(dir "/?", ""); print}' | \
+  fzf --multi --exact --layout=reverse --info=default --border --height=70% \
+      --preview 'batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}' \
+      --preview-window 'right,50%' \
+      --bind 'pgdn:page-down,pgup:page-up' \
+      --bind 'ctrl-n:become(sudo nano {+})' \
+      --bind "shift-left:reload(locate / | awk '{print}')" \
+      --bind "shift-right:reload(locate '$dir' | awk -v dir='$dir' '\$0 ~ dir {sub(dir \"/?\", \"\"); print}')"
+
+  echo -e "\r"
+  zle redisplay
+}
+
 # Search in file
 ff() {
   local RG_PREFIX="rg --line-number --no-heading --color=always --smart-case --hidden --glob '!**/.git/*'"
@@ -111,25 +131,6 @@ ff() {
       --preview 'batcat --theme=base16 --style="numbers" --color=always {1} --highlight-line {2}' \
       --preview-window 'down,35%,+{2}-3' \
       --bind 'enter:become(sudo nano -Y sh $(for f in {+}; do echo "+$(cut -d: -f2 <<< $f) $(cut -d: -f1 <<< $f)"; done))'
-}
-
-# Fuzzy search
-fzf-find-widget() {
-  local dir="${1:-$PWD}"
-
-  find "$dir" -type f -printf "%d %P\n" 2>/dev/null | \
-  sort -k1,1n -k2 | \
-  awk '{$1=""; print substr($0,2)}' | \
-  fzf --multi --layout=reverse --info=default --border --height=70% \
-      --preview 'batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}' \
-      --preview-window 'right,50%' \
-      --bind 'pgdn:page-down,pgup:page-up' \
-      --bind 'ctrl-n:become(sudo nano {+})' \
-      --bind "shift-left:reload(find / -type f -printf '%P\n' 2>/dev/null | sort)" \
-      --bind "shift-right:reload(find '$dir' -type f -printf '%P\n' 2>/dev/null | sort)"
-
-  echo -e "\r"
-  zle redisplay
 }
 
 # Fuzzy history search
@@ -195,19 +196,19 @@ fzf-cd-widget() {
 
 # Activate widgets
 zle -N fzf-find-widget
-bindkey '^F' fzf-find-widget
-
 zle -N fzf-history-widget
-bindkey "${key[Up]}" fzf-history-widget
-
 zle -N fzf-cd-widget
+
+bindkey '^F' fzf-find-widget
+bindkey "${key[Up]}" fzf-history-widget
 bindkey "${key[End]}" fzf-cd-widget
 
-# AWS autocomplete
-export PATH=/usr/libexec/:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
-autoload bashcompinit && bashcompinit
-# autoload -Uz compinit && compinit
-complete -C '/usr/libexec/aws_completer' aws
+# Completion styling
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' menu no
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Various
 WORDCHARS="_.;~-*^|!?&#$%[](){}<>"
@@ -219,11 +220,17 @@ LS_COLORS=$(echo $LS_COLORS | sed "s/01;/00;/g")
 export LS_COLORS
 ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=red'
 
+# Startup
+# echo "kali" | figlet -f fraktur | boxes -d ian_jones -a hcvc -p h6v0 | lolcat -f -a -d 1 -p 5 -F 0.03 -S 110
+
 # Generated for envman
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
-# Startup
-# echo "kali" | figlet -f fraktur | boxes -d ian_jones -a hcvc -p h6v0 | lolcat -f -a -d 1 -p 5 -F 0.03 -S 110
+# AWS autocomplete
+export PATH=/usr/libexec/:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+autoload bashcompinit && bashcompinit
+# autoload -Uz compinit && compinit
+complete -C '/usr/libexec/aws_completer' aws
 
 # PATH
 export PATH="$PATH:$HOME/.local/bin"
