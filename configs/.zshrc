@@ -64,6 +64,7 @@ alias sn="sudo nano"
 alias sm="sudo nano +-1"
 alias ch="sudo chmod +x"
 alias de="sudo rm -rf"
+alias q="xsel --clipboard <"
 alias rc="sudo nano +-1 ~/.zshrc && re"
 alias p1="sudo nano ~/.p10k.zsh"
 alias re="omz reload"
@@ -72,7 +73,9 @@ alias da="rclone copy Drive:/Linux/AWS/Files/ ~/files/ --include '*' -P"
 alias ua="rclone copy ~/files/ Drive:/Linux/AWS/Files/ --include '*' -P"
 dl() {local source="Drive:Linux/AWS/Files/"; local destination="~/files/"; file="$1"; rclone copy "${source}${file}" "${destination}";}
 ul() {local source=""; local destination="Drive:Linux/AWS/Files/"; source="$1"; rclone copy "${source}" "${destination}";}
+
 bindkey -s "^[-" "~/"
+bindkey '^Z' undo
 
 # Fuzzy finder defaults
 export FZF_DEFAULT_OPTS="
@@ -94,11 +97,13 @@ fi
 # Fuzzy search
 f() {
   fzf --multi --exact --layout=reverse --info=default --border --height=70% \
-      --preview 'batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}' \
-      --preview-window 'right,50%' \
-      --bind 'pgdn:page-down,pgup:page-up' \
-      --bind 'ctrl-n:become(sudo nano {+})' \
-      --bind 'ctrl-x:execute(trash {+})+reload(find . -type f)'
+      --preview "batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}" \
+      --preview-window "right,50%" \
+      --bind "pgdn:page-down,pgup:page-up" \
+      --bind "ctrl-q:execute-silent(cat {+} | xclip -selection clipboard)+reload(find . -type f)" \
+      --bind "ctrl-x:execute(trash {+})+reload(find . -type f)" \
+      --bind "ctrl-n:become(sudo nano {+})" \
+      --bind "ctrl-r:become(source {+})"
 }
 
 # Custom fuzzy search
@@ -118,7 +123,7 @@ fzf-find-widget() {
   zle redisplay
 }
 
-# Search in file
+# Fuzzy search in file
 ff() {
   local RG_PREFIX="rg --line-number --no-heading --color=always --smart-case --hidden --glob '!**/.git/*'"
   local INITIAL_QUERY="${*:-}"
@@ -178,12 +183,12 @@ fzf-cd-widget() {
   local temp_dir
 
   temp_dir=$(
-    find "$dir" -type d 2>/dev/null | \
+    find "$dir" -type d -printf "%P\n" 2>/dev/null | \
     fzf --layout=reverse --height=80% \
-        --preview "sudo eza --tree --level=3 --color=always --icons {}" \
+        --preview "sudo eza --tree --level=3 --color=always --icons '$dir/{}'" \
         --preview-window=right:50%:wrap --ansi \
         --bind "shift-left:reload(find / -type d 2>/dev/null)" \
-        --bind "shift-right:reload(find '$dir' -type d 2>/dev/null)+change-query()"
+        --bind "shift-right:reload(find '$dir' -type d -printf '%P\n' 2>/dev/null)+change-query()"
   )
 
   if [[ -n "$temp_dir" ]]; then
