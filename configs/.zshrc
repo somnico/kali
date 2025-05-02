@@ -38,6 +38,11 @@ znap source marlonrichert/zsh-autocomplete
 # Shell integrations
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 eval "$(zoxide init --cmd cd zsh)"
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+# Hotkeys
+bindkey -s "^[-" "~/"
+bindkey '^Z' undo
 
 # History
 HISTSIZE=10000
@@ -74,8 +79,6 @@ alias ua="rclone copy ~/files/ Drive:/Linux/AWS/Files/ --include '*' -P"
 dl() {local source="Drive:Linux/AWS/Files/"; local destination="~/files/"; file="$1"; rclone copy "${source}${file}" "${destination}";}
 ul() {local source=""; local destination="Drive:Linux/AWS/Files/"; source="$1"; rclone copy "${source}" "${destination}";}
 
-bindkey -s "^[-" "~/"
-bindkey '^Z' undo
 
 # Fuzzy finder defaults
 export FZF_DEFAULT_OPTS="
