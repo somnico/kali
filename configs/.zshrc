@@ -38,6 +38,7 @@ znap source marlonrichert/zsh-autocomplete
 # Shell integrations
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 eval "$(zoxide init --cmd cd zsh)"
+source $HOME/.cargo/env
 # eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # Hotkeys
