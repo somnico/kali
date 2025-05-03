@@ -87,7 +87,7 @@ function imgshl_display_image () {
 
     if [ $pixel_perfect == 1 ]; then
         if type timg >/dev/null 2>/dev/null; then
-            timg -b none -p h "${display_file}"
+            timg -b auto -p h "${display_file}"
         else
             chafa --format=symbols --symbols=vhalf --scale=max --margin-bottom=3 "${display_file}"
         fi
@@ -241,7 +241,7 @@ function imgshl_stitch_ani_images () {
 function imgshl_display_ani_image () {
     local display_file
     display_file="${1:?}"
-    chafa --format=symbols --symbols=vhalf+hhalf+half+block+inverted+sextant+wedge+legacy+quad+stipple+solid+space --scale=max --margin-bottom=3 "$display_file"
+    chafa --format=symbols --symbols=vhalf+hhalf+half+block+inverted+quad+stipple+solid+space --scale=max --margin-bottom=3 "$display_file"
 }
 
 function imgshl_display () {
