@@ -199,8 +199,8 @@ fzf-cd-widget() {
 
   temp_dir=$(
     find "$dir" -type d -printf "%P\n" 2>/dev/null | \
-    fzf --layout=reverse --height=80% \
-        --preview "sudo eza --tree --level=3 --color=always --icons '$dir/{}'" \
+    fzf --layout=reverse --exact --height=80% \
+        --preview "eza --tree --level=3 --color=always --icons '$dir/{}'" \
         --preview-window=right:50%:wrap --ansi \
         --bind "shift-left:reload(find / -type d 2>/dev/null)" \
         --bind "shift-right:reload(find '$dir' -type d -printf '%P\n' 2>/dev/null)+change-query()"
@@ -266,9 +266,6 @@ export PATH=/usr/libexec/:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bi
 autoload bashcompinit && bashcompinit
 # autoload -Uz compinit && compinit
 complete -C '/usr/libexec/aws_completer' aws
-
-# Allow windows
-[ -f /etc/wsl.conf ] && echo -e "\n[automount]\nenabled = true\noptions = \"metadata,umask=22,fmask=11\"" | sudo tee -a /etc/wsl.conf
 
 # PATH
 export PATH="$PATH:$HOME/.local/bin"
