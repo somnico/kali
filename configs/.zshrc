@@ -266,5 +266,8 @@ autoload bashcompinit && bashcompinit
 # autoload -Uz compinit && compinit
 complete -C '/usr/libexec/aws_completer' aws
 
+# Allow windows
+[ -f /etc/wsl.conf ] && echo -e "\n[automount]\nenabled = true\noptions = \"metadata,umask=22,fmask=11\"" | sudo tee -a /etc/wsl.conf
+
 # PATH
 export PATH="$PATH:$HOME/.local/bin"
