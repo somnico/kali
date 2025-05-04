@@ -39,7 +39,10 @@ znap source marlonrichert/zsh-autocomplete
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 eval "$(zoxide init --cmd cd zsh)"
 source $HOME/.cargo/env
+
 # eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+# . "$HOME/.atuin/bin/env"
+# eval "$(atuin init zsh)"
 
 # Hotkeys
 bindkey -s "^[-" "~/"
@@ -80,6 +83,13 @@ alias ua="rclone copy ~/files/ Drive:/Linux/AWS/Files/ --include '*' -P"
 dl() {local source="Drive:Linux/AWS/Files/"; local destination="~/files/"; file="$1"; rclone copy "${source}${file}" "${destination}";}
 ul() {local source=""; local destination="Drive:Linux/AWS/Files/"; source="$1"; rclone copy "${source}" "${destination}";}
 
+
+# Change permission
+perm() {
+  local target="${1:-.}"
+  sudo chown -R "$USER:$USER" "$target" && sudo chmod -R u+rwX,go+rX "$target"
+  echo "Permissions fixed for $(realpath "$target")"
+}
 
 # Fuzzy finder defaults
 export FZF_DEFAULT_OPTS="
@@ -231,6 +241,21 @@ ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=red'
 
 # Startup
 # echo "kali" | figlet -f fraktur | boxes -d ian_jones -a hcvc -p h6v0 | lolcat -f -a -d 1 -p 5 -F 0.03 -S 110
+
+pokemon=(
+"volbeat" "duskull" "haunter" "hoppip" "lickitung" "vileplume" "butterfree" "dugtrio"
+"poliwag" "rapidash" "dewgong" "gengar" "onix" "koffing" "charizard" "arbok" "pikachu"
+"mr.mime" "magikarp" "dragonite" "s:gyarados" "mew" "mewtwo" "muk" "crobat" "s:azumarill"
+"unown-india" "unown-oscar" "unown-exclamation" "mantine" "entei" "ho-oh" "blaziken"
+"beautifly" "cascoon" "ludicolo" "seedot" "wingull" "surskit" "loudred" "azurill"
+"volbeat" "roselia" "wailmer" "s:spoink" "spinda" "cacnea" "seviper" "s:whiscash"
+"milotic" "castform-snowy" "chimecho" "salamence" "s:regirock" "metagross" "kyogre-primal"
+"groudon" "rayquaza" "deoxys" "empoleon" "burmy-sandy" "honchkrow" "spiritomb" "garchomp"
+"drapion" "lumineon" "magnezone" "electivire" "gliscor" "s:dusknoir" "froslass" "uxie"
+"s:giratina" "arceus-ghost"
+)
+
+alias poke='pokeshell -a "${pokemon[$((RANDOM % ${#pokemon[@]}))]}"'
 
 # Generated for envman
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
