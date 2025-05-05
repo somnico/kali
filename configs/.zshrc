@@ -169,13 +169,13 @@ fzf-history-widget() {
     zle accept-line
 
   elif [[ -f ~/.fzf_right_arrow_cmd ]]; then
-    BUFFER="$(<~/.fzf_right_arrow_cmd) "
+    BUFFER="$(<~/.fzf_right_arrow_cmd)"
     rm ~/.fzf_right_arrow_cmd
     CURSOR=$#BUFFER
     zle redisplay
 
   elif [[ -f ~/.fzf_ctrl_a_cmd ]]; then
-    BUFFER="$(<~/.fzf_ctrl_a_cmd) "
+    BUFFER="$(<~/.fzf_ctrl_a_cmd)"
     rm ~/.fzf_ctrl_a_cmd
     CURSOR=0
     zle redisplay
