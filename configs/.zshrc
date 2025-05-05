@@ -86,6 +86,7 @@ alias rc="sudo nano +-1 ~/.zshrc && re"
 alias p1="sudo nano ~/.p10k.zsh"
 alias re="omz reload"
 alias pale="palemoon/./palemoon"
+alias top="sudo XDG_CONFIG_HOME=$HOME/.config btop"
 alias da="rclone copy Drive:/Linux/AWS/Files/ ~/files/ --include '*' -P"
 alias ua="rclone copy ~/files/ Drive:/Linux/AWS/Files/ --include '*' -P"
 dl() {local source="Drive:Linux/AWS/Files/"; local destination="~/files/"; file="$1"; rclone copy "${source}${file}" "${destination}";}
