@@ -5,10 +5,6 @@ export ZSH="$HOME/.oh-my-zsh"
 zstyle ':omz:update' mode auto
 zstyle ':omz:update' frequency 14
 
-# Reset autosuggestion bindings
-ZSH_AUTOSUGGEST_CLEAR_WIDGETS=()
-ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=()
-
 # Set Oh My Zsh theme
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
@@ -32,6 +28,7 @@ source ~/.p10k.zsh
 [[ -r ~/.oh-my-zsh/plugins/znap/znap.zsh ]] || git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git ~/.oh-my-zsh/plugins/znap
 source ~/.oh-my-zsh/plugins/znap/znap.zsh
 znap source marlonrichert/zsh-autocomplete
+bindkey -r "^[[1;3A"
 # zstyle ':autocomplete:history-search-backward:*' list-lines 10
 # bindkey -M menuselect ^M .accept-line
 # bindkey -M menuselect '^A' .beginning-of-line
@@ -40,9 +37,9 @@ znap source marlonrichert/zsh-autocomplete
 # bindkey -M menuselect '^[[1;5D' .backward-word '^[1;5D' .backward-word
 
 # Autosuggestions configuration
-bindkey '\e[1;3C' autosuggest-accept
-bindkey '^[[1;5A' autosuggest-execute
-bindkey '^[[C' forward-char
+# zle_bracketed_paste=()
+ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(bracketed-paste)
+bindkey '\e[1;3C' autosuggest-execute
 
 
 # Shell integrations
