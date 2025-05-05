@@ -5,6 +5,10 @@ export ZSH="$HOME/.oh-my-zsh"
 zstyle ':omz:update' mode auto
 zstyle ':omz:update' frequency 14
 
+# Reset autosuggestion bindings
+ZSH_AUTOSUGGEST_CLEAR_WIDGETS=()
+ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=()
+
 # Set Oh My Zsh theme
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
@@ -34,6 +38,12 @@ znap source marlonrichert/zsh-autocomplete
 # bindkey -M menuselect '^[[D' .backward-char '^[OD' .backward-char
 # bindkey -M menuselect '^[[C' .forward-char '^[OC'  .forward-char
 # bindkey -M menuselect '^[[1;5D' .backward-word '^[1;5D' .backward-word
+
+# Autosuggestions configuration
+bindkey '\e[1;3C' autosuggest-accept
+bindkey '^[[1;5A' autosuggest-execute
+bindkey '^[[C' forward-char
+
 
 # Shell integrations
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
