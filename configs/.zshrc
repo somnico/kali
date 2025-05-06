@@ -9,7 +9,24 @@ zstyle ':omz:update' frequency 14
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Plugins
-plugins=(git sudo jq fzf-tab zsh-autosuggestions zsh-syntax-highlighting history dirhistory command-not-found direnv)
+plugins=(
+  git
+  sudo
+  jq
+  eza
+  fzf-tab
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+  command-not-found
+  history
+  dirhistory
+  direnv
+  copypath
+  cp
+  extract
+  colored-man-pages
+  fancy-ctrl-z
+)
 
 # Completetion configuration
 fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
@@ -74,13 +91,14 @@ alias b="batcat --paging=never --theme=ansi-dark"
 alias ba="batcat --paging=never --theme=ansi-dark --style=changes"
 alias c="rcat"
 alias fd="fdfind"
-alias q="xsel --clipboard <"
 
 alias sn="sudo nano"
 alias sm="sudo nano +-1"
 alias ch="sudo chmod +x"
 alias de="sudo rm -rf"
 alias k="ps aux | fzf --multi | awk '{print \$2}' | xargs -r sudo kill -15"
+alias q="xsel --clipboard <"
+alias cop="copypath"
 
 alias rc="sudo nano +-1 ~/.zshrc && re"
 alias p1="sudo nano ~/.p10k.zsh"
