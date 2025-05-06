@@ -240,7 +240,8 @@ function dirhistory_zle_dirhistory_home() {
 zle -N dirhistory_zle_dirhistory_home
 
 for keymap in emacs vicmd viins; do
-  bindkey -M $keymap "H" dirhistory_zle_dirhistory_home
+  # bindkey -M $keymap "H" dirhistory_zle_dirhistory_home
+  bindkey -M $keymap "^[OH" dirhistory_zle_dirhistory_home # Windows terminal
 done
 
 unset keymap
