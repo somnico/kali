@@ -70,23 +70,29 @@ setopt hist_find_no_dups
 
 # Aliases
 # alias f="fzf --multi --layout=reverse --info=default --border --height=70% --preview 'batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}' --preview-window 'right,50%' --bind 'pgdn:page-down,pgup:page-up' --bind 'ctrl-n:become(sudo nano {+})'"  
-alias k="ps aux | fzf --multi | awk '{print \$2}' | xargs -r sudo kill -15"
 alias b="batcat --paging=never --theme=ansi-dark"
 alias ba="batcat --paging=never --theme=ansi-dark --style=changes"
 alias c="rcat"
 alias fd="fdfind"
-alias e="/mnt/c/Windows/explorer.exe ."
-alias i="sudo apt-get install -y"
+alias q="xsel --clipboard <"
+
 alias sn="sudo nano"
 alias sm="sudo nano +-1"
 alias ch="sudo chmod +x"
 alias de="sudo rm -rf"
-alias q="xsel --clipboard <"
+alias k="ps aux | fzf --multi | awk '{print \$2}' | xargs -r sudo kill -15"
+
 alias rc="sudo nano +-1 ~/.zshrc && re"
 alias p1="sudo nano ~/.p10k.zsh"
 alias re="omz reload"
-alias pale="palemoon/./palemoon"
+
+alias i="sudo apt-get install -y"
 alias top="sudo XDG_CONFIG_HOME=$HOME/.config btop"
+
+alias pale="palemoon/./palemoon"
+alias e="/mnt/c/Windows/explorer.exe ."
+
+
 alias da="rclone copy Drive:/Linux/AWS/Files/ ~/files/ --include '*' -P"
 alias ua="rclone copy ~/files/ Drive:/Linux/AWS/Files/ --include '*' -P"
 dl() {local source="Drive:Linux/AWS/Files/"; local destination="~/files/"; file="$1"; rclone copy "${source}${file}" "${destination}";}
