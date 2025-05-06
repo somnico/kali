@@ -240,7 +240,11 @@ zstyle ':chpwd:*' recent-dirs-file ~/.cache/.chpwd-recent-dirs
 fzf-cdr() {
   local dir
   dir=$(cdr -l | awk '{$1=""; print substr($0,2)}' | fzf --height=40% --reverse)
-  [[ -n "$dir" ]] && cd "$dir"
+  
+  if [[ -n "$dir" ]]; then
+    cd "${dir/#\~/$HOME}"  
+    zle .accept-line 
+  fi
 }
 
 # Activate widgets
