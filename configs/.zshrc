@@ -9,7 +9,7 @@ zstyle ':omz:update' frequency 14
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Plugins
-plugins=(git sudo jq fzf-tab zsh-autosuggestions zsh-syntax-highlighting history dirhistory command-not-found)
+plugins=(git sudo jq fzf-tab zsh-autosuggestions zsh-syntax-highlighting history dirhistory command-not-found direnv)
 
 # Completetion configuration
 fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
@@ -239,7 +239,8 @@ zstyle ':chpwd:*' recent-dirs-file ~/.cache/.chpwd-recent-dirs
 
 fzf-cdr() {
   local dir
-  dir=$(cdr -l | awk '{$1=""; print substr($0,2)}' | fzf --height=40% --reverse)
+  # dir=$(cdr -l | awk '{$1=""; print substr($0,2)}' | fzf --height=40% --reverse)
+  dir=$(zoxide query -l | fzf --height=40% --reverse)
   
   if [[ -n "$dir" ]]; then
     cd "${dir/#\~/$HOME}"  
@@ -279,16 +280,16 @@ ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=red'
 # echo "kali" | figlet -f fraktur | boxes -d ian_jones -a hcvc -p h6v0 | lolcat -f -a -d 1 -p 5 -F 0.03 -S 110
 
 pokemon=(
-"volbeat" "duskull" "haunter" "hoppip" "lickitung" "vileplume" "butterfree" "dugtrio"
-"poliwag" "rapidash" "dewgong" "gengar" "onix" "koffing" "charizard" "arbok" "pikachu"
-"mr.mime" "magikarp" "dragonite" "s:gyarados" "mew" "mewtwo" "muk" "crobat" "s:azumarill"
-"unown-india" "unown-oscar" "unown-exclamation" "mantine" "entei" "ho-oh" "blaziken"
-"beautifly" "cascoon" "ludicolo" "seedot" "wingull" "surskit" "loudred" "azurill"
-"volbeat" "roselia" "wailmer" "s:spoink" "spinda" "cacnea" "seviper" "s:whiscash"
-"milotic" "castform-snowy" "chimecho" "salamence" "s:regirock" "metagross" "kyogre-primal"
-"groudon" "rayquaza" "deoxys" "empoleon" "burmy-sandy" "honchkrow" "spiritomb" "garchomp"
-"drapion" "lumineon" "magnezone" "electivire" "gliscor" "s:dusknoir" "froslass" "uxie"
-"s:giratina" "arceus-ghost"
+  "volbeat" "duskull" "haunter" "hoppip" "lickitung" "vileplume" "butterfree" "dugtrio"
+  "poliwag" "rapidash" "dewgong" "gengar" "onix" "koffing" "charizard" "arbok" "pikachu"
+  "mr.mime" "magikarp" "dragonite" "s:gyarados" "mew" "mewtwo" "muk" "crobat" "s:azumarill"
+  "unown-india" "unown-oscar" "unown-exclamation" "mantine" "entei" "ho-oh" "blaziken"
+  "beautifly" "cascoon" "ludicolo" "seedot" "wingull" "surskit" "loudred" "azurill"
+  "volbeat" "roselia" "wailmer" "s:spoink" "spinda" "cacnea" "seviper" "s:whiscash"
+  "milotic" "castform-snowy" "chimecho" "salamence" "s:regirock" "metagross" "kyogre-primal"
+  "groudon" "rayquaza" "deoxys" "empoleon" "burmy-sandy" "honchkrow" "spiritomb" "garchomp"
+  "drapion" "lumineon" "magnezone" "electivire" "gliscor" "s:dusknoir" "froslass" "uxie"
+  "s:giratina" "arceus-ghost"
 )
 
 alias poke='pokeshell -a "${pokemon[$((RANDOM % ${#pokemon[@]}))]}"'
