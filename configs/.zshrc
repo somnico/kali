@@ -86,11 +86,10 @@ setopt hist_ignore_dups
 setopt hist_find_no_dups
 
 # Aliases
-# alias f="fzf --multi --layout=reverse --info=default --border --height=70% --preview 'batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}' --preview-window 'right,50%' --bind 'pgdn:page-down,pgup:page-up' --bind 'ctrl-n:become(sudo nano {+})'"  
-alias b="batcat --paging=never --theme=ansi-dark"
-alias ba="batcat --paging=never --theme=ansi-dark --style=changes"
-alias c="rcat"
+# alias f="fzf --multi --layout=reverse --info=default --border --height=70% --preview 'batcat --paging=never --theme=ansi --style=numbers --color=always {}' --preview-window 'right,50%' --bind 'pgdn:page-down,pgup:page-up' --bind 'ctrl-n:become(sudo nano {+})'"  
 alias fd="fdfind"
+alias b="batcat --paging=never --theme=ansi"
+alias ba="batcat --paging=never --theme=ansi --style=changes"
 
 alias sn="sudo nano"
 alias sm="sudo nano +-1"
@@ -144,7 +143,7 @@ fi
 # Fuzzy search
 f() {
   fzf --multi --exact --layout=reverse --info=default --border --height=70% \
-      --preview "batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}" \
+      --preview "batcat --paging=never --theme=ansi --style=numbers --color=always {}" \
       --preview-window "right,50%" \
       --bind "pgdn:page-down,pgup:page-up" \
       --bind "ctrl-q:execute-silent(cat {+} | xclip -selection clipboard)+reload(find . -type f)" \
@@ -159,7 +158,7 @@ fzf-find-widget() {
 
   locate "$dir" | awk -v dir="$dir" '$0 ~ dir {sub(dir "/?", ""); print}' | \
   fzf --multi --exact --layout=reverse --info=default --border --height=70% \
-      --preview 'batcat --paging=never --theme=ansi-dark --style=numbers --color=always {}' \
+      --preview 'batcat --paging=never --theme=ansi --style=numbers --color=always {}' \
       --preview-window 'right,50%' \
       --bind 'pgdn:page-down,pgup:page-up' \
       --bind 'ctrl-n:become(sudo nano {+})' \
