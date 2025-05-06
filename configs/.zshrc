@@ -228,14 +228,31 @@ fzf-cd-widget() {
   fi
 }
 
+# Recent directories
+autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+add-zsh-hook chpwd chpwd_recent_dirs
+zstyle ':completion:*:*:cdr:*:*' menu selection
+zstyle ':completion:*' recent-dirs-insert fallback
+zstyle ':chpwd:*' recent-dirs-default true
+zstyle ':chpwd:*' recent-dirs-max 0
+zstyle ':chpwd:*' recent-dirs-file ~/.cache/.chpwd-recent-dirs
+
+fzf-cdr() {
+  local dir
+  dir=$(cdr -l | awk '{$1=""; print substr($0,2)}' | fzf --height=40% --reverse)
+  [[ -n "$dir" ]] && cd "$dir"
+}
+
 # Activate widgets
 zle -N fzf-find-widget
 zle -N fzf-history-widget
 zle -N fzf-cd-widget
+zle -N fzf-cdr
 
 bindkey '^F' fzf-find-widget
 bindkey "${key[Up]}" fzf-history-widget
-bindkey "${key[End]}" fzf-cd-widget
+bindkey "\e[5~" fzf-cd-widget
+bindkey "\e[6~" fzf-cdr
 
 # Completion styling
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
