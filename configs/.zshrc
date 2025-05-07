@@ -14,7 +14,6 @@ plugins=(
   sudo
   jq
   eza
-  fzf-tab
   zsh-autosuggestions
   zsh-syntax-highlighting
   command-not-found
@@ -26,6 +25,7 @@ plugins=(
   extract
   colored-man-pages
   fancy-ctrl-z
+  fzf-tab
 )
 
 # Completetion configuration
@@ -41,13 +41,17 @@ source $ZSH/oh-my-zsh.sh
 # Source Powerlevel
 source ~/.p10k.zsh
 
+
 # Autocomplete configuration
 [[ -r ~/.oh-my-zsh/plugins/znap/znap.zsh ]] || git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git ~/.oh-my-zsh/plugins/znap
 source ~/.oh-my-zsh/plugins/znap/znap.zsh
 znap source marlonrichert/zsh-autocomplete
 bindkey -r "^[[1;3A"
+bindkey -r '^I'
+bindkey -M menuselect ^M .accept-line
+
+# zstyle ':autocomplete:*' enable-completion no
 # zstyle ':autocomplete:history-search-backward:*' list-lines 10
-# bindkey -M menuselect ^M .accept-line
 # bindkey -M menuselect '^A' .beginning-of-line
 # bindkey -M menuselect '^[[D' .backward-char '^[OD' .backward-char
 # bindkey -M menuselect '^[[C' .forward-char '^[OC'  .forward-char
@@ -60,17 +64,16 @@ bindkey '\e[1;3C' autosuggest-execute
 
 
 # Shell integrations
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+source <(fzf --zsh)
+enable-fzf-tab
+bindkey '^I' fzf-tab-complete
 eval "$(zoxide init --cmd cd zsh)"
 source $HOME/.cargo/env
 
 # eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 # . "$HOME/.atuin/bin/env"
 # eval "$(atuin init zsh)"
-
-# Hotkeys
-bindkey -s "^[-" "~/"
-bindkey '^Z' undo
 
 # History
 HISTSIZE=10000
@@ -85,29 +88,30 @@ setopt hist_save_no_dups
 setopt hist_ignore_dups
 setopt hist_find_no_dups
 
+# Correction
+setopt CORRECT
+unsetopt CORRECTALL
+
 # Aliases
-# alias f="fzf --multi --layout=reverse --info=default --border --height=70% --preview 'batcat --paging=never --theme=ansi --style=numbers --color=always {}' --preview-window 'right,50%' --bind 'pgdn:page-down,pgup:page-up' --bind 'ctrl-n:become(sudo nano {+})'"  
 alias fd="fdfind"
 alias b="batcat --paging=never --theme=ansi"
 alias ba="batcat --paging=never --theme=ansi --style=changes"
-
-alias sn="sudo nano"
-alias sm="sudo nano +-1"
-alias ch="sudo chmod +x"
-alias de="sudo rm -rf"
-alias k="ps aux | fzf --multi | awk '{print \$2}' | xargs -r sudo kill -15"
 alias q="xsel --clipboard <"
 alias cop="copypath"
 
+alias i="sudo apt-get install -y"
+alias sn="sudo nano"
+alias sm="sudo nano +-1"
 alias rc="sudo nano +-1 ~/.zshrc && re"
 alias p1="sudo nano ~/.p10k.zsh"
+alias ch="sudo chmod +x"
+alias de="sudo rm -rf"
+alias k="ps aux | fzf --multi | awk '{print \$2}' | xargs -r sudo kill -15"
+alias top="sudo XDG_CONFIG_HOME=$HOME/.config btop"
 alias re="omz reload"
 
-alias i="sudo apt-get install -y"
-alias top="sudo XDG_CONFIG_HOME=$HOME/.config btop"
-
-alias pale="palemoon/./palemoon"
 alias e="/mnt/c/Windows/explorer.exe ."
+alias pale="palemoon/./palemoon"
 
 
 alias da="rclone copy Drive:/Linux/AWS/Files/ ~/files/ --include '*' -P"
@@ -138,7 +142,25 @@ export FZF_DEFAULT_OPTS="
 # Adjust background color based on environment
 if [[ "$TERM_PROGRAM" == "vscode" ]]; then
   export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --color=bg:#1f2335,preview-bg:#1f2335,gutter:#1f2335"
-fi
+fi 
+
+# export FZF_DEFAULT_COMMAND="fdfind -H -t d --follow -E /mnt/c -E .git"
+# export FZF_DEFAULT_COMMAND="locate -i '' | grep -vE '/mnt/|\.git/'"
+
+# Fzf-tab styling
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' menu no
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --tree --level=3 --color=always $realpath'
+zstyle ':fzf-tab:*' use-fzf-default-opts yes
+zstyle ':completion:*' file-patterns '%p'
+
+test() {
+  result=$(fdfind -t d -E "/mnt" | fzf $1)
+  cd $result
+  unset result
+}
 
 # Fuzzy search
 f() {
@@ -254,7 +276,7 @@ zstyle ':chpwd:*' recent-dirs-default true
 zstyle ':chpwd:*' recent-dirs-max 0
 zstyle ':chpwd:*' recent-dirs-file ~/.cache/.chpwd-recent-dirs
 
-fzf-cdr() {
+fzf-recency() {
   local dir
   # dir=$(cdr -l | awk '{$1=""; print substr($0,2)}' | fzf --height=40% --reverse)
   dir=$(zoxide query -l | fzf --height=40% --reverse)
@@ -262,6 +284,8 @@ fzf-cdr() {
   if [[ -n "$dir" ]]; then
     cd "${dir/#\~/$HOME}"  
     zle .accept-line 
+  else
+    zle reset-prompt
   fi
 }
 
@@ -269,19 +293,16 @@ fzf-cdr() {
 zle -N fzf-find-widget
 zle -N fzf-history-widget
 zle -N fzf-cd-widget
-zle -N fzf-cdr
+zle -N fzf-recency
 
+# Hotkeys
 bindkey '^F' fzf-find-widget
 bindkey "${key[Up]}" fzf-history-widget
 bindkey "\e[5~" fzf-cd-widget
-bindkey "\e[6~" fzf-cdr
+bindkey "\e[6~" fzf-recency
 
-# Completion styling
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+bindkey -s "^[-" "~/"
+bindkey '^Z' undo
 
 # Various
 WORDCHARS="_.;~-*^|!?&#$%[](){}<>"
@@ -316,7 +337,7 @@ alias poke='pokeshell -a "${pokemon[$((RANDOM % ${#pokemon[@]}))]}"'
 
 # AWS autocomplete
 export PATH=/usr/libexec/:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
-autoload bashcompinit && bashcompinit
+# autoload bashcompinit && bashcompinit
 # autoload -Uz compinit && compinit
 complete -C '/usr/libexec/aws_completer' aws
 
