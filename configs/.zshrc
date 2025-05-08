@@ -14,6 +14,7 @@ plugins=(
   sudo
   jq
   eza
+  tmux
   zsh-autosuggestions
   zsh-syntax-highlighting
   command-not-found
@@ -46,16 +47,9 @@ source ~/.p10k.zsh
 [[ -r ~/.oh-my-zsh/plugins/znap/znap.zsh ]] || git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git ~/.oh-my-zsh/plugins/znap
 source ~/.oh-my-zsh/plugins/znap/znap.zsh
 znap source marlonrichert/zsh-autocomplete
+bindkey -M menuselect ^M .accept-line
 bindkey -r "^[[1;3A"
 bindkey -r '^I'
-bindkey -M menuselect ^M .accept-line
-
-# zstyle ':autocomplete:*' enable-completion no
-# zstyle ':autocomplete:history-search-backward:*' list-lines 10
-# bindkey -M menuselect '^A' .beginning-of-line
-# bindkey -M menuselect '^[[D' .backward-char '^[OD' .backward-char
-# bindkey -M menuselect '^[[C' .forward-char '^[OC'  .forward-char
-# bindkey -M menuselect '^[[1;5D' .backward-word '^[1;5D' .backward-word
 
 # Autosuggestions configuration
 # zle_bracketed_paste=()
@@ -69,7 +63,6 @@ source <(fzf --zsh)
 enable-fzf-tab
 bindkey '^I' fzf-tab-complete
 eval "$(zoxide init --cmd cd zsh)"
-source $HOME/.cargo/env
 
 # eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 # . "$HOME/.atuin/bin/env"
@@ -77,20 +70,32 @@ source $HOME/.cargo/env
 
 # History
 HISTSIZE=10000
-HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
+HISTFILE=~/.zsh_history
 HISTDUP=erase
-setopt appendhistory
-setopt sharehistory
-setopt hist_ignore_space
-setopt hist_ignore_all_dups
-setopt hist_save_no_dups
-setopt hist_ignore_dups
-setopt hist_find_no_dups
+setopt APPEND_HISTORY
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_SPACE
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_FIND_NO_DUPS
+setopt HISTFCNTLLOCK
+setopt HIST_REDUCE_BLANKS
 
-# Correction
+# Options
 setopt CORRECT
-unsetopt CORRECTALL
+unsetopt CORRECT_ALL
+setopt INTERACTIVE_COMMENTS
+setopt HASH_EXECUTABLES_ONLY
+setopt NUMERIC_GLOB_SORT
+setopt RECEXACT
+setopt GLOBDOTS
+setopt GLOB_COMPLETE
+setopt GLOBSTARSHORT
+setopt NO_CASE_GLOB
+setopt RCEXPANDPARAM
+setopt SUNKEYBOARDHACK
 
 # Aliases
 alias fd="fdfind"
@@ -137,7 +142,11 @@ export FZF_DEFAULT_OPTS="
   --color=query:#c8ff9e
   --border=rounded --preview-window=border-rounded --prompt='  '
   --marker='▌' --pointer='▌' --border-label='' --separator='' --scrollbar='' --info=default
+  --tmux center
 "
+
+export FZF_TMUX=1
+export FZF_TMUX_OPTS=""
 
 # Adjust background color based on environment
 if [[ "$TERM_PROGRAM" == "vscode" ]]; then
@@ -151,10 +160,14 @@ fi
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --tree --level=3 --color=always $realpath'
-zstyle ':fzf-tab:*' use-fzf-default-opts yes
 zstyle ':completion:*' file-patterns '%p'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --tree --level=3 --color=always ${realpath}'
+zstyle ':fzf-tab:*' use-fzf-default-opts yes
+zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+
+zstyle ':fzf-tab:*' popup-pad 100 100
+zstyle ':fzf-tab:*' popup-min-size 20 10
 
 test() {
   result=$(fdfind -t d -E "/mnt" | fzf $1)
@@ -168,7 +181,7 @@ f() {
       --preview "batcat --paging=never --theme=ansi --style=numbers --color=always {}" \
       --preview-window "right,50%" \
       --bind "pgdn:page-down,pgup:page-up" \
-      --bind "ctrl-q:execute-silent(cat {+} | xclip -selection clipboard)+reload(find . -type f)" \
+      --bind "ctrl-q:execute-silent(cat {+} | xclip -selection clipboard)+reload(fdfind -t f --hidden)" \
       --bind "ctrl-x:execute(trash {+})+reload(find . -type f)" \
       --bind "ctrl-n:become(sudo nano {+})" \
       --bind "ctrl-r:become(source {+})"
@@ -215,7 +228,9 @@ fzf-history-widget() {
     --bind 'right:execute-silent(echo {} > ~/.fzf_right_arrow_cmd)+abort' \
     --bind 'ctrl-a:execute-silent(echo {} > ~/.fzf_ctrl_a_cmd)+abort' \
     --bind 'left:execute-silent(echo "$(echo {} | sed "s/[^ ]* *$//")" > ~/.fzf_left_arrow_cmd)+abort' \
-    --bind 'ctrl-c:abort')
+    --bind 'ctrl-c:abort' \
+    --bind 'ctrl-q:execute-silent(echo -n {} | xclip -selection clipboard)+abort'
+    )
 
   if [[ $? -eq 0 ]]; then
     BUFFER=$temp_cmd
@@ -253,10 +268,10 @@ fzf-cd-widget() {
   temp_dir=$(
     find "$dir" -type d -printf "%P\n" 2>/dev/null | \
     fzf --layout=reverse --exact --height=80% \
-        --preview "eza --tree --level=3 --color=always --icons '$dir/{}'" \
+        --preview "eza --tree --level=3 --color=always '$dir/{}'" \
         --preview-window=right:50%:wrap --ansi \
         --bind "shift-left:reload(find / -type d 2>/dev/null)" \
-        --bind "shift-right:reload(find '$dir' -type d -printf '%P\n' 2>/dev/null)+change-query()"
+        --bind "shift-right:reload(find '$dir' -type d -printf '%P\n' 2>/dev/null)+change-query()" \
   )
 
   if [[ -n "$temp_dir" ]]; then
@@ -342,4 +357,7 @@ export PATH=/usr/libexec/:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bi
 complete -C '/usr/libexec/aws_completer' aws
 
 # PATH
+export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$PATH:$HOME/.local/bin"
+
+
