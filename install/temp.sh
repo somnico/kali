@@ -122,19 +122,15 @@ sudo curl -o ~/.p10k.zsh https://gist.githubusercontent.com/somnico/b71f23f21f93
 # Plugin configuration
 mkdir -p ~/.oh-my-zsh/plugins/znap/
 sudo curl -o ~/.oh-my-zsh/plugins/dirhistory/dirhistory.plugin.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/dirhistory.plugin.zsh
-
-# Fix tmux popup for fzf-tab 
-sed -i '
-/echo -E "env FZF_DEFAULT_OPTS=\${(qq)FZF_DEFAULT_OPTS} SHELL=\$ZSH_NAME \$commands\[fzf\] \${(qq)fzf_opts\[@\]} < \$tmp_dir\/completions\.\$\$ > \$tmp_dir\/result-\$\$"/c\
-echo -E "env SHELL=$ZSH_NAME FZF_DEFAULT_OPTS=$BASE_FZF_DEFAULT_OPTS $commands[fzf] ${(qq)fzf_opts[@]} < $tmp_dir/completions.$$ > $tmp_dir/result-$$" > $tmp_dir/fzf-$$
-' ~/.oh-my-zsh/custom/plugins/fzf-tab/lib/ftb-tmux-popup
+sudo curl -o ~/.oh-my-zsh/custom/plugins/fzf-tab/lib/ftb-tmux-popup https://raw.githubusercontent.com/somnico/kali/master/configs/ftb-tmux-popup
+sudo curl -o ~/.oh-my-zsh/plugins/tmux/tmux.only.conf https://raw.githubusercontent.com/somnico/kali/master/configs/tmux.only.conf
 
 # Keybinds
 sudo curl -o ~/.oh-my-zsh/lib/key-bindings.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/key-bindings.zsh
 
 
 # Install pwntools
-sudo apt-get install -y python3 python3-pip python3-dev python3-venv pipx git libssl-dev libffi-dev build-essential
+sudo apt-get install -y python3 python3-dev python3-pip pipx python3-venv python3-setuptools python3-cffi python3-pypandoc git libssl-dev libffi-dev build-essential
 source ~/.profile
 python3 -m pip install --upgrade pip --no-warn-script-location
 python3 -m pip install --upgrade pwntools --no-warn-script-location
@@ -151,17 +147,39 @@ sudo chmod +x pid.sh
 # Install oletools
 sudo -H pip install -U oletools[full]
 
+
 # Install helpers
 sudo apt-get install -y nodejs npm snapd
 sudo apt-get install -y bat zoxide lsd eza fzf fd-find ripgrep silversearcher-ag rsync
 sudo ln -s $(which fdfind) /usr/bin/fd 
-sudo systemctl enable --now snapd.socket
-sudo systemctl enable --now snapd.apparmor
+sudo systemctl enable --now snapd.socket && sudo systemctl enable --now snapd.apparmor
 sudo npm install -g tldr zx
 sudo updatedb
 wget https://downloads.flox.dev/by-env/stable/deb/flox-1.4.1.x86_64-linux.deb
 sudo dpkg -i flox-1.4.1.x86_64-linux.deb
 
+# Install nix
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --determinate
+
+# Install webi
+curl -sS https://webi.sh/webi | sh
+
+# Install spack
+git clone -c feature.manyFiles=true --depth=2 https://github.com/spack/spack.git ~/spack  
+
+# Install mise
+curl https://mise.run | sh
+
+# Install rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
+
+# Install github cli
+sudo mkdir -p -m 755 /etc/apt/keyrings 
+out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg 
+cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null 
+sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg 
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null 
+sudo apt update && sudo apt install gh -y
 
 # Install useful tools
 curl -fsS https://dotenvx.sh | sh
@@ -180,7 +198,7 @@ sudo apt update && sudo apt install -y gum
 # Install browser
 wget "https://www.palemoon.org/download.php?mirror=eu&bits=64&type=linuxgtk3" -O palemoon.tar.xz
 tar -xvf palemoon.tar.xz
-rm palemoon.tar.xz
+sudo rm -f palemoon.tar.xz
 
 # Install rclone
 sudo curl https://rclone.org/install.sh | sudo bash
@@ -188,18 +206,13 @@ python3 -m pip install gdown --no-warn-script-location
 mkdir -p ~/.config/rclone/ ~/files/
 sudo curl -L -o ~/.config/rclone/rclone.conf https://drive.google.com/uc?id=19Ef85AHcyRmbll5BUcB5vG5Cu722sLa6
 
-# Install rust
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
-
-# Install mise
-curl https://mise.run | sh
-
 # Install utilities
-sudo apt-get install -y autoconf pcf2bdf xfonts-75dpi xfonts-base zlib1g-dev libreadline-dev  udiskie moreutils 
+sudo apt-get install -y autoconf pcf2bdf xfonts-75dpi xfonts-base zlib1g-dev libreadline-dev udiskie moreutils ncurses-bin libcurses-perl libncurses-dev libncursesw5-dev
 sudo apt-get install -y sl pv oneko scdoc procps g++ pkg-config libpoppler-glib-dev poppler-utils apt-transport-https ca-certificates software-properties-common
 sudo apt-get install -y libtool libsixel-dev libpng-dev libjpeg-dev libtiff-dev libgraphicsmagick++-dev libturbojpeg-dev libexif-dev libaa-bin libmpv-dev 
 sudo apt-get install -y libpthread-stubs0-dev libswscale-dev libdeflate-dev librsvg2-dev libcairo-dev libavcodec-dev libavformat-dev libavdevice-dev libavutil-dev
 sudo apt-get install -y expat libxml2-dev libasound2-dev libfreetype6-dev libexpat1-dev libxcb-composite0-dev libharfbuzz-dev libfontconfig1-dev 
+sudo apt-get install -y doctest-dev libgpm-dev libqrcodegen-dev libunistring-dev
 
 # Install build tools
 curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to $HOME/.local/bin
@@ -214,17 +227,26 @@ bash -c "$(curl -sLo- https://superfile.netlify.app/install.sh)"
 curl -LO https://github.com/sxyazi/yazi/releases/download/v25.4.8/yazi-x86_64-unknown-linux-gnu.zip
 unzip yazi-x86_64-unknown-linux-gnu.zip
 sudo install -m 755 yazi-x86_64-unknown-linux-gnu/yazi /usr/local/bin/
-rm -f yazi-x86_64-unknown-linux-gnu.zip 
+sudo rm -f yazi-x86_64-unknown-linux-gnu.zip 
 
 sudo apt-get install -y mc
 
+# Install sesh
+wget https://github.com/joshmedeski/sesh/releases/download/v2.13.0/sesh_Linux_x86_64.tar.gz
+tar -xzf sesh_Linux_x86_64.tar.gz
+sudo mv sesh /usr/local/bin/
+sudo chmod +x /usr/local/bin/sesh
+sudo rm -f sesh_Linux_x86_64.tar.gz
+
 # Install a bunch of stuff
-sudo apt-get install -y fortune-mod cowsay lolcat boxes cmatrix timg chafa fastfetch jp2a jq yq pandoc ffmpeg imagemagick fontforge xcel xclip trash-cli man-db htop btop ansilove aha asciinema gifsicle yt-dlp
+sudo apt-get install -y fortune-mod cowsay lolcat boxes cmatrix caca-utils fastfetch timg chafa jp2a bsdgames thefuck
+sudo apt-get install -y jq yq pandoc texinfo ffmpeg imagemagick fontforge xcel xclip trash-cli man-db htop btop ansilove aha asciinema gifsicle yt-dlp
 sudo apt-get install -y soft-serve 
 sudo mkdir -p ~/.config/btop
 sudo curl -o ~/.config/btop/btop.conf https://raw.githubusercontent.com/somnico/kali/refs/heads/master/configs/btop.conf
 
 cargo install resvg display3d git-delta silicon
+cargo install --git https://github.com/asciinema/agg
 
 sudo snap install glow
 
@@ -233,7 +255,7 @@ sudo apt install -y soft-serve
 sudo snap install ttyd --classic
 wget https://github.com/charmbracelet/vhs/releases/download/v0.9.0/vhs_0.9.0_amd64.deb
 sudo dpkg -i vhs_0.9.0_amd64.deb
-sudo rm vhs_0.9.0_amd64.deb
+sudo rm -f vhs_0.9.0_amd64.deb
 
 
 wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
@@ -248,7 +270,7 @@ sudo npm install -g svg-term-cli
 curl -LO https://github.com/wtfutil/wtf/releases/download/v0.43.0/wtf_0.43.0_linux_amd64.tar.gz
 tar -xzf wtf_0.43.0_linux_amd64.tar.gz
 sudo install -m 755 wtf_0.43.0_linux_amd64/wtfutil /usr/local/bin/wtfutil
-rm -rf wtf_0.43.0_linux_amd64 wtf_0.43.0_linux_amd64.tar.gz
+sudo rm -rf wtf_0.43.0_linux_amd64 wtf_0.43.0_linux_amd64.tar.gz
 
 git clone https://github.com/cmang/durdraw.git
 cd durdraw
@@ -259,12 +281,12 @@ sudo rm -rf durdraw
 
 git clone https://github.com/acxz/pokeshell /tmp/pokeshell
 sudo sh /tmp/pokeshell/install.sh
-rm -rf /tmp/pokeshell
+sudo rf /tmp/pokeshell
 sudo curl -o /usr/local/bin/imageshell/imageshell.sh https://raw.githubusercontent.com/somnico/kali/master/configs/imageshell.sh
 
 echo 'deb [trusted=yes] https://apt.fury.io/ascii-image-converter/ /' | sudo tee /etc/apt/sources.list.d/ascii-image-converter.list
 sudo apt update && sudo apt install -y ascii-image-converter
-sudo rm -v /etc/apt/sources.list.d/ascii-image-converter.list
+sudo rm -fv /etc/apt/sources.list.d/ascii-image-converter.list
 
 git clone https://github.com/dylanaraps/neofetch
 cd neofetch
@@ -274,6 +296,8 @@ sudo rm -rf neofetch
 
 pipx install -U wheel hyfetch
 
+sh -c "$(curl -fsSL https://codeberg.org/anhsirk0/fetch-master-6000/raw/branch/main/install.sh)" -- --install-path="$HOME/.local/bin" --headless
+
 git clone https://github.com/Notenlish/anifetch
 
 git clone https://git.ari.lt/ari/badapplefetch.git  
@@ -282,9 +306,22 @@ cd badapplefetch
 make -j$(nproc --all)
 cd ..
 
+git clone https://github.com/erkin/ponysay.git
+cd ponysay
+sudo ./setup.py --freedom=partial install
+cd ..
+sudo rm -rf ponysay
 
+git clone https://github.com/pipeseroni/pipes.sh.git
+cd pipes.sh
+sudo make install
+cd ..
+sudo rm -rf pipes.sh
 
-yes | sudo sh -c "$(curl https://codeberg.org/anhsirk0/fetch-master-6000/raw/branch/main/install.sh)"
+git clone https://gitlab.com/jallbrit/cbonsai
+cd cbonsai
+sudo make install 2> /dev/null
+cd ..
 
 git clone --depth 1 https://github.com/cjbassi/gotop /tmp/gotop
 /tmp/gotop/scripts/download.sh
@@ -295,15 +332,9 @@ git clone https://github.com/hIMEI29A/FigletFonts.git
 cd FigletFonts
 sudo make
 cd ..
-
-sudo apt-get install -y libncursesw5-dev
-git clone https://gitlab.com/jallbrit/cbonsai
-cd cbonsai
-sudo make install 2> /dev/null
-cd ..
-
-sudo curl -o /etc/boxes/boxes-config https://raw.githubusercontent.com/somnico/kali/master/configs/boxes-config
 sudo curl -o /usr/share/figlet/fraktur.flf https://raw.githubusercontent.com/somnico/kali/master/configs/fraktur.flf
+sudo curl -o /etc/boxes/boxes-config https://raw.githubusercontent.com/somnico/kali/master/configs/boxes-config
+
 
 
 # Setup AWS CLI
@@ -458,10 +489,25 @@ exec zsh
 # sudo usermod -aG docker $USER
 
 # Install go
-# sudo apt install -y golang
+# sudo apt install -y golang-go
 
 # Homebrew install
 # yes "" | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Install notcurses
+# git clone https://github.com/dankamongmen/notcurses.git
+# cd notcurses
+# mkdir build
+# cd build
+# cmake ..
+# make
+# sudo make install
+# sudo ldconfig
+# cd ..
+# cd cffi
+# sudo python3 setup.py build
+# sudo python3 setup.py install
+# cd ../..
 
 # Yazi alternate install
 # cargo install --locked yazi-fm yazi-cli
