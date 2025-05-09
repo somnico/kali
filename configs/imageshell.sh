@@ -239,10 +239,46 @@ function imgshl_stitch_ani_images () {
 }
 
 function imgshl_display_ani_image () {
-    local display_file
-    display_file="${1:?}"
+    local display_file="$1"
+
+    # Get name only
+    filename="$(basename "$display_file")"
+    after_colon="${filename#*:}"
+    pokemon_name="${after_colon%%+*}"
+
+    echo "Using Pokémon name: $pokemon_name"
+
+    # Create the output directory
+    output_dir="/tmp/pokeshell_frames/$pokemon_name"
+    mkdir -p "$output_dir"
+
+    # Extract frames
+    convert "$display_file" "$output_dir/$(printf "%04d.png" 0)"
+
+    echo "Saved raw image frames to: $output_dir"
+
+    # ASCII conversion
+    ascii_output_dir="/tmp/pokeshell_ascii_frames/$pokemon_name"
+    mkdir -p "$ascii_output_dir"
+
+    counter=0
+    for img in "$output_dir"/*.png; do
+        new_filename=$(printf "%04d.png" "$counter")
+        mv "$img" "$output_dir/$new_filename"
+        out_txt="$ascii_output_dir/$(basename "${new_filename%.png}")"
+        chafa --format=symbols --symbols=vhalf+hhalf+half+block+inverted+quad --size=40x40 "$output_dir/$new_filename" > "$out_txt"
+        # chafa  --format=symbols --symbols=ascii --fg-only --size=40x40 "$output_dir/$new_filename" > "$out_txt"
+        ((counter++))
+    done
+
+    echo "Converted frames to ASCII text in: $ascii_output_dir"
+
+    # Preview
     chafa --format=symbols --symbols=vhalf+hhalf+half+block+inverted+quad+stipple+solid+space --scale=max --margin-bottom=3 "$display_file"
+    # chafa --glyph-file /usr/share/fonts/misc/blapinus.pcf.gz --symbols imported-wide-ued00..uffff --scale max "$display_file"
+    # chafa --glyph-file /usr/share/fonts/misc/Chafablap.pcf.gz --symbols imported --scale max "$display_file"
 }
+
 
 function imgshl_display () {
     local -n __images
