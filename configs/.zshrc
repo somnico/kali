@@ -27,6 +27,7 @@ plugins=(
   colored-man-pages
   fancy-ctrl-z
   fzf-tab
+  thefuck
 )
 
 # Completetion configuration
@@ -56,13 +57,15 @@ bindkey -r '^I'
 ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(bracketed-paste)
 bindkey '\e[1;3C' autosuggest-execute
 
-
 # Shell integrations
 # [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 source <(fzf --zsh)
 enable-fzf-tab
 bindkey '^I' fzf-tab-complete
 eval "$(zoxide init --cmd cd zsh)"
+source ~/.config/envman/PATH.env # Webi 
+source ~/spack/share/spack/setup-env.sh # Spack
+[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
 # eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 # . "$HOME/.atuin/bin/env"
@@ -104,6 +107,7 @@ alias ba="batcat --paging=never --theme=ansi --style=changes"
 alias q="xsel --clipboard <"
 alias cop="copypath"
 
+mkcd() {mkdir -p -- "$1" && cd -- "$1"}
 alias i="sudo apt-get install -y"
 alias sn="sudo nano"
 alias sm="sudo nano +-1"
@@ -117,7 +121,6 @@ alias re="omz reload"
 
 alias e="/mnt/c/Windows/explorer.exe ."
 alias pale="palemoon/./palemoon"
-
 
 alias da="rclone copy Drive:/Linux/AWS/Files/ ~/files/ --include '*' -P"
 alias ua="rclone copy ~/files/ Drive:/Linux/AWS/Files/ --include '*' -P"
@@ -169,7 +172,8 @@ zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
 zstyle ':fzf-tab:*' popup-pad 100 100
 zstyle ':fzf-tab:*' popup-min-size 20 10
 
-test() {
+
+tes() {
   result=$(fdfind -t d -E "/mnt" | fzf $1)
   cd $result
   unset result
@@ -347,17 +351,11 @@ pokemon=(
 
 alias poke='pokeshell -a "${pokemon[$((RANDOM % ${#pokemon[@]}))]}"'
 
-# Generated for envman
-[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
-
 # AWS autocomplete
-export PATH=/usr/libexec/:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+export PATH=/usr/libexec/:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:$PATH
 # autoload bashcompinit && bashcompinit
 # autoload -Uz compinit && compinit
 complete -C '/usr/libexec/aws_completer' aws
 
 # PATH
-export PATH="$HOME/.cargo/bin:$PATH"
-export PATH="$PATH:$HOME/.local/bin"
-
-
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
