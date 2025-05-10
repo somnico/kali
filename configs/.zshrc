@@ -1,3 +1,11 @@
+# Start monitoring
+# zmodload zsh/zprof
+
+# Instant prompt
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # Path to Oh My Zsh
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -90,7 +98,6 @@ setopt HIST_REDUCE_BLANKS
 setopt CORRECT
 unsetopt CORRECT_ALL
 setopt INTERACTIVE_COMMENTS
-setopt HASH_EXECUTABLES_ONLY
 setopt NUMERIC_GLOB_SORT
 setopt RECEXACT
 setopt GLOBDOTS
@@ -359,3 +366,6 @@ complete -C '/usr/libexec/aws_completer' aws
 
 # PATH
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+
+# End monitoring
+# zprof
