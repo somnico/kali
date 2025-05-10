@@ -56,20 +56,30 @@ source ~/.p10k.zsh
 [[ -r ~/.oh-my-zsh/plugins/znap/znap.zsh ]] || git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git ~/.oh-my-zsh/plugins/znap
 source ~/.oh-my-zsh/plugins/znap/znap.zsh
 znap source marlonrichert/zsh-autocomplete
+
+() {local k; for k in $'\e[A' $'\eOA'; do bindkey "$k" up-line-or-history; done}
 bindkey -M menuselect ^M .accept-line
 bindkey -r "^[[1;3A"
-bindkey -r '^I'
+export LC_ALL="C"
 
 # Autosuggestions configuration
 # zle_bracketed_paste=()
 ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(bracketed-paste)
 bindkey '\e[1;3C' autosuggest-execute
 
-# Shell integrations
+# Fzf configuration
 # [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# enable-fzf-tab
 source <(fzf --zsh)
-enable-fzf-tab
-bindkey '^I' fzf-tab-complete
+
+my-fzf-tab() {
+  functions[compadd]=$functions[-ftb-compadd]
+  zle fzf-tab-complete
+}
+zle -N my-fzf-tab
+bindkey "^I" my-fzf-tab
+
+# Shell integrations
 eval "$(zoxide init --cmd cd zsh)"
 source ~/.config/envman/PATH.env # Webi 
 source ~/spack/share/spack/setup-env.sh # Spack
@@ -248,7 +258,7 @@ fzf-history-widget() {
     zle accept-line
 
   elif [[ -f ~/.fzf_right_arrow_cmd ]]; then
-    BUFFER="$(<~/.fzf_right_arrow_cmd)"
+    BUFFER="$(<~/.fzf_right_arrow_cmd) "
     rm ~/.fzf_right_arrow_cmd
     CURSOR=$#BUFFER
     zle redisplay
