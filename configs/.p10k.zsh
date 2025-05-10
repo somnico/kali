@@ -10,6 +10,7 @@
 # Tip: Looking for a nice color? Here's a one-liner to print colormap.
 #
 #   for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$'\n'}; done
+
 # Temporarily change options.
 'builtin' 'local' '-a' 'p10k_config_opts'
 [[ ! -o 'aliases'         ]] || p10k_config_opts+=('aliases')
@@ -29,9 +30,9 @@
 
   # The list of segments shown on the left. Fill it with the most important segments.
   typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
-    os_icon                 # os identifier
+    # os_icon               # os identifier
     my_dir                  # current directory
-    vcs_joined              # git status
+    # vcs_joined              # git status
     # prompt_char           # prompt symbol
   )
 
@@ -42,7 +43,7 @@
   typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
     # status                # exit code of the last command
     command_execution_time  # duration of the last command
-    background_jobs         # presence of background jobs
+    background_jobs_joined  # presence of background jobs
     direnv                  # direnv status (https://direnv.net/)
     asdf                    # asdf version manager (https://github.com/asdf-vm/asdf)
     virtualenv              # python virtual environment (https://docs.python.org/3/library/venv.html)
@@ -187,12 +188,12 @@
 
   # The left end of left prompt.
   # typeset -g POWERLEVEL9K_LEFT_PROMPT_FIRST_SEGMENT_START_SYMBOL='\uE0B2'
-  typeset -g POWERLEVEL9K_LEFT_PROMPT_FIRST_SEGMENT_START_SYMBOL='%K{#5e616e} %K{#94969e} %K{#cacacf} %k'
+  # typeset -g POWERLEVEL9K_LEFT_PROMPT_FIRST_SEGMENT_START_SYMBOL='%K{#5e616e} %K{#94969e} %K{#cacacf} %k'
+  typeset -g POWERLEVEL9K_LEFT_PROMPT_FIRST_SEGMENT_START_SYMBOL='%K{#3f4c6e} %K{#556b9e} %K{#6c8bcf} %k'
 
   # The right end of right prompt.
   # typeset -g POWERLEVEL9K_RIGHT_PROMPT_LAST_SEGMENT_END_SYMBOL='\uE0B0'
-  # typeset -g POWERLEVEL9K_RIGHT_PROMPT_LAST_SEGMENT_END_SYMBOL='%K{#cabb7f} %K{#948c6a} %K{#5e5d54} %k'
-  typeset -g POWERLEVEL9K_LEFT_PROMPT_FIRST_SEGMENT_START_SYMBOL='%K{#3f4c6e} %K{#556b9e} %K{#6c8bcf} %k'
+  typeset -g POWERLEVEL9K_RIGHT_PROMPT_LAST_SEGMENT_END_SYMBOL='%K{#cabb7f} %K{#948c6a} %K{#5e5d54} %k'
   
   # Left prompt terminator for lines without any segments.
   typeset -g POWERLEVEL9K_EMPTY_LINE_LEFT_PROMPT_LAST_SEGMENT_END_SYMBOL=
@@ -203,14 +204,21 @@
   typeset -g POWERLEVEL9K_OS_ICON_BACKGROUND=7
   # Custom icon.
   typeset -g POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION=''
-  # Icon
 
   # Custom
   function prompt_my_dir() {
-  local dir=${${(%):-%~}//\~/}
-  local dir_without_slashes=${dir//\//  }
-  p10k segment -b 4 -f 7 -t "${dir_without_slashes//\%/%%}"
+    local dir=${${(%):-%~}//\~/}
+    local dir_without_slashes=${dir//\//  }
+    p10k segment -b 4 -f 7 -t "${dir_without_slashes//\%/%%}"
   }
+
+function instant_prompt_my_dir() {
+    prompt_my_dir
+  }
+
+  # function prompt_example() {
+  #   p10k segment -b 1 -f 3 -i '⭐' -t 'hello, %n'
+  # }
 
   # Symbols
   # 󰄾󰶻󰔢󰔡󱍠󰦝󱦚󱠨󱄻󰕬󰅬󰌡󰫈󰁙
@@ -383,7 +391,7 @@
   typeset -g POWERLEVEL9K_VCS_MODIFIED_BACKGROUND=4
   typeset -g POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND=4
   typeset -g POWERLEVEL9K_VCS_CONFLICTED_BACKGROUND=4
-  typeset -g POWERLEVEL9K_VCS_LOADING_BACKGROUND=8
+  typeset -g POWERLEVEL9K_VCS_LOADING_BACKGROUND=4
 
   # Branch icon. Set this parameter to '\UE0A0 ' for the popular Powerline branch icon.
   typeset -g POWERLEVEL9K_VCS_BRANCH_ICON=
@@ -571,10 +579,10 @@
 
   ###################[ command_execution_time: duration of the last command ]###################
   # Execution time color.
-  typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND=0
+  typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND=15
   typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND=3
   # Show duration of the last command if takes at least this many seconds.
-  typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=3
+  typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=1
   # Show this many fractional digits. Zero means round to seconds.
   typeset -g POWERLEVEL9K_COMMAND_EXECUTION_TIME_PRECISION=0
   # Duration format: 1d 2h 3m 4s.
@@ -586,8 +594,8 @@
 
   #######################[ background_jobs: presence of background jobs ]#######################
   # Background jobs color.
-  typeset -g POWERLEVEL9K_BACKGROUND_JOBS_FOREGROUND=6
-  typeset -g POWERLEVEL9K_BACKGROUND_JOBS_BACKGROUND=0
+  typeset -g POWERLEVEL9K_BACKGROUND_JOBS_FOREGROUND=15
+  typeset -g POWERLEVEL9K_BACKGROUND_JOBS_BACKGROUND=3
   # Don't show the number of background jobs.
   typeset -g POWERLEVEL9K_BACKGROUND_JOBS_VERBOSE=false
   # Custom icon.
@@ -1849,4 +1857,4 @@
 typeset -g POWERLEVEL9K_CONFIG_FILE=${${(%):-%x}:a}
 
 (( ${#p10k_config_opts} )) && setopt ${p10k_config_opts[@]}
-'builtin' 'unset' 'p10k_config_opts'%
+'builtin' 'unset' 'p10k_config_opts'
