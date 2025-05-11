@@ -56,11 +56,11 @@ source ~/.p10k.zsh
 [[ -r ~/.oh-my-zsh/plugins/znap/znap.zsh ]] || git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git ~/.oh-my-zsh/plugins/znap
 source ~/.oh-my-zsh/plugins/znap/znap.zsh
 znap source marlonrichert/zsh-autocomplete
+# ZSH_AUTOCOMPLETE_NO_AUTOSUGGEST=1 
 
 () {local k; for k in $'\e[A' $'\eOA'; do bindkey "$k" up-line-or-history; done}
 bindkey -M menuselect ^M .accept-line
 bindkey -r "^[[1;3A"
-export LC_ALL="C"
 
 # Autosuggestions configuration
 # zle_bracketed_paste=()
@@ -117,11 +117,12 @@ setopt NO_CASE_GLOB
 setopt RCEXPANDPARAM
 setopt SUNKEYBOARDHACK
 
+
 # Aliases
 alias fd="fdfind"
 alias b="batcat --paging=never --theme=ansi"
 alias ba="batcat --paging=never --theme=ansi --style=changes"
-alias q="xsel --clipboard <"
+alias qq="xsel --clipboard <"
 alias cop="copypath"
 
 mkcd() {mkdir -p -- "$1" && cd -- "$1"}
@@ -139,18 +140,14 @@ alias re="omz reload"
 alias e="/mnt/c/Windows/explorer.exe ."
 alias pale="palemoon/./palemoon"
 
+perm() {local target="${1:-.}"; sudo chown -R "$USER:$USER" "$target"; sudo chmod -R u+rwX,go+rX "$target"; echo "Permissions fixed"}
+
 alias da="rclone copy Drive:/Linux/AWS/Files/ ~/files/ --include '*' -P"
 alias ua="rclone copy ~/files/ Drive:/Linux/AWS/Files/ --include '*' -P"
 dl() {local source="Drive:Linux/AWS/Files/"; local destination="~/files/"; file="$1"; rclone copy "${source}${file}" "${destination}";}
 ul() {local source=""; local destination="Drive:Linux/AWS/Files/"; source="$1"; rclone copy "${source}" "${destination}";}
 
 
-# Change permission
-perm() {
-  local target="${1:-.}"
-  sudo chown -R "$USER:$USER" "$target" && sudo chmod -R u+rwX,go+rX "$target"
-  echo "Permissions fixed for $(realpath "$target")"
-}
 
 # Fuzzy finder defaults
 export FZF_DEFAULT_OPTS="
@@ -185,7 +182,6 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --tree --level=3 --color=always ${realpath}'
 zstyle ':fzf-tab:*' use-fzf-default-opts yes
 zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
-
 zstyle ':fzf-tab:*' popup-pad 100 100
 zstyle ':fzf-tab:*' popup-min-size 20 10
 
@@ -314,8 +310,8 @@ zstyle ':chpwd:*' recent-dirs-file ~/.cache/.chpwd-recent-dirs
 
 fzf-recency() {
   local dir
-  # dir=$(cdr -l | awk '{$1=""; print substr($0,2)}' | fzf --height=40% --reverse)
-  dir=$(zoxide query -l | fzf --height=40% --reverse)
+  # dir=$(cdr -l | awk '{$1=""; print substr($0,2)}' | fzf --height=80% --reverse)
+  dir=$(zoxide query -l | fzf --height=80% --reverse)
   
   if [[ -n "$dir" ]]; then
     cd "${dir/#\~/$HOME}"  
@@ -341,6 +337,7 @@ bindkey -s "^[-" "~/"
 bindkey '^Z' undo
 
 # Various
+export LC_ALL="C"
 WORDCHARS="_.;~-*^|!?&#$%[](){}<>"
 PROMPT_EOL_MARK=""
 unsetopt PROMPT_SP
@@ -376,6 +373,9 @@ complete -C '/usr/libexec/aws_completer' aws
 
 # PATH
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+
+# Timer
+# time zsh -i -c exit
 
 # End monitoring
 # zprof
