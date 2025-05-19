@@ -344,7 +344,7 @@ set timeout 10
 spawn aws configure
 
 expect {AWS Access Key ID \[*\]:}
-send "AKIA3LHDJPG2TAI4EYWR\r"
+send ""
 
 expect {AWS Secret Access Key \[*\]:}
 send ""
