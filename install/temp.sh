@@ -347,7 +347,7 @@ expect {AWS Access Key ID \[*\]:}
 send "AKIA3LHDJPG2TAI4EYWR\r"
 
 expect {AWS Secret Access Key \[*\]:}
-send "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\r"
+send ""
 
 expect {Default region name \[*\]:}
 send "eu-north-1\r"
