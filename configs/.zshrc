@@ -6,15 +6,29 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# Defer
+source ~/zsh-defer/zsh-defer.plugin.zsh
+
 # Path to Oh My Zsh
 export ZSH="$HOME/.oh-my-zsh"
+
+# Set Oh My Zsh theme
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Updates for Oh My Zsh
 zstyle ':omz:update' mode auto
 zstyle ':omz:update' frequency 14
 
-# Set Oh My Zsh theme
-ZSH_THEME="powerlevel10k/powerlevel10k"
+# Configuration for keychain
+zstyle :omz:plugins:keychain agents gpg,ssh
+zstyle :omz:plugins:keychain options --quiet
+# zstyle :omz:plugins:keychain identities <SSH key filenames in ~/.ssh/> <GPG key ID --list-secret-keys>
+
+# Configuration for plugins
+MAGIC_ENTER_GIT_COMMAND='git status -u .'
+MAGIC_ENTER_OTHER_COMMAND=true
+export HISTORY_START_WITH_GLOBAL=true
+export PER_DIRECTORY_HISTORY_TOGGLE='^H'
 
 # Plugins
 plugins=(
@@ -28,14 +42,28 @@ plugins=(
   command-not-found
   history
   dirhistory
+  per-directory-history
+  last-working-dir
+  jump
   direnv
   copypath
   cp
+  profiles
+  poetry
+  poetry-env
   extract
   colored-man-pages
   fancy-ctrl-z
   fzf-tab
   thefuck
+  globalias
+  magic-enter
+  httpie
+  nmap
+  jsontools
+  percol
+  gpg-agent 
+  keychain
 )
 
 # Completetion configuration
@@ -81,9 +109,9 @@ bindkey "^I" my-fzf-tab
 
 # Shell integrations
 eval "$(zoxide init --cmd cd zsh)"
-source ~/.config/envman/PATH.env # Webi 
-source ~/spack/share/spack/setup-env.sh # Spack
-[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+zsh-defer source ~/.config/envman/PATH.env # Webi 
+zsh-defer source ~/spack/share/spack/setup-env.sh # Spack
+zsh-defer [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
 # eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 # . "$HOME/.atuin/bin/env"
@@ -124,6 +152,7 @@ alias b="batcat --paging=never --theme=ansi"
 alias ba="batcat --paging=never --theme=ansi --style=changes"
 alias qq="xsel --clipboard <"
 alias cop="copypath"
+alias j="jump"
 
 mkcd() {mkdir -p -- "$1" && cd -- "$1"}
 alias i="sudo apt-get install -y"
@@ -136,6 +165,7 @@ alias de="sudo rm -rf"
 alias k="ps aux | fzf --multi | awk '{print \$2}' | xargs -r sudo kill -15"
 alias top="sudo XDG_CONFIG_HOME=$HOME/.config btop"
 alias re="omz reload"
+alias so="source ~/.zshrc"
 
 alias e="/mnt/c/Windows/explorer.exe ."
 alias pale="palemoon/./palemoon"
@@ -366,10 +396,10 @@ pokemon=(
 alias poke='pokeshell -a "${pokemon[$((RANDOM % ${#pokemon[@]}))]}"'
 
 # AWS autocomplete
-export PATH=/usr/libexec/:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:$PATH
+# export PATH=/usr/libexec/:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:$PATH
 # autoload bashcompinit && bashcompinit
 # autoload -Uz compinit && compinit
-complete -C '/usr/libexec/aws_completer' aws
+# complete -C '/usr/libexec/aws_completer' aws
 
 # PATH
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
