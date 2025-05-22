@@ -131,9 +131,11 @@ sudo curl -o ~/.oh-my-zsh/lib/key-bindings.zsh https://raw.githubusercontent.com
 
 # Install pwntools
 sudo apt-get install -y python3 python3-dev python3-pip pipx python3-venv python3-setuptools python3-cffi python3-pypandoc git libssl-dev libffi-dev build-essential
+pipx install poetry uv
 source ~/.profile
 python3 -m pip install --upgrade pip --no-warn-script-location
 python3 -m pip install --upgrade pwntools --no-warn-script-location
+
 
 # Install gdb peda
 sudo apt-get install -y gdb
@@ -150,13 +152,20 @@ sudo -H pip install -U oletools[full]
 
 # Install helpers
 sudo apt-get install -y nodejs npm snapd
-sudo apt-get install -y bat zoxide lsd eza fzf fd-find ripgrep silversearcher-ag rsync
-sudo ln -s $(which fdfind) /usr/bin/fd 
 sudo systemctl enable --now snapd.socket && sudo systemctl enable --now snapd.apparmor
+sudo apt-get install -y bat zoxide lsd eza fzf fd-find ripgrep silversearcher-ag ack rsync mosh
+sudo ln -s $(which fdfind) /usr/bin/fd 
 sudo npm install -g tldr zx
 sudo updatedb
 wget https://downloads.flox.dev/by-env/stable/deb/flox-1.4.1.x86_64-linux.deb
 sudo dpkg -i flox-1.4.1.x86_64-linux.deb
+
+# Install q
+curl --proto '=https' --tlsv1.2 -sSf "https://desktop-release.q.us-east-1.amazonaws.com/latest/q-x86_64-linux.zip" -o "q.zip"
+unzip q.zip
+./q/install.sh
+q integrations install ssh
+# https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line-installing.html#command-line-installing-ubuntu
 
 # Install nix
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --determinate
@@ -212,7 +221,7 @@ sudo apt-get install -y sl pv oneko scdoc procps g++ pkg-config libpoppler-glib-
 sudo apt-get install -y libtool libsixel-dev libpng-dev libjpeg-dev libtiff-dev libgraphicsmagick++-dev libturbojpeg-dev libexif-dev libaa-bin libmpv-dev 
 sudo apt-get install -y libpthread-stubs0-dev libswscale-dev libdeflate-dev librsvg2-dev libcairo-dev libavcodec-dev libavformat-dev libavdevice-dev libavutil-dev
 sudo apt-get install -y expat libxml2-dev libasound2-dev libfreetype6-dev libexpat1-dev libxcb-composite0-dev libharfbuzz-dev libfontconfig1-dev 
-sudo apt-get install -y doctest-dev libgpm-dev libqrcodegen-dev libunistring-dev
+sudo apt-get install -y doctest-dev libgpm-dev libqrcodegen-dev libunistring-dev libfuse2
 
 # Install build tools
 curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to $HOME/.local/bin
@@ -220,6 +229,7 @@ sudo /bin/sh -c 'wget https://github.com/earthly/earthly/releases/latest/downloa
 sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
 curl -sf https://gobinaries.com/tj/mmake/cmd/mmake | sudo sh
 sudo apt-get install -y automake cmake 
+curl https://get.please.build | bash
 
 # Install filemanagers
 bash -c "$(curl -sLo- https://superfile.netlify.app/install.sh)"
@@ -239,8 +249,8 @@ sudo chmod +x /usr/local/bin/sesh
 sudo rm -f sesh_Linux_x86_64.tar.gz
 
 # Install a bunch of stuff
-sudo apt-get install -y fortune-mod cowsay lolcat boxes cmatrix caca-utils fastfetch timg chafa jp2a bsdgames thefuck
-sudo apt-get install -y jq yq pandoc texinfo ffmpeg imagemagick fontforge xcel xclip trash-cli man-db htop btop ansilove aha asciinema gifsicle yt-dlp
+sudo apt-get install -y fortune-mod cowsay lolcat boxes cmatrix vitetris caca-utils fastfetch timg chafa jp2a bsdgames thefuck
+sudo apt-get install -y keychain jq yq pandoc httpie texinfo ffmpeg imagemagick fontforge xcel xclip trash-cli man-db procs htop btop ansilove aha asciinema gifsicle yt-dlp
 sudo apt-get install -y soft-serve 
 sudo mkdir -p ~/.config/btop
 sudo curl -o ~/.config/btop/btop.conf https://raw.githubusercontent.com/somnico/kali/refs/heads/master/configs/btop.conf
@@ -249,28 +259,37 @@ cargo install resvg display3d git-delta silicon
 cargo install --git https://github.com/asciinema/agg
 
 sudo snap install glow
+sudo snap install ttyd --classic
 
 sudo apt install -y soft-serve
 
-sudo snap install ttyd --classic
+
+curl -s "https://get.sdkman.io" | bash
+
 wget https://github.com/charmbracelet/vhs/releases/download/v0.9.0/vhs_0.9.0_amd64.deb
 sudo dpkg -i vhs_0.9.0_amd64.deb
 sudo rm -f vhs_0.9.0_amd64.deb
-
 
 wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
 sudo dpkg -i libssl1.1_1.1.0g-2ubuntu4_amd64.deb
 wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.bullseye_amd64.deb
 sudo dpkg -i wkhtmltox_0.12.6.1-2.bullseye_amd64.deb
 
-curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
+sudo npm install -g svg-term-cli wipeclean 
 
-sudo npm install -g svg-term-cli
+curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 
 curl -LO https://github.com/wtfutil/wtf/releases/download/v0.43.0/wtf_0.43.0_linux_amd64.tar.gz
 tar -xzf wtf_0.43.0_linux_amd64.tar.gz
 sudo install -m 755 wtf_0.43.0_linux_amd64/wtfutil /usr/local/bin/wtfutil
 sudo rm -rf wtf_0.43.0_linux_amd64 wtf_0.43.0_linux_amd64.tar.gz
+
+sudo wget https://github.com/sqshq/sampler/releases/download/v1.1.0/sampler-1.1.0-linux-amd64 -O /usr/local/bin/sampler
+sudo chmod +x /usr/local/bin/sampler
+
+wget -O astroterm "https://github.com/da-luce/astroterm/releases/latest/download/astroterm-linux-x86_64"
+sudo chmod +x ./astroterm
+sudo mv astroterm /usr/local/bin/
 
 git clone https://github.com/cmang/durdraw.git
 cd durdraw
@@ -294,7 +313,7 @@ sudo make install
 cd ..
 sudo rm -rf neofetch
 
-pipx install -U wheel hyfetch
+pipx install -U wheel hyfetch dooit dooit-extras percol
 
 sh -c "$(curl -fsSL https://codeberg.org/anhsirk0/fetch-master-6000/raw/branch/main/install.sh)" -- --install-path="$HOME/.local/bin" --headless
 
@@ -323,6 +342,11 @@ cd cbonsai
 sudo make install 2> /dev/null
 cd ..
 
+git clone https://gitlab.com/alice-lefebvre/pond/
+cd pond
+make && sudo make install
+cd ..
+
 git clone --depth 1 https://github.com/cjbassi/gotop /tmp/gotop
 /tmp/gotop/scripts/download.sh
 sudo mv gotop /usr/bin
@@ -335,6 +359,10 @@ cd ..
 sudo curl -o /usr/share/figlet/fraktur.flf https://raw.githubusercontent.com/somnico/kali/master/configs/fraktur.flf
 sudo curl -o /etc/boxes/boxes-config https://raw.githubusercontent.com/somnico/kali/master/configs/boxes-config
 
+git clone 'https://github.com/k-vernooy/tetris' && cd tetris
+make
+sudo make install
+cd ..
 
 
 # Setup AWS CLI
@@ -344,10 +372,10 @@ set timeout 10
 spawn aws configure
 
 expect {AWS Access Key ID \[*\]:}
-send ""
+send "\r"
 
 expect {AWS Secret Access Key \[*\]:}
-send ""
+send "\r"
 
 expect {Default region name \[*\]:}
 send "eu-north-1\r"
