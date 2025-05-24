@@ -113,9 +113,6 @@ git clone https://github.com/reegnz/jq-zsh-plugin.git ${ZSH_CUSTOM:-~/.oh-my-zsh
 git clone https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab
 git clone https://github.com/babarot/enhancd.git $ZSH_CUSTOM/plugins/enhancd
 
-# ZSH configuration 
-sudo curl -o ~/.zshrc https://gist.githubusercontent.com/somnico/62d5f387f0a33ee82265f22ba1cd63c7/raw
-
 # Powerlevel configuration
 sudo curl -o ~/.p10k.zsh https://gist.githubusercontent.com/somnico/b71f23f21f931d6d9c2445719c571ab5/raw 
 
@@ -129,13 +126,21 @@ sudo curl -o ~/.oh-my-zsh/plugins/tmux/tmux.only.conf https://raw.githubusercont
 sudo curl -o ~/.oh-my-zsh/lib/key-bindings.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/key-bindings.zsh
 
 
-# Install pwntools
+# Install python
 sudo apt-get install -y python3 python3-dev python3-pip pipx python3-venv python3-setuptools python3-cffi python3-pypandoc git libssl-dev libffi-dev build-essential
-pipx install poetry uv
 source ~/.profile
+pipx install wheel poetry uv
 python3 -m pip install --upgrade pip --no-warn-script-location
-python3 -m pip install --upgrade pwntools --no-warn-script-location
 
+# Install lazy script
+git clone https://github.com/arismelachroinos/lscript.git
+cd lscript
+sudo chmod +x install.sh
+./install.sh
+cd ..
+
+# Install owntools
+python3 -m pip install --upgrade pwntools --no-warn-script-location
 
 # Install gdb peda
 sudo apt-get install -y gdb
@@ -241,27 +246,36 @@ sudo rm -f yazi-x86_64-unknown-linux-gnu.zip
 
 sudo apt-get install -y mc
 
-# Install sesh
+# Install tmux utilities
+gem install tmuxinator
+sudo wget https://raw.githubusercontent.com/tmuxinator/tmuxinator/master/completion/tmuxinator.zsh -O /usr/local/share/zsh/site-functions/_tmuxinator
+
 wget https://github.com/joshmedeski/sesh/releases/download/v2.13.0/sesh_Linux_x86_64.tar.gz
 tar -xzf sesh_Linux_x86_64.tar.gz
 sudo mv sesh /usr/local/bin/
 sudo chmod +x /usr/local/bin/sesh
 sudo rm -f sesh_Linux_x86_64.tar.gz
 
+git clone https://github.com/zinic/tmux-cssh.git
+cd tmux-cssh
+chmod +x tmux-cssh
+sudo mv tmux-cssh /usr/local/bin/
+sudo rm -rf tmux-cssh
+
 # Install a bunch of stuff
 sudo apt-get install -y fortune-mod cowsay lolcat boxes cmatrix vitetris caca-utils fastfetch timg chafa jp2a bsdgames thefuck
-sudo apt-get install -y keychain jq yq pandoc httpie texinfo ffmpeg imagemagick fontforge xcel xclip trash-cli man-db procs htop btop ansilove aha asciinema gifsicle yt-dlp
-sudo apt-get install -y soft-serve 
+sudo apt-get install -y clusterssh keychain jq yq pandoc httpie texinfo ffmpeg imagemagick fontforge xcel xclip trash-cli man-db procs htop btop iftop ansilove aha asciinema gifsicle yt-dlp
+sudo apt-get install -y  magic-wormhole soft-serve taskwarrior
 sudo mkdir -p ~/.config/btop
 sudo curl -o ~/.config/btop/btop.conf https://raw.githubusercontent.com/somnico/kali/refs/heads/master/configs/btop.conf
+
+pipx install supervisor percol dooit dooit-extras 
 
 cargo install resvg display3d git-delta silicon
 cargo install --git https://github.com/asciinema/agg
 
 sudo snap install glow
 sudo snap install ttyd --classic
-
-sudo apt install -y soft-serve
 
 
 curl -s "https://get.sdkman.io" | bash
@@ -313,7 +327,7 @@ sudo make install
 cd ..
 sudo rm -rf neofetch
 
-pipx install -U wheel hyfetch dooit dooit-extras percol
+pipx install -U hyfetch
 
 sh -c "$(curl -fsSL https://codeberg.org/anhsirk0/fetch-master-6000/raw/branch/main/install.sh)" -- --install-path="$HOME/.local/bin" --headless
 
@@ -365,33 +379,19 @@ sudo make install
 cd ..
 
 
-# Setup AWS CLI
-expect << 'EOF'
-set timeout 10
-
-spawn aws configure
-
-expect {AWS Access Key ID \[*\]:}
-send "\r"
-
-expect {AWS Secret Access Key \[*\]:}
-send "\r"
-
-expect {Default region name \[*\]:}
-send "eu-north-1\r"
-
-expect {Default output format \[*\]:}
-send "\r"
-
-expect eof
-EOF
-
 # Windows permissions 
 [ -f /etc/wsl.conf ] && echo -e "\n[automount]\nenabled = true\noptions = \"metadata,umask=22,fmask=11\"" | sudo tee -a /etc/wsl.conf
 
 # No sudo
 echo -e "Defaults:kali timestamp_timeout=-1\nkali ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/kali > /dev/null
 sudo chmod 0440 /etc/sudoers.d/kali && sudo visudo -c
+
+# OMZ sudo fix
+compaudit | xargs -r chmod g-w,o-w
+sudo chmod -R 755 /usr/local/share/zsh/site-functions
+
+# ZSH configuration 
+sudo curl -o ~/.zshrc https://gist.githubusercontent.com/somnico/62d5f387f0a33ee82265f22ba1cd63c7/raw
 
 # Reset debconf
 unset DEBIAN_FRONTEND
@@ -421,14 +421,6 @@ exec zsh
 
 # Change shell
 # chsh -s $(which zsh)
-
-# Lazy script
-# https://github.com/arismelachroinos/lscript 
-# sudo su
-# git clone https://github.com/arismelachroinos/lscript.git
-# cd lscript
-# chmod +x install.sh
-# ./install.sh
 
 # Commands for file sharing
 # Web application instead of Desktop app in Google Credentials
@@ -506,63 +498,6 @@ exec zsh
 
 # Display clock
 # while sleep 1;do tput sc;tput cup 0 $(($(tput cols)-29));date;tput rc;done &
-
-# Docker install
-# echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bookworm stable" | sudo tee /etc/apt/sources.list.d/docker.list
-# curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-# sudo apt update
-# sudo apt install -y docker-ce docker-ce-cli containerd.io
-# sudo systemctl enable docker
-# sudo systemctl start docker
-# sudo usermod -aG docker $USER
-
-# Install go
-# sudo apt install -y golang-go
-
-# Homebrew install
-# yes "" | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# Install notcurses
-# git clone https://github.com/dankamongmen/notcurses.git
-# cd notcurses
-# mkdir build
-# cd build
-# cmake ..
-# make
-# sudo make install
-# sudo ldconfig
-# cd ..
-# cd cffi
-# sudo python3 setup.py build
-# sudo python3 setup.py install
-# cd ../..
-
-# Yazi alternate install
-# cargo install --locked yazi-fm yazi-cli
-
-# Timg manual install
-# git clone https://github.com/hzeller/timg.git
-# cd timg
-# cmake .
-# make -j$(nproc)
-# sudo make install
-# cd ..
-
-# Chafa manual install
-# git clone https://github.com/hpjansson/chafa.git
-# ./autogen.sh
-# make
-# sudo make install
-
-# Fastfetch manual install
-# git clone https://github.com/fastfetch-cli/fastfetch.git
-# cd fastfetch
-# mkdir -p build
-# cd build
-# cmake ..
-# cmake --build . --target fastfetch
-# sudo cp fastfetch /usr/local/bin/
-# cd ../..
 
 # AWS alternative
 # mkdir -p ~/.aws/
