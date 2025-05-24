@@ -1,0 +1,110 @@
+###############
+### install ###
+###############
+
+# Setup AWS CLI
+expect << 'EOF'
+set timeout 10
+
+spawn aws configure
+
+expect {AWS Access Key ID \[*\]:}
+send "\r"
+
+expect {AWS Secret Access Key \[*\]:}
+send "\r"
+
+expect {Default region name \[*\]:}
+send "eu-north-1\r"
+
+expect {Default output format \[*\]:}
+send "\r"
+
+expect eof
+EOF
+
+# Docker install
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bookworm stable" | sudo tee /etc/apt/sources.list.d/docker.list
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io
+sudo systemctl enable docker
+sudo systemctl start docker
+sudo usermod -aG docker $USER
+
+# Install go
+sudo apt install -y golang-go
+
+# Homebrew install
+yes "" | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Install notcurses
+git clone https://github.com/dankamongmen/notcurses.git
+cd notcurses
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+sudo ldconfig
+cd ..
+cd cffi
+sudo python3 setup.py build
+sudo python3 setup.py install
+cd ../..
+
+# Yazi alternate install
+cargo install --locked yazi-fm yazi-cli
+
+# Timg manual install
+git clone https://github.com/hzeller/timg.git
+cd timg
+cmake .
+make -j$(nproc)
+sudo make install
+cd ..
+
+# Chafa manual install
+git clone https://github.com/hpjansson/chafa.git
+./autogen.sh
+make
+sudo make install
+
+# Fastfetch manual install
+git clone https://github.com/fastfetch-cli/fastfetch.git
+cd fastfetch
+mkdir -p build
+cd build
+cmake ..
+cmake --build . --target fastfetch
+sudo cp fastfetch /usr/local/bin/
+cd ../..
+
+
+#############
+### zshrc ###
+#############
+
+# default dir shorten toggle
+short_dir() {
+  if [[ -z "$POWERLEVEL9K_SHORTEN_DIR_LENGTH" ]]; then
+    typeset -g POWERLEVEL9K_SHORTEN_DIR_LENGTH=1
+  else
+    typeset -g POWERLEVEL9K_SHORTEN_DIR_LENGTH=
+  fi
+  p10k reload
+  # zle push-line
+  zle accept-line
+}
+
+
+############
+### p10k ###
+############
+
+# Custom
+function prompt_my_dir() {
+    local dir=${${(%):-%~}//\~/}
+    local dir_without_slashes=${dir//\//  }
+    p10k segment -b 4 -f 7 -t "${dir_without_slashes//\%/%%}"
+}
