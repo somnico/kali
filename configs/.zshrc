@@ -19,16 +19,19 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 zstyle ':omz:update' mode auto
 zstyle ':omz:update' frequency 14
 
-# Configuration for keychain
+# Configuration for ssh
 zstyle :omz:plugins:keychain agents gpg,ssh
 zstyle :omz:plugins:keychain options --quiet
 # zstyle :omz:plugins:keychain identities <SSH key filenames in ~/.ssh/> <GPG key ID --list-secret-keys>
 
+zstyle :omz:plugins:ssh-agent quiet yes
+
 # Configuration for plugins
-MAGIC_ENTER_GIT_COMMAND='git status -u .'
-MAGIC_ENTER_OTHER_COMMAND=true
+MAGIC_ENTER_GIT_COMMAND=' '
+MAGIC_ENTER_OTHER_COMMAND=' '
 export HISTORY_START_WITH_GLOBAL=true
-export PER_DIRECTORY_HISTORY_TOGGLE='^H'
+export PER_DIRECTORY_HISTORY_TOGGLE='^[h'
+zbell_duration=20
 
 # Plugins
 plugins=(
@@ -37,21 +40,29 @@ plugins=(
   jq
   eza
   tmux
+  tmux-cssh
+  aliases
+  alias-finder
   zsh-autosuggestions
   zsh-syntax-highlighting
+  zsh-navigation-tools
   command-not-found
   history
   dirhistory
   per-directory-history
   last-working-dir
+  zoxide
   jump
+  wd
   direnv
   copypath
   cp
-  profiles
+  safe-paste
+  transfer
   poetry
   poetry-env
   extract
+  universalarchive
   colored-man-pages
   fancy-ctrl-z
   fzf-tab
@@ -59,16 +70,26 @@ plugins=(
   globalias
   magic-enter
   httpie
+  urltools
+  web-search
   nmap
   jsontools
   percol
-  gpg-agent 
-  keychain
+  gpg-agent
+  ssh-agent
+  ssh
+  systemadmin
+  profiles
+  zbell
 )
+
+# Delayed plugin loading
+zsh-defer eval "$(keychain --eval --quiet)"
 
 # Completetion configuration
 fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
-autoload -Uz compinit && compinit
+autoload -Uz compinit
+zsh-defer compinit -C
 
 # Blank line
 preexec() {echo}
@@ -80,10 +101,12 @@ source $ZSH/oh-my-zsh.sh
 source ~/.p10k.zsh
 
 
+
 # Autocomplete configuration
 [[ -r ~/.oh-my-zsh/plugins/znap/znap.zsh ]] || git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git ~/.oh-my-zsh/plugins/znap
 source ~/.oh-my-zsh/plugins/znap/znap.zsh
 znap source marlonrichert/zsh-autocomplete
+# zsh -c 'znap source marlonrichert/zsh-autocomplete'
 # ZSH_AUTOCOMPLETE_NO_AUTOSUGGEST=1 
 
 () {local k; for k in $'\e[A' $'\eOA'; do bindkey "$k" up-line-or-history; done}
@@ -108,10 +131,9 @@ zle -N my-fzf-tab
 bindkey "^I" my-fzf-tab
 
 # Shell integrations
-eval "$(zoxide init --cmd cd zsh)"
-zsh-defer source ~/.config/envman/PATH.env # Webi 
-zsh-defer source ~/spack/share/spack/setup-env.sh # Spack
-zsh-defer [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+# zsh-defer source ~/.config/envman/PATH.env # Webi 
+# zsh-defer source ~/spack/share/spack/setup-env.sh # Spack
+# zsh-defer [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
 # eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 # . "$HOME/.atuin/bin/env"
@@ -154,12 +176,13 @@ alias qq="xsel --clipboard <"
 alias cop="copypath"
 alias j="jump"
 
-mkcd() {mkdir -p -- "$1" && cd -- "$1"}
+mkcd() {sudo mkdir -p -- "$1" && cd -- "$1"}
 alias i="sudo apt-get install -y"
 alias sn="sudo nano"
 alias sm="sudo nano +-1"
 alias rc="sudo nano +-1 ~/.zshrc && re"
 alias p1="sudo nano ~/.p10k.zsh"
+alias s="sudo -E zsh"
 alias ch="sudo chmod +x"
 alias de="sudo rm -rf"
 alias k="ps aux | fzf --multi | awk '{print \$2}' | xargs -r sudo kill -15"
@@ -176,7 +199,15 @@ alias da="rclone copy Drive:/Linux/AWS/Files/ ~/files/ --include '*' -P"
 alias ua="rclone copy ~/files/ Drive:/Linux/AWS/Files/ --include '*' -P"
 dl() {local source="Drive:Linux/AWS/Files/"; local destination="~/files/"; file="$1"; rclone copy "${source}${file}" "${destination}";}
 ul() {local source=""; local destination="Drive:Linux/AWS/Files/"; source="$1"; rclone copy "${source}" "${destination}";}
+0x0() {curl -F file=@"$1" -F expires=168 https://0x0.st}
+sss() {curl -s -F "files[]=@$1" https://uguu.se/upload | jq -r '.files[0].url'}
 
+
+
+alias txs="tmuxinator start"
+alias txo="tmuxinator open"	
+alias txn="tmuxinator new"	
+alias txl="tmuxinator list"
 
 
 # Fuzzy finder defaults
@@ -351,11 +382,19 @@ fzf-recency() {
   fi
 }
 
+function short_dir() {
+  TRUNCATE_ON=$(( (TRUNCATE_ON + 1) % 3 ))
+  p10k reload
+  zle accept-line
+}
+
 # Activate widgets
 zle -N fzf-find-widget
 zle -N fzf-history-widget
 zle -N fzf-cd-widget
 zle -N fzf-recency
+
+zle -N short_dir
 
 # Hotkeys
 bindkey '^F' fzf-find-widget
@@ -365,6 +404,7 @@ bindkey "\e[6~" fzf-recency
 
 bindkey -s "^[-" "~/"
 bindkey '^Z' undo
+bindkey '^S' short_dir
 
 # Various
 export LC_ALL="C"
@@ -373,9 +413,13 @@ PROMPT_EOL_MARK=""
 unsetopt PROMPT_SP
 
 # Remove bold
+export LS_COLORS="$(vivid generate snazzy)"
 LS_COLORS=$(echo $LS_COLORS | sed "s/01;/00;/g")
 export LS_COLORS
 ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=red'
+
+# Long paths
+hash -d h=/long/useless/path/to/project
 
 # Startup
 # echo "kali" | figlet -f fraktur | boxes -d ian_jones -a hcvc -p h6v0 | lolcat -f -a -d 1 -p 5 -F 0.03 -S 110
@@ -395,14 +439,12 @@ pokemon=(
 
 alias poke='pokeshell -a "${pokemon[$((RANDOM % ${#pokemon[@]}))]}"'
 
-# AWS autocomplete
-# export PATH=/usr/libexec/:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:$PATH
-# autoload bashcompinit && bashcompinit
-# autoload -Uz compinit && compinit
-# complete -C '/usr/libexec/aws_completer' aws
+
+# Default editor
+export EDITOR=nano
 
 # PATH
-export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$HOME/.local/share/gem/ruby/3.3.0/bin:$PATH"
 
 # Timer
 # time zsh -i -c exit
