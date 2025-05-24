@@ -114,6 +114,74 @@
     # example               # example user-defined segment (see prompt_example function below)
   )
 
+
+  function prompt_custom() {
+    local cwd=${(%):-%~}
+    local sep='  '
+    local dir_icon=""
+    local logic_path=""
+    local display_path=""
+    
+    # Different icons
+    if [[ "$cwd" == "~" || "$cwd" == "$HOME" ]]; then
+      dir_icon=""
+      logic_path="" 
+    elif [[ "$cwd" == "~/"* || "$cwd" == "$HOME/"* ]]; then
+      dir_icon=""
+      logic_path="${cwd:2}"  
+    elif [[ "$cwd" == "/" ]]; then
+      dir_icon="󰅬"
+      logic_path="" 
+    elif [[ "$cwd" == /* ]]; then
+      dir_icon="󰅬"
+      logic_path="${cwd:1}"  
+    fi
+
+    display_path="${logic_path//\//${sep}}"
+    local full_display="${dir_icon}${display_path:+ ${display_path}}"
+
+    if (( TRUNCATE_ON == 0 )); then
+      # Full path
+      p10k segment -b 4 -f 7 -t "${full_display}"
+      return
+    elif (( TRUNCATE_ON == 1 )); then
+      # First letter of each dir
+      local -a parts
+      parts=("${(@s:/:)logic_path}")
+
+      local last_index=$#parts
+      for ((i=1; i < last_index; i++)); do
+        [[ -n "${parts[i]}" ]] && parts[i]="${parts[i]:0:1}"
+      done
+
+      truncated_path="${(j:  :)parts}"
+      local truncated_dir="${dir_icon}${truncated_path:+ ${truncated_path}}"
+      p10k segment -b 4 -f 7 -t "${truncated_dir}"
+      return
+    elif (( TRUNCATE_ON == 2 )); then
+      # First and last folder 
+      local -a parts
+      parts=("${(@s:/:)logic_path}")
+      local count=${#parts}
+
+      local truncated_middle=""
+      if (( count <= 2 )); then
+        truncated_middle="${logic_path//\//${sep}}"
+      else
+        truncated_middle="${parts[1]}  ${parts[count]}"
+      fi
+
+      local truncated_dir="${dir_icon}${truncated_middle:+ ${truncated_middle}}"
+      p10k segment -b 4 -f 7 -t "${truncated_dir}"
+      return
+    fi
+  }
+
+  function instant_prompt_custom() {
+    prompt_custom
+  }
+  
+
   # Defines character set used by powerlevel10k. It's best to let `p10k configure` set it for you.
   typeset -g POWERLEVEL9K_MODE=powerline
   # When set to `moderate`, some icons will have an extra space after them. This is meant to avoid
@@ -209,66 +277,6 @@
   # Custom icon.
   typeset -g POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION=''
 
-
-  function prompt_custom() {
-    # local cwd=${(%):-%~}
-    # local dir="${cwd//\~/}"
-    local cwd=${(%):-%~}
-    local dir="$cwd"
-    local sep='  '
-
-    if [[ "$cwd" == /* && "$cwd" != $HOME* ]]; then
-      if [[ "$cwd" == "/" ]]; then
-        dir="󰅬"  
-      else
-        local path_rest="${cwd:1}"
-        path_rest="${path_rest//\//${sep}}"
-        dir="󰅬 ${path_rest}"
-      fi
-    elif [[ "$cwd" == "~" || "$cwd" == $HOME* ]]; then
-      # dir="${cwd//\~/}"
-      dir="${cwd:1}"
-      dir="${dir//\//${sep}}" 
-    elif [[ "$cwd" == ~/work* ]]; then
-    else
-    fi
-
-
-    if (( ! MY_TRUNCATE_ON )); then
-      local dir_no_slash=${dir//\//  }
-      p10k segment -b 4 -f 7 -t "${dir}"
-      return
-    fi
-    
-    local mtime=$(stat -c %Y -- "$cwd" 2>/dev/null)
-    [[ -z $mtime ]] && mtime=0
-
-    local cache_key="${dir}::${mtime}"
-
-    if _p9k_cache_stat_get prompt_custom "$cache_key"; then
-      local truncated_dir="${_p9k__cache_val[1]}"
-    else
-      local -a parts
-      parts=("${(@s:/:)dir}")
-
-      local last_index=$#parts
-      for ((i=1; i < last_index; i++)); do
-        if [[ -n "${parts[i]}" ]]; then
-          parts[i]="${parts[i]:0:1}" 
-        fi
-      done
-
-      truncated_dir="${(j:  :)parts}"
-      _p9k_cache_stat_set "$truncated_dir"
-    fi
-
-    p10k segment -b 4 -f 7 -t "${truncated_dir}"
-  }
-
-  function instant_prompt_custom() {
-    prompt_custom
-  }
-  
   ################################[ prompt_char: prompt symbol ]################################
   # Path separator for the prompt symbol.
   typeset -g POWERLEVEL9K_DIR_PATH_SEPARATOR=
