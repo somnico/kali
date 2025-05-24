@@ -11,6 +11,9 @@
 #
 #   for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$'\n'}; done
 
+# Symbols
+# 󰄾󰶻…󰔢󰔡󱍠󰦝󱦚󱠨󱄻󰕬󰅬󰌡󰫈󰁙
+
 # Temporarily change options.
 'builtin' 'local' '-a' 'p10k_config_opts'
 [[ ! -o 'aliases'         ]] || p10k_config_opts+=('aliases')
@@ -31,7 +34,7 @@
   # The list of segments shown on the left. Fill it with the most important segments.
   typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
     # os_icon               # os identifier
-    my_dir                  # custom current directory
+    custom                  # custom current directory
     # dir                   # current directory
     # vcs_joined            # git status
     # prompt_char           # prompt symbol
@@ -206,27 +209,69 @@
   # Custom icon.
   typeset -g POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION=''
 
-  # Custom
-  function prompt_my_dir_old() {
-    local dir=${${(%):-%~}//\~/}
-    local dir_without_slashes=${dir//\//  }
-    p10k segment -b 4 -f 7 -t "${dir_without_slashes//\%/%%}"
+
+  function prompt_custom() {
+    # local cwd=${(%):-%~}
+    # local dir="${cwd//\~/}"
+    local cwd=${(%):-%~}
+    local dir="$cwd"
+    local sep='  '
+
+    if [[ "$cwd" == /* && "$cwd" != $HOME* ]]; then
+      if [[ "$cwd" == "/" ]]; then
+        dir="󰅬"  
+      else
+        local path_rest="${cwd:1}"
+        path_rest="${path_rest//\//${sep}}"
+        dir="󰅬 ${path_rest}"
+      fi
+    elif [[ "$cwd" == "~" || "$cwd" == $HOME* ]]; then
+      # dir="${cwd//\~/}"
+      dir="${cwd:1}"
+      dir="${dir//\//${sep}}" 
+    elif [[ "$cwd" == ~/work* ]]; then
+    else
+    fi
+
+
+    if (( ! MY_TRUNCATE_ON )); then
+      local dir_no_slash=${dir//\//  }
+      p10k segment -b 4 -f 7 -t "${dir}"
+      return
+    fi
+    
+    local mtime=$(stat -c %Y -- "$cwd" 2>/dev/null)
+    [[ -z $mtime ]] && mtime=0
+
+    local cache_key="${dir}::${mtime}"
+
+    if _p9k_cache_stat_get prompt_custom "$cache_key"; then
+      local truncated_dir="${_p9k__cache_val[1]}"
+    else
+      local -a parts
+      parts=("${(@s:/:)dir}")
+
+      local last_index=$#parts
+      for ((i=1; i < last_index; i++)); do
+        if [[ -n "${parts[i]}" ]]; then
+          parts[i]="${parts[i]:0:1}" 
+        fi
+      done
+
+      truncated_dir="${(j:  :)parts}"
+      _p9k_cache_stat_set "$truncated_dir"
+    fi
+
+    p10k segment -b 4 -f 7 -t "${truncated_dir}"
   }
 
-  function prompt_my_dir() {
-    local dir="${${(%):-%~}//\~/}"
-    local dir="${dir//\//  }"
-    p10k segment -b 4 -f 7 -t "${dir//\%/%%}"
+  function instant_prompt_custom() {
+    prompt_custom
   }
-
-  function instant_prompt_my_dir() {
-      prompt_my_dir
-    }
-
-  # Symbols
-  # 󰄾󰶻󰔢󰔡󱍠󰦝󱦚󱠨󱄻󰕬󰅬󰌡󰫈󰁙
-
+  
   ################################[ prompt_char: prompt symbol ]################################
+  # Path separator for the prompt symbol.
+  typeset -g POWERLEVEL9K_DIR_PATH_SEPARATOR=
   # Transparent background.
   typeset -g POWERLEVEL9K_PROMPT_CHAR_BACKGROUND=
   # Green prompt symbol if the last command succeeded.
@@ -256,13 +301,13 @@
   typeset -g POWERLEVEL9K_DIR_FOREGROUND=254
   # If directory is too long, shorten some of its segments to the shortest possible unique
   # prefix. The shortened directory can be tab-completed to the original.
-  # typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_from_right
-  typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_to_unique
+  typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_from_right
+  # typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_to_unique
   # typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_to_left
   # typeset -g POWERLEVEL9K_SHORTEN_STRATEGY=truncate_to_last
   # Replace removed segment suffixes with this symbol.
-  typeset -g POWERLEVEL9K_SHORTEN_DELIMITER=
-  # typeset -g POWERLEVEL9K_SHORTEN_DELIMITER='..'
+  typeset -g POWERLEVEL9K_SHORTEN_DELIMITER=''
+  # typeset -g POWERLEVEL9K_SHORTEN_DELIMITER='…'
   # Color of the shortened directory segments.
   typeset -g POWERLEVEL9K_DIR_SHORTENED_FOREGROUND=254
   # Color of the anchor directory segments. Anchor segments are never shortened. The first
@@ -308,17 +353,14 @@
   # relative to the marker. Plain "first" and "last" are equivalent to "first:0" and "last:0"
   # respectively.
   typeset -g POWERLEVEL9K_DIR_TRUNCATE_BEFORE_MARKER=false
-  typeset -g POWERLEVEL9K_MY_DIR_TRUNCATE_BEFORE_MARKER=false
   # Don't shorten this many last directory segments. They are anchors.
-  typeset -g POWERLEVEL9K_SHORTEN_DIR_LENGTH=1
-  typeset -g POWERLEVEL9K_SHORTEN_MY_DIR_LENGTH=1
+  typeset -g POWERLEVEL9K_SHORTEN_DIR_LENGTH=
   # Shorten directory if it's longer than this even if there is space for it. The value can
   # be either absolute (e.g., '80') or a percentage of terminal width (e.g, '50%'). If empty,
   # directory will be shortened only when prompt doesn't fit or when other parameters demand it
   # (see POWERLEVEL9K_DIR_MIN_COMMAND_COLUMNS and POWERLEVEL9K_DIR_MIN_COMMAND_COLUMNS_PCT below).
   # If set to `0`, directory will always be shortened to its minimum length.
   typeset -g POWERLEVEL9K_DIR_MAX_LENGTH=50%
-  typeset -g POWERLEVEL9K_MY_DIR_MAX_LENGTH=50%
   # When `dir` segment is on the last prompt line, try to shorten it enough to leave at least this
   # many columns for typing commands.
   typeset -g POWERLEVEL9K_DIR_MIN_COMMAND_COLUMNS=0
@@ -337,7 +379,7 @@
 
   # The default icon shown next to non-writable and non-existent directories when
   # POWERLEVEL9K_DIR_SHOW_WRITABLE is set to v3.
-  typeset -g POWERLEVEL9K_LOCK_ICON=''
+  typeset -g POWERLEVEL9K_LOCK_ICON=
 
   # POWERLEVEL9K_DIR_CLASSES allows you to specify custom icons and colors for different
   # directories. It must be an array with 3 * N elements. Each triplet consists of:
@@ -390,8 +432,17 @@
   # If a styling parameter isn't explicitly defined for some class, it falls back to the classless
   # parameter. For example, if POWERLEVEL9K_DIR_WORK_NOT_WRITABLE_FOREGROUND is not set, it falls
   # back to POWERLEVEL9K_DIR_FOREGROUND.
-  #
-  typeset -g POWERLEVEL9K_DIR_CLASSES=()
+  
+  typeset -g POWERLEVEL9K_DIR_CLASSES=(
+    '~/work(|/*)'  WORK     '󰿆'
+    '~(|/*)'       HOME     ''
+    '/'            ROOT     ''
+    '*'            DEFAULT  ''
+  )
+  
+typeset -g POWERLEVEL9K_DIR_ROOT_NOT_WRITABLE_VISUAL_IDENTIFIER_EXPANSION=''
+
+typeset -g POWERLEVEL9K_DIR_DEFAULT_NOT_WRITABLE_VISUAL_IDENTIFIER_EXPANSION=''
 
   # Custom prefix.
   # typeset -g POWERLEVEL9K_DIR_PREFIX='in '
