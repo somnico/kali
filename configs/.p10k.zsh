@@ -114,6 +114,8 @@
     # example               # example user-defined segment (see prompt_example function below)
   )
 
+  # Default state of custom prompt
+  typeset -g TRUNCATE_ON=0
 
   function prompt_custom() {
     local cwd=${(%):-%~}
