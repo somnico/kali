@@ -23,7 +23,6 @@ zstyle ':omz:update' frequency 14
 zstyle :omz:plugins:keychain agents gpg,ssh
 zstyle :omz:plugins:keychain options --quiet
 # zstyle :omz:plugins:keychain identities <SSH key filenames in ~/.ssh/> <GPG key ID --list-secret-keys>
-
 zstyle :omz:plugins:ssh-agent quiet yes
 
 # Configuration for plugins
@@ -32,13 +31,13 @@ MAGIC_ENTER_OTHER_COMMAND=' '
 export HISTORY_START_WITH_GLOBAL=true
 export PER_DIRECTORY_HISTORY_TOGGLE='^[h'
 zbell_duration=20
+zstyle '*:compinit' arguments -i -u -C
 
 # Plugins
 plugins=(
   git
   sudo
   jq
-  eza
   tmux
   tmux-cssh
   aliases
@@ -66,6 +65,7 @@ plugins=(
   colored-man-pages
   fancy-ctrl-z
   fzf-tab
+  zsh-autocomplete
   thefuck
   globalias
   magic-enter
@@ -88,8 +88,6 @@ zsh-defer eval "$(keychain --eval --quiet)"
 
 # Completetion configuration
 fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
-autoload -Uz compinit
-zsh-defer compinit -C
 
 # Blank line
 preexec() {echo}
@@ -101,17 +99,17 @@ source $ZSH/oh-my-zsh.sh
 source ~/.p10k.zsh
 
 
-
 # Autocomplete configuration
-[[ -r ~/.oh-my-zsh/plugins/znap/znap.zsh ]] || git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git ~/.oh-my-zsh/plugins/znap
-source ~/.oh-my-zsh/plugins/znap/znap.zsh
-znap source marlonrichert/zsh-autocomplete
-# zsh -c 'znap source marlonrichert/zsh-autocomplete'
-# ZSH_AUTOCOMPLETE_NO_AUTOSUGGEST=1 
-
 () {local k; for k in $'\e[A' $'\eOA'; do bindkey "$k" up-line-or-history; done}
 bindkey -M menuselect ^M .accept-line
 bindkey -r "^[[1;3A"
+
+# For only certain argc completions change to argc_scripts=(... ...)
+export ARGC_COMPLETIONS_ROOT="/home/kali/.config/argc-completions"
+export ARGC_COMPLETIONS_PATH="$ARGC_COMPLETIONS_ROOT/completions/linux:$ARGC_COMPLETIONS_ROOT/completions"
+export PATH="$ARGC_COMPLETIONS_ROOT/bin:$PATH"
+argc_scripts=( $(ls -p -1 "$ARGC_COMPLETIONS_ROOT/completions/linux" "$ARGC_COMPLETIONS_ROOT/completions" | sed -n 's/\.sh$//p') )
+source <(argc --argc-completions zsh $argc_scripts)
 
 # Autosuggestions configuration
 # zle_bracketed_paste=()
@@ -167,11 +165,14 @@ setopt NO_CASE_GLOB
 setopt RCEXPANDPARAM
 setopt SUNKEYBOARDHACK
 
+DISABLE_AUTO_TITLE=true
+
 
 # Aliases
 alias fd="fdfind"
 alias b="batcat --paging=never --theme=ansi"
 alias ba="batcat --paging=never --theme=ansi --style=changes"
+alias ls="eza --group-directories-first --header --icons --group"
 alias qq="xsel --clipboard <"
 alias cop="copypath"
 alias j="jump"
@@ -193,6 +194,11 @@ alias so="source ~/.zshrc"
 alias e="/mnt/c/Windows/explorer.exe ."
 alias pale="palemoon/./palemoon"
 
+alias txs="tmuxinator start"
+alias txo="tmuxinator open"	
+alias txn="tmuxinator new"	
+alias txl="tmuxinator list"
+
 perm() {local target="${1:-.}"; sudo chown -R "$USER:$USER" "$target"; sudo chmod -R u+rwX,go+rX "$target"; echo "Permissions fixed"}
 
 alias da="rclone copy Drive:/Linux/AWS/Files/ ~/files/ --include '*' -P"
@@ -201,13 +207,7 @@ dl() {local source="Drive:Linux/AWS/Files/"; local destination="~/files/"; file=
 ul() {local source=""; local destination="Drive:Linux/AWS/Files/"; source="$1"; rclone copy "${source}" "${destination}";}
 0x0() {curl -F file=@"$1" -F expires=168 https://0x0.st}
 sss() {curl -s -F "files[]=@$1" https://uguu.se/upload | jq -r '.files[0].url'}
-
-
-
-alias txs="tmuxinator start"
-alias txo="tmuxinator open"	
-alias txn="tmuxinator new"	
-alias txl="tmuxinator list"
+alias ws="wormhole send"
 
 
 # Fuzzy finder defaults
@@ -413,13 +413,9 @@ PROMPT_EOL_MARK=""
 unsetopt PROMPT_SP
 
 # Remove bold
-export LS_COLORS="$(vivid generate snazzy)"
-LS_COLORS=$(echo $LS_COLORS | sed "s/01;/00;/g")
-export LS_COLORS
+# export LS_COLORS="$(vivid generate dracula)"
+export LS_COLORS="$(echo $LS_COLORS | sed 's/01;/00;/g')"
 ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=red'
-
-# Long paths
-hash -d h=/long/useless/path/to/project
 
 # Startup
 # echo "kali" | figlet -f fraktur | boxes -d ian_jones -a hcvc -p h6v0 | lolcat -f -a -d 1 -p 5 -F 0.03 -S 110
@@ -442,6 +438,9 @@ alias poke='pokeshell -a "${pokemon[$((RANDOM % ${#pokemon[@]}))]}"'
 
 # Default editor
 export EDITOR=nano
+
+# Long paths
+hash -d h=/long/useless/path/to/project
 
 # PATH
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$HOME/.local/share/gem/ruby/3.3.0/bin:$PATH"
