@@ -185,57 +185,57 @@ function prompt_my_dir() {
 }
 
 
-  function prompt_custom() {
-    local cwd=${(%):-%~}
-    local sep='  '
-    local dir_icon=""
-    local logic_path=""
-    local display_path=""
-    
-    if [[ "$cwd" == "~" || "$cwd" == "$HOME" ]]; then
-      dir_icon=""
-      logic_path="" 
-    elif [[ "$cwd" == "~/"* || "$cwd" == "$HOME/"* ]]; then
-      dir_icon=""
-      logic_path="${cwd:2}"  
-    elif [[ "$cwd" == "/" ]]; then
-      dir_icon="󰅬"
-      logic_path="" 
-    elif [[ "$cwd" == /* ]]; then
-      dir_icon="󰅬"
-      logic_path="${cwd:1}"  
-    else
-    fi
+function prompt_custom_cached() {
+  local cwd=${(%):-%~}
+  local sep='  '
+  local dir_icon=""
+  local logic_path=""
+  local display_path=""
+  
+  if [[ "$cwd" == "~" || "$cwd" == "$HOME" ]]; then
+    dir_icon=""
+    logic_path="" 
+  elif [[ "$cwd" == "~/"* || "$cwd" == "$HOME/"* ]]; then
+    dir_icon=""
+    logic_path="${cwd:2}"  
+  elif [[ "$cwd" == "/" ]]; then
+    dir_icon="󰅬"
+    logic_path="" 
+  elif [[ "$cwd" == /* ]]; then
+    dir_icon="󰅬"
+    logic_path="${cwd:1}"  
+  else
+  fi
 
-    display_path="${logic_path//\//${sep}}"
-    local full_display="${dir_icon}${display_path:+ ${display_path}}"
+  display_path="${logic_path//\//${sep}}"
+  local full_display="${dir_icon}${display_path:+ ${display_path}}"
 
-    if (( ! TRUNCATE_ON )); then
-      p10k segment -b 4 -f 7 -t "${full_display}"
-      return
-    fi
+  if (( ! TRUNCATE_ON )); then
+    p10k segment -b 4 -f 7 -t "${full_display}"
+    return
+  fi
 
-    local mtime=$(stat -c %Y -- "$cwd" 2>/dev/null)
-    [[ -z $mtime ]] && mtime=0
-    local cache_key="${cwd}::${mtime}"
+  local mtime=$(stat -c %Y -- "$cwd" 2>/dev/null)
+  [[ -z $mtime ]] && mtime=0
+  local cache_key="${cwd}::${mtime}"
 
-    if _p9k_cache_stat_get prompt_custom "$cache_key"; then
-      local truncated_path="${_p9k__cache_val[1]}"
-    else
-      local -a parts
-      parts=("${(@s:/:)logic_path}")
+  if _p9k_cache_stat_get prompt_custom "$cache_key"; then
+    local truncated_path="${_p9k__cache_val[1]}"
+  else
+    local -a parts
+    parts=("${(@s:/:)logic_path}")
 
-      local last_index=$#parts
-      for ((i=1; i < last_index; i++)); do
-        [[ -n "${parts[i]}" ]] && parts[i]="${parts[i]:0:1}"
-      done
+    local last_index=$#parts
+    for ((i=1; i < last_index; i++)); do
+      [[ -n "${parts[i]}" ]] && parts[i]="${parts[i]:0:1}"
+    done
 
-      truncated_path="${(j:  :)parts}"
+    truncated_path="${(j:  :)parts}"
 
-      _p9k_cache_stat_set "$truncated_path"
-    fi
+    _p9k_cache_stat_set "$truncated_path"
+  fi
 
-    local truncated_dir="${dir_icon}${truncated_path:+ ${truncated_path}}"
+  local truncated_dir="${dir_icon}${truncated_path:+ ${truncated_path}}"
 
-    p10k segment -b 4 -f 7 -t "${truncated_dir}"
-  }
+  p10k segment -b 4 -f 7 -t "${truncated_dir}"
+}
