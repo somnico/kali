@@ -15,23 +15,18 @@ export ZSH="$HOME/.oh-my-zsh"
 # Set Oh My Zsh theme
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
-# Updates for Oh My Zsh
-zstyle ':omz:update' mode auto
-zstyle ':omz:update' frequency 14
-
-# Configuration for ssh
+# Configuration for plugins
+zstyle :omz:plugins:ssh-agent quiet yes
 zstyle :omz:plugins:keychain agents gpg,ssh
 zstyle :omz:plugins:keychain options --quiet
 # zstyle :omz:plugins:keychain identities <SSH key filenames in ~/.ssh/> <GPG key ID --list-secret-keys>
-zstyle :omz:plugins:ssh-agent quiet yes
-
-# Configuration for plugins
 MAGIC_ENTER_GIT_COMMAND=' '
 MAGIC_ENTER_OTHER_COMMAND=' '
 export HISTORY_START_WITH_GLOBAL=true
 export PER_DIRECTORY_HISTORY_TOGGLE='^[h'
 zbell_duration=20
 zstyle '*:compinit' arguments -i -u -C
+bindkey ' ' magic-space
 
 # Plugins
 plugins=(
@@ -42,8 +37,9 @@ plugins=(
   tmux-cssh
   aliases
   alias-finder
-  zsh-autosuggestions
+  zsh-no-ps2
   zsh-syntax-highlighting
+  zsh-autosuggestions
   zsh-navigation-tools
   command-not-found
   history
@@ -64,8 +60,8 @@ plugins=(
   universalarchive
   colored-man-pages
   fancy-ctrl-z
-  fzf-tab
   zsh-autocomplete
+  fzf-tab
   thefuck
   globalias
   magic-enter
@@ -79,6 +75,7 @@ plugins=(
   ssh-agent
   ssh
   systemadmin
+  zsh-prompt-benchmark
   profiles
   zbell
 )
@@ -87,7 +84,8 @@ plugins=(
 zsh-defer eval "$(keychain --eval --quiet)"
 
 # Completetion configuration
-fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
+fpath=(~/.cache/completions $fpath)
+fpath+=("${ZSH_CUSTOM:-${ZSH:-$HOME/.oh-my-zsh}/custom}/plugins/zsh-completions/src")
 
 # Blank line
 preexec() {echo}
@@ -103,8 +101,17 @@ source ~/.p10k.zsh
 () {local k; for k in $'\e[A' $'\eOA'; do bindkey "$k" up-line-or-history; done}
 bindkey -M menuselect ^M .accept-line
 bindkey -r "^[[1;3A"
+zstyle ':completion:correct-word:*' max-errors 0
 
-# For only certain argc completions change to argc_scripts=(... ...)
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' file-patterns '%p'
+zstyle ':completion:*' menu no
+zstyle ':completion:*' rehash true
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.cache
+
+# Argc comfiguration, argc_scripts=(... ...)
 export ARGC_COMPLETIONS_ROOT="/home/kali/.config/argc-completions"
 export ARGC_COMPLETIONS_PATH="$ARGC_COMPLETIONS_ROOT/completions/linux:$ARGC_COMPLETIONS_ROOT/completions"
 export PATH="$ARGC_COMPLETIONS_ROOT/bin:$PATH"
@@ -112,8 +119,10 @@ argc_scripts=( $(ls -p -1 "$ARGC_COMPLETIONS_ROOT/completions/linux" "$ARGC_COMP
 source <(argc --argc-completions zsh $argc_scripts)
 
 # Autosuggestions configuration
-# zle_bracketed_paste=()
+zstyle ':bracketed-paste-magic' active-widgets '.self-*'
 ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(bracketed-paste)
+ZSH_AUTOSUGGEST_STRATEGY=(history)
+ZSH_AUTOSUGGEST_USE_ASYNC=true
 bindkey '\e[1;3C' autosuggest-execute
 
 # Fzf configuration
@@ -129,13 +138,11 @@ zle -N my-fzf-tab
 bindkey "^I" my-fzf-tab
 
 # Shell integrations
-# zsh-defer source ~/.config/envman/PATH.env # Webi 
-# zsh-defer source ~/spack/share/spack/setup-env.sh # Spack
-# zsh-defer [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+[ -s ~/.config/envman/PATH.env ] && source ~/.config/envman/PATH.env # Webi 
+[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+. "$HOME/.atuin/bin/env"
+eval "$(atuin init zsh --disable-up-arrow | sed 's/atuin history start -- "$1"/atuin history start -- "$2"/')"
 
-# eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-# . "$HOME/.atuin/bin/env"
-# eval "$(atuin init zsh)"
 
 # History
 HISTSIZE=10000
@@ -161,11 +168,15 @@ setopt RECEXACT
 setopt GLOBDOTS
 setopt GLOB_COMPLETE
 setopt GLOBSTARSHORT
+setopt EXTENDED_GLOB
 setopt NO_CASE_GLOB
 setopt RCEXPANDPARAM
 setopt SUNKEYBOARDHACK
+setopt NOBEEP
 
 DISABLE_AUTO_TITLE=true
+DISABLE_AUTO_UPDATE="true"
+DISABLE_MAGIC_FUNCTIONS="true"
 
 
 # Aliases
@@ -205,8 +216,8 @@ alias da="rclone copy Drive:/Linux/AWS/Files/ ~/files/ --include '*' -P"
 alias ua="rclone copy ~/files/ Drive:/Linux/AWS/Files/ --include '*' -P"
 dl() {local source="Drive:Linux/AWS/Files/"; local destination="~/files/"; file="$1"; rclone copy "${source}${file}" "${destination}";}
 ul() {local source=""; local destination="Drive:Linux/AWS/Files/"; source="$1"; rclone copy "${source}" "${destination}";}
-0x0() {curl -F file=@"$1" -F expires=168 https://0x0.st}
-sss() {curl -s -F "files[]=@$1" https://uguu.se/upload | jq -r '.files[0].url'}
+0x() {curl -F file=@"$1" -F expires=168 https://0x0.st}
+u() {curl -s -F "files[]=@$1" https://uguu.se/upload | jq -r '.files[0].url'}
 alias ws="wormhole send"
 
 
@@ -235,10 +246,6 @@ fi
 # export FZF_DEFAULT_COMMAND="locate -i '' | grep -vE '/mnt/|\.git/'"
 
 # Fzf-tab styling
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*' menu no
-zstyle ':completion:*' file-patterns '%p'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --tree --level=3 --color=always ${realpath}'
 zstyle ':fzf-tab:*' use-fzf-default-opts yes
@@ -388,6 +395,16 @@ function short_dir() {
   zle accept-line
 }
 
+function lg() {
+  export LAZYGIT_NEW_DIR_FILE=~/.lazygit/newdir
+  lazygit "$@"
+
+  if [ -f $LAZYGIT_NEW_DIR_FILE ]; then
+    cd "$(cat $LAZYGIT_NEW_DIR_FILE)"
+    rm -f $LAZYGIT_NEW_DIR_FILE > /dev/null
+  fi
+}
+
 # Activate widgets
 zle -N fzf-find-widget
 zle -N fzf-history-widget
@@ -446,7 +463,7 @@ hash -d h=/long/useless/path/to/project
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$HOME/.local/share/gem/ruby/3.3.0/bin:$PATH"
 
 # Timer
-# time zsh -i -c exit
+# for i in $(seq 1 10); do time zsh -i -c exit; done
 
 # End monitoring
 # zprof
