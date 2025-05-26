@@ -2,6 +2,20 @@
 ### install ###
 ###############
 
+# Fix autocomplete freezes
+cd $ZSH_CUSTOM/plugins/zsh-autocomplete
+git fetch --unshallow
+git restore run-tests.zsh
+cd ~
+
+# Setup nala
+sudo nala fetch --debian sid
+
+# Install bechmark
+wget https://github.com/sharkdp/hyperfine/releases/download/v1.19.0/hyperfine_1.19.0_amd64.deb
+sudo dpkg -i hyperfine_1.19.0_amd64.deb
+sudo rm -rf hyperfine_1.19.0_amd64.deb
+
 # Setup AWS CLI
 expect << 'EOF'
 set timeout 10
@@ -27,7 +41,7 @@ EOF
 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bookworm stable" | sudo tee /etc/apt/sources.list.d/docker.list
 curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 sudo apt update
-sudo apt install -y docker-ce docker-ce-cli containerd.io
+sudo apt install -y docker-ce docker-ce-cli docker-compose-plugin containerd.io
 sudo systemctl enable docker
 sudo systemctl start docker
 sudo usermod -aG docker $USER
@@ -85,6 +99,57 @@ cd ../..
 ### zshrc ###
 #############
 
+# Updates for Oh My Zsh
+omz update
+zstyle ':omz:update' mode auto
+zstyle ':omz:update' frequency 14
+
+# Pugin configuration
+zstyle ':omz:plugins:eza' 'dirs-first' yes
+zstyle ':omz:plugins:eza' 'header' yes
+zstyle ':omz:plugins:eza' 'show-group' yes
+zstyle ':omz:plugins:eza' 'icons' yes
+
+# Not needed
+autoload -Uz compinit
+zsh-defer compinit -C
+
+# Slow
+source ~/spack/share/spack/setup-env.sh
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+# Autocomplete alternative install
+[[ -r ~/.oh-my-zsh/plugins/znap/znap.zsh ]] || git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git ~/.oh-my-zsh/plugins/znap
+source ~/.oh-my-zsh/plugins/znap/znap.zsh
+znap source marlonrichert/zsh-autocomplete
+ZSH_AUTOCOMPLETE_NO_AUTOSUGGEST=1 
+
+# Autocomplete configuration
+zstyle ':completion:correct-word:*' tag-order '-'
+zstyle ':completion:correct-word:*' max-errors 0
+
+# Autosuggestions configuration
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_COMPLETION_IGNORE="(eza|cat|cd) *"
+bindkey '^[n' autosuggest-clear
+
+zle_bracketed_paste=()
+
+pasteinit() {
+  OLD_SELF_INSERT=${${(s.:.)widgets[self-insert]}[2,3]}
+  zle -N self-insert url-quote-magic
+}
+
+pastefinish() {
+  zle -N self-insert $OLD_SELF_INSERT
+}
+
+zstyle :bracketed-paste-magic paste-init pasteinit
+zstyle :bracketed-paste-magic paste-finish pastefinish
+
+# Zoxide without omz plugin
+eval "$(zoxide init --cmd cd zsh)"
+
 # default dir shorten toggle
 short_dir() {
   if [[ -z "$POWERLEVEL9K_SHORTEN_DIR_LENGTH" ]]; then
@@ -93,9 +158,19 @@ short_dir() {
     typeset -g POWERLEVEL9K_SHORTEN_DIR_LENGTH=
   fi
   p10k reload
-  # zle push-line
+  zle push-line
   zle accept-line
 }
+
+# AWS autocomplete
+export PATH=/usr/libexec/:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:$PATH
+autoload bashcompinit && bashcompinit
+autoload -Uz compinit && compinit
+complete -C '/usr/libexec/aws_completer' aws
+
+# SDKMAN must be at the end
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 
 ############
@@ -108,3 +183,59 @@ function prompt_my_dir() {
     local dir_without_slashes=${dir//\//  }
     p10k segment -b 4 -f 7 -t "${dir_without_slashes//\%/%%}"
 }
+
+
+  function prompt_custom() {
+    local cwd=${(%):-%~}
+    local sep='  '
+    local dir_icon=""
+    local logic_path=""
+    local display_path=""
+    
+    if [[ "$cwd" == "~" || "$cwd" == "$HOME" ]]; then
+      dir_icon=""
+      logic_path="" 
+    elif [[ "$cwd" == "~/"* || "$cwd" == "$HOME/"* ]]; then
+      dir_icon=""
+      logic_path="${cwd:2}"  
+    elif [[ "$cwd" == "/" ]]; then
+      dir_icon="󰅬"
+      logic_path="" 
+    elif [[ "$cwd" == /* ]]; then
+      dir_icon="󰅬"
+      logic_path="${cwd:1}"  
+    else
+    fi
+
+    display_path="${logic_path//\//${sep}}"
+    local full_display="${dir_icon}${display_path:+ ${display_path}}"
+
+    if (( ! TRUNCATE_ON )); then
+      p10k segment -b 4 -f 7 -t "${full_display}"
+      return
+    fi
+
+    local mtime=$(stat -c %Y -- "$cwd" 2>/dev/null)
+    [[ -z $mtime ]] && mtime=0
+    local cache_key="${cwd}::${mtime}"
+
+    if _p9k_cache_stat_get prompt_custom "$cache_key"; then
+      local truncated_path="${_p9k__cache_val[1]}"
+    else
+      local -a parts
+      parts=("${(@s:/:)logic_path}")
+
+      local last_index=$#parts
+      for ((i=1; i < last_index; i++)); do
+        [[ -n "${parts[i]}" ]] && parts[i]="${parts[i]:0:1}"
+      done
+
+      truncated_path="${(j:  :)parts}"
+
+      _p9k_cache_stat_set "$truncated_path"
+    fi
+
+    local truncated_dir="${dir_icon}${truncated_path:+ ${truncated_path}}"
+
+    p10k segment -b 4 -f 7 -t "${truncated_dir}"
+  }
