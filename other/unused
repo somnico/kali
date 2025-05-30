@@ -2,6 +2,42 @@
 ### install ###
 ###############
 
+# Install plugins
+git clone https://github.com/supercrabtree/k $ZSH_CUSTOM/plugins/k
+
+# Shodan workaround
+source ~/.local/share/pipx/venvs/shodan/bin/activate
+sudo pip install --break-system-packages --upgrade setuptools
+pipx install shodan --pip-args="--upgrade setuptools"
+shodan init ...
+
+# Install Docker
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bookworm stable" | sudo tee /etc/apt/sources.list.d/docker.list
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli docker-compose-plugin containerd.io
+sudo systemctl enable docker
+sudo systemctl start docker
+sudo usermod -aG docker $USER
+
+# Install docker cli for desktop compatibility
+sudo apt install -y docker.io
+sudo mount --make-shared /  
+
+# Install go
+sudo apt install -y golang
+
+# Install Homebrew
+yes "" | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Install spack
+git clone -c feature.manyFiles=true --depth=2 https://github.com/spack/spack.git ~/spack  
+
+#Install helpers
+curl https://raw.githubusercontent.com/jarun/advcpmv/master/install.sh --create-dirs -o ./advcpmv/install.sh && (cd advcpmv && sh install.sh)
+sudo cp ./advcpmv/adv{cp,mv} /usr/local/bin/
+
+
 # Fix autocomplete freezes
 cd $ZSH_CUSTOM/plugins/zsh-autocomplete
 git fetch --unshallow
@@ -37,21 +73,6 @@ send "\r"
 expect eof
 EOF
 
-# Docker install
-echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bookworm stable" | sudo tee /etc/apt/sources.list.d/docker.list
-curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo apt update
-sudo apt install -y docker-ce docker-ce-cli docker-compose-plugin containerd.io
-sudo systemctl enable docker
-sudo systemctl start docker
-sudo usermod -aG docker $USER
-
-# Install go
-sudo apt install -y golang-go
-
-# Homebrew install
-yes "" | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
 # Install notcurses
 git clone https://github.com/dankamongmen/notcurses.git
 cd notcurses
@@ -67,8 +88,21 @@ sudo python3 setup.py build
 sudo python3 setup.py install
 cd ../..
 
-# Yazi alternate install
-cargo install --locked yazi-fm yazi-cli
+
+
+# Yazi alternate installs
+sudo snap install yazi --classic --edge
+
+# Other file managers
+bash -c "$(curl -sLo- https://superfile.netlify.app/install.sh)"
+sudo apt-get install -y nnn ranger mc lf
+bash <(curl -s https://raw.githubusercontent.com/kamiyaa/joshuto/master/utils/install.sh)
+
+
+curl -LO https://github.com/sxyazi/yazi/releases/download/v25.4.8/yazi-x86_64-unknown-linux-gnu.zip
+unzip yazi-x86_64-unknown-linux-gnu.zip
+sudo install -m 755 yazi-x86_64-unknown-linux-gnu/yazi /usr/local/bin/
+sudo rm -f yazi-x86_64-unknown-linux-gnu.zip 
 
 # Timg manual install
 git clone https://github.com/hzeller/timg.git
@@ -110,6 +144,17 @@ zstyle ':omz:plugins:eza' 'header' yes
 zstyle ':omz:plugins:eza' 'show-group' yes
 zstyle ':omz:plugins:eza' 'icons' yes
 
+# Plugins 
+plugins=(
+  zsh-autocomplete
+  command-not-found
+  poetry
+  poetry-env
+  thefuck
+  zbell
+  k
+)
+
 # Not needed
 autoload -Uz compinit
 zsh-defer compinit -C
@@ -125,8 +170,12 @@ znap source marlonrichert/zsh-autocomplete
 ZSH_AUTOCOMPLETE_NO_AUTOSUGGEST=1 
 
 # Autocomplete configuration
-zstyle ':completion:correct-word:*' tag-order '-'
+() {local k; for k in $'\e[A' $'\eOA'; do bindkey "$k" up-line-or-history; done}
+bindkey -M menuselect ^M .accept-line
+bindkey -r "^[[1;3A"
 zstyle ':completion:correct-word:*' max-errors 0
+zstyle ':completion:correct-word:*' tag-order '-'
+
 
 # Autosuggestions configuration
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
@@ -134,6 +183,8 @@ ZSH_AUTOSUGGEST_COMPLETION_IGNORE="(eza|cat|cd) *"
 bindkey '^[n' autosuggest-clear
 
 zle_bracketed_paste=()
+
+zstyle ':bracketed-paste-magic' active-widgets '.self-*'
 
 pasteinit() {
   OLD_SELF_INSERT=${${(s.:.)widgets[self-insert]}[2,3]}
@@ -147,10 +198,25 @@ pastefinish() {
 zstyle :bracketed-paste-magic paste-init pasteinit
 zstyle :bracketed-paste-magic paste-finish pastefinish
 
+# Fzf configuration
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+enable-fzf-tab
+
 # Zoxide without omz plugin
 eval "$(zoxide init --cmd cd zsh)"
 
-# default dir shorten toggle
+# Recent directories
+autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+add-zsh-hook chpwd chpwd_recent_dirs
+zstyle ':completion:*:*:cdr:*:*' menu selection
+zstyle ':completion:*' recent-dirs-insert fallback
+zstyle ':chpwd:*' recent-dirs-default true
+zstyle ':chpwd:*' recent-dirs-max 0
+zstyle ':chpwd:*' recent-dirs-file ~/.cache/.chpwd-recent-dirs
+
+dir=$(cdr -l | awk '{$1=""; print substr($0,2)}' | fzf --height=80% --reverse)
+
+# Default p10k dir shorten toggle
 short_dir() {
   if [[ -z "$POWERLEVEL9K_SHORTEN_DIR_LENGTH" ]]; then
     typeset -g POWERLEVEL9K_SHORTEN_DIR_LENGTH=1
@@ -161,6 +227,26 @@ short_dir() {
   zle push-line
   zle accept-line
 }
+
+# Nnn configuration
+BLK="0B" CHR="0B" DIR="04" EXE="06" REG="00" HARDLINK="06" SYMLINK="06" MISSING="00" ORPHAN="09" FIFO="06" SOCK="0B" OTHER="06"
+export NNN_FCOLORS="$BLK$CHR$DIR$EXE$REG$HARDLINK$SYMLINK$MISSING$ORPHAN$FIFO$SOCK$OTHER"
+
+n () {
+    [ "${NNNLVL:-0}" -eq 0 ] || {
+        echo "nnn is already running"
+        return
+    }
+
+    export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
+    command nnn "$@"
+
+    [ ! -f "$NNN_TMPFILE" ] || {
+        . "$NNN_TMPFILE"
+        rm -f -- "$NNN_TMPFILE" > /dev/null
+    }
+}
+
 
 # AWS autocomplete
 export PATH=/usr/libexec/:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:$PATH
@@ -239,3 +325,47 @@ function prompt_custom_cached() {
 
   p10k segment -b 4 -f 7 -t "${truncated_dir}"
 }
+
+# Fuzzy history search
+fzf-history-widget() {
+  local selected_cmd temp_cmd
+
+  temp_cmd=$(fc -rln 1 | tac | fzf +s --height=70% --exact --tac --query "$LBUFFER" \
+    --bind 'enter:accept' \
+    --bind 'right:execute-silent(echo {} > ~/.fzf_right_arrow_cmd)+abort' \
+    --bind 'ctrl-a:execute-silent(echo {} > ~/.fzf_ctrl_a_cmd)+abort' \
+    --bind 'left:execute-silent(echo "$(echo {} | sed "s/[^ ]* *$//")" > ~/.fzf_left_arrow_cmd)+abort' \
+    --bind 'ctrl-c:abort' \
+    --bind 'ctrl-q:execute-silent(echo -n {} | xclip -selection clipboard)+abort'
+    )
+
+  if [[ $? -eq 0 ]]; then
+    BUFFER=$temp_cmd
+    zle accept-line
+
+  elif [[ -f ~/.fzf_right_arrow_cmd ]]; then
+    BUFFER="$(<~/.fzf_right_arrow_cmd) "
+    rm ~/.fzf_right_arrow_cmd
+    CURSOR=$#BUFFER
+    zle redisplay
+
+  elif [[ -f ~/.fzf_ctrl_a_cmd ]]; then
+    BUFFER="$(<~/.fzf_ctrl_a_cmd)"
+    rm ~/.fzf_ctrl_a_cmd
+    CURSOR=0
+    zle redisplay
+
+  elif [[ -f ~/.fzf_left_arrow_cmd ]]; then
+    BUFFER="$(<~/.fzf_left_arrow_cmd)"
+    rm ~/.fzf_left_arrow_cmd
+    CURSOR=$#BUFFER
+    zle redisplay
+
+  else
+    BUFFER=""
+    zle redisplay
+  fi
+}
+
+# Commands to remember
+zoxide jump = zi
