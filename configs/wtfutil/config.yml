@@ -1,0 +1,184 @@
+wtf:
+  colors:
+    background: black
+    border:
+      normal: "#543B54"
+      focusable: blue
+      focused: green
+    checked: yellow
+    highlight:
+      fore: black
+      back: green
+    rows:
+      even: green
+      odd: blue
+  refreshInterval: 1
+  openFileUtil: "open"
+  mods:
+    europe_time:
+      title: "Europe"
+      type: clocks
+      colors:
+        rows:
+          even: "green"
+          odd: "blue"
+      enabled: true
+      locations:
+        GMT: "Etc/GMT"
+        Amsterdam: "Europe/Amsterdam"
+        Berlin: "Europe/Berlin"
+        Barcelona: "Europe/Madrid"
+        Copenhagen: "Europe/Copenhagen"
+        London: "Europe/London"
+        Rome: "Europe/Rome"
+        Stockholm: "Europe/Stockholm"
+      position:
+        top: 0
+        left: 0
+        height: 1
+        width: 1
+      refreshInterval: 15
+      sort: "alphabetical"
+    americas_time:
+      title: "Americas"
+      type: clocks
+      colors:
+        rows:
+          even: "green"
+          odd: "blue"
+      enabled: true
+      locations:
+        UTC: "Etc/UTC"
+        Vancouver: "America/Vancouver"
+        New_York: "America/New_York"
+        Sao_Paulo: "America/Sao_Paulo"
+        Denver: "America/Denver"
+        Iqaluit: "America/Iqaluit"
+        Bahamas: "America/Nassau"
+        Chicago: "America/Chicago"
+      position:
+        top: 0
+        left: 1
+        height: 1
+        width: 1
+      refreshInterval: 15
+      sort: "alphabetical"
+    todolist:
+      type: todo
+      checkedIcon: "X"
+      colors:
+        checked: gray
+        highlight:
+          fore: "black"
+          back: "orange"
+      enabled: true
+      filename: "todo.yml"
+      position:
+        top: 1
+        left: 1
+        height: 4
+        width: 1
+      refreshInterval: 3600
+    # gcal:
+    #   colors:
+    #     title: "green"
+    #     eventTime: "lightblue"
+    #     description: "yellow"
+    #     highlights:
+    #     - ['1on1|1\/11', 'green']
+    #     - ['apple|google|aws', 'blue']
+    #     - ['interview|meet', 'magenta']
+    #     - ['lunch', 'yellow']
+    #     past: "gray"
+    #   title: "Calendar"
+    #   calendarReadLevel: "reader"
+    #   displayResponseStatus: true
+    #   email: "nico@gmail.com" 
+    #   enabled: true
+    #   eventCount: 15
+    #   hourFormat: "12"
+    #   multiCalendar: true
+    #   position:
+    #     top: 1
+    #     left: 1
+    #     height: 4
+    #     width: 1
+    #   refreshInterval: 300
+    #   secretFile: "~/.config/wtf/credentials.json"
+    #   showDeclined: true
+    #   showEndTime: false
+    #   timezone: "America/Chicago" 
+    #   withLocation: true
+    prettyweather:
+        title: Weather
+        enabled: true
+        city: "fredrikstad"
+        position:
+            top: 1
+            left: 0
+            height: 2
+            width: 1
+        refreshInterval: 1m
+        unit: "m"
+        view: 0
+        language: "en"
+    git:
+      title: Git
+      commitCount: 5
+      commitFormat: "[forestgreen]%h [grey]%cd [white]%s [grey]%an[white]"
+      dateFormat: "%H:%M %d %b %y"
+      enabled: true
+      position:
+        top: 0
+        left: 2
+        height: 1
+        width: 2
+      refreshInterval: 8s
+      repositories:
+        - "/Users/chris/go/src/github.com/wtfutil/wtf"
+        - "/Users/user/fakeapp"
+    kubernetes:
+      enabled: true
+      title: "Kubernetes"
+      kubeconfig: ~/.kube/config
+      namespaces: ["demo", "kube-system"]
+      objects: ["nodes","deployments", "pods"]
+      position:
+        top: 1
+        left: 2
+        height: 2
+        width: 2
+      refreshInterval: 150
+    resources:
+      type: resourceusage
+      title: "Resources"
+      enabled: true
+      position:
+        top: 3
+        left: 0
+        height: 2
+        width: 1
+      refreshInterval: 1
+    docker:
+      type: docker
+      enabled: true
+      labelColor: green
+      title: "Docker"
+      position:
+        top: 3
+        left: 2
+        height: 1
+        width: 2
+      refreshInterval: 1
+    disks:
+      type: cmdrunner
+      cmd: "df"
+      args: ["-h"]
+      title: "Command"
+      enabled: true
+      position:
+        top: 4
+        left: 2
+        height: 1
+        width: 2
+      refreshInterval: 1
