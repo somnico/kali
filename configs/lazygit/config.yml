@@ -1,0 +1,58 @@
+gui:
+  theme:
+    inactiveBorderColor:
+      - "#543B54"
+    activeBorderColor:
+      - green
+  border: 'rounded'
+  nerdFontsVersion: "3"
+  animateExplosion: true
+  spinner:
+    frames:
+      - '⠇'
+      - '⠏'
+      - '⠋'
+      - '⠙'
+      - '⠹'
+      - '⠸'
+      - '⠼'
+      - '⠴'
+      - '⠦'
+      - '⠧'
+      - '🌕'
+      - '🌖'
+      - '🌗'
+      - '🌘'
+      - '🌑'
+      - '🌒'
+      - '🌓'
+      - '🌔'
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+    rate: 50
+  customIcons:
+    filenames:
+      "CONTRIBUTING.md": { icon: "\uede2", color: "#FEDDEF" }
+      "HACKING.md": { icon: "\uede2", color: "#FEDDEF" }
+    extensions:
+      ".cat":
+        icon: "\U000f011b"
+        color: "#BC4009"
+      ".dog":
+        icon: "\U000f0a43"
+        color: "#B6977E"
+git:
+  paging:
+    colorArg: never
+    pager: delta --dark --paging=never
+    useConfig: false
+  commit:
+    signOff: false
+  merging:
+    manualCommit: false
