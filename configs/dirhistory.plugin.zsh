@@ -242,6 +242,7 @@ zle -N dirhistory_zle_dirhistory_home
 for keymap in emacs vicmd viins; do
   # bindkey -M $keymap "H" dirhistory_zle_dirhistory_home
   bindkey -M $keymap "^[OH" dirhistory_zle_dirhistory_home # Windows terminal
+  bindkey -M $keymap "^[1~" dirhistory_zle_dirhistory_home # Tmux
 done
 
 unset keymap
