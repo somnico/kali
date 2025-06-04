@@ -1,7 +1,7 @@
 #!/bin/bash
 
 for f in frame-*.png; do
-  convert "$f" -resize 512x512 -blur 0x1 -threshold 60% "tmp-${f%.png}.pgm"
+  convert "$f" -resize 512x512 -blur 0x2 -monochrome -dither FloydSteinberg "tmp-${f%.png}.pgm"
 done
 
 for f in tmp-frame-*.pgm; do
