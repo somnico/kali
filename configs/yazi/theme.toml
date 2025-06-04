@@ -14,7 +14,7 @@ dark  = "kanagawa"
 # : Manager {{{
 
 [mgr]
-cwd = { fg = "cyan" }
+cwd = { fg = "blue" }
 
 # Hovered
 hovered = { reversed = true }
