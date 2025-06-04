@@ -5,11 +5,19 @@
 # Install plugins
 git clone https://github.com/supercrabtree/k $ZSH_CUSTOM/plugins/k
 
+# Configure plugins
+sudo curl -o ~/.oh-my-zsh/plugins/tmux/tmux.only.conf https://raw.githubusercontent.com/somnico/kali/master/configs/tmux.only.conf
+
+
 # Shodan workaround
 source ~/.local/share/pipx/venvs/shodan/bin/activate
 sudo pip install --break-system-packages --upgrade setuptools
 pipx install shodan --pip-args="--upgrade setuptools"
 shodan init ...
+
+# Install encryption tools
+kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.29.0/controller.yaml
+
 
 # Install Docker
 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian bookworm stable" | sudo tee /etc/apt/sources.list.d/docker.list
@@ -52,6 +60,18 @@ wget https://github.com/sharkdp/hyperfine/releases/download/v1.19.0/hyperfine_1.
 sudo dpkg -i hyperfine_1.19.0_amd64.deb
 sudo rm -rf hyperfine_1.19.0_amd64.deb
 
+# Install dragon
+git clone https://github.com/mwh/dragon.git
+cd dragon
+sudo make install
+cd ..
+sudo rm -rf dragon
+
+[[mgr.prepend_keymap]]
+on = "<C-x>"
+run = "shell -- dragon -x -i -T \"$1\" --confirm"
+desc = "Open the file in a GUI menu"
+
 # Setup AWS CLI
 expect << 'EOF'
 set timeout 10
@@ -88,7 +108,10 @@ sudo python3 setup.py build
 sudo python3 setup.py install
 cd ../..
 
-
+# Install browser
+wget "https://www.palemoon.org/download.php?mirror=eu&bits=64&type=linuxgtk3" -O palemoon.tar.xz
+tar -xvf palemoon.tar.xz
+sudo rm -f palemoon.tar.xz
 
 # Yazi alternate installs
 sudo snap install yazi --classic --edge
@@ -143,11 +166,17 @@ zstyle ':omz:plugins:eza' 'dirs-first' yes
 zstyle ':omz:plugins:eza' 'header' yes
 zstyle ':omz:plugins:eza' 'show-group' yes
 zstyle ':omz:plugins:eza' 'icons' yes
+zstyle :omz:plugins:ssh-agent quiet yes
+zstyle :omz:plugins:keychain agents gpg,ssh
+zstyle :omz:plugins:keychain options --quiet
+zstyle :omz:plugins:keychain identities <SSH key filenames in ~/.ssh/> <GPG key ID --list-secret-keys>
 
 # Plugins 
 plugins=(
+  git
+  tmux
   zsh-autocomplete
-  command-not-found
+  fzf-zsh-plugin
   poetry
   poetry-env
   thefuck
@@ -202,6 +231,16 @@ zstyle :bracketed-paste-magic paste-finish pastefinish
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 enable-fzf-tab
 
+sudo ln -s /usr/share/doc/fzf/examples/key-bindings.zsh ~/.fzf/shell/key-bindings.zsh
+sudo ln -s /usr/share/doc/fzf/examples/completion.zsh ~/.fzf/shell/completion.zsh
+
+export FZF_DEFAULT_OPTS="--input-border=rounded"
+
+# Fzf-tab configuration
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color=always ${realpath}'
+zstyle ':completion:*' file-patterns '%p'
+zstyle ':fzf-tab:*' fzf-flags --height ~90%
+
 # Zoxide without omz plugin
 eval "$(zoxide init --cmd cd zsh)"
 
@@ -247,6 +286,63 @@ n () {
     }
 }
 
+# Fuzzy history search
+fzf-history-widget() {
+  local selected_cmd temp_cmd
+
+  temp_cmd=$(fc -rln 1 | tac | fzf +s --height=70% --exact --tac --query "$LBUFFER" \
+    --bind 'enter:accept' \
+    --bind 'right:execute-silent(echo {} > ~/.fzf_right_arrow_cmd)+abort' \
+    --bind 'ctrl-a:execute-silent(echo {} > ~/.fzf_ctrl_a_cmd)+abort' \
+    --bind 'left:execute-silent(echo "$(echo {} | sed "s/[^ ]* *$//")" > ~/.fzf_left_arrow_cmd)+abort' \
+    --bind 'ctrl-c:abort' \
+    --bind 'ctrl-q:execute-silent(echo -n {} | xclip -selection clipboard)+abort'
+    )
+
+  if [[ $? -eq 0 ]]; then
+    BUFFER=$temp_cmd
+    zle accept-line
+
+  elif [[ -f ~/.fzf_right_arrow_cmd ]]; then
+    BUFFER="$(<~/.fzf_right_arrow_cmd) "
+    rm ~/.fzf_right_arrow_cmd
+    CURSOR=$#BUFFER
+    zle redisplay
+
+  elif [[ -f ~/.fzf_ctrl_a_cmd ]]; then
+    BUFFER="$(<~/.fzf_ctrl_a_cmd)"
+    rm ~/.fzf_ctrl_a_cmd
+    CURSOR=0
+    zle redisplay
+
+  elif [[ -f ~/.fzf_left_arrow_cmd ]]; then
+    BUFFER="$(<~/.fzf_left_arrow_cmd)"
+    rm ~/.fzf_left_arrow_cmd
+    CURSOR=$#BUFFER
+    zle redisplay
+
+  else
+    BUFFER=""
+    zle redisplay
+  fi
+}
+
+tes() {
+  result=$(fdfind -t d -E "/mnt" | fzf $1)
+  cd $result
+  unset result
+}
+
+
+# Various
+export LS_COLORS="$(vivid generate dracula)"
+export LC_ALL="C"
+
+# Long paths
+hash -d h=/long/useless/path/to/project
+
+# Startup
+echo "kali" | figlet -f fraktur | boxes -d ian_jones -a hcvc -p h6v0 | lolcat -f -a -d 1 -p 5 -F 0.03 -S 110
 
 # AWS autocomplete
 export PATH=/usr/libexec/:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:$PATH
@@ -257,6 +353,7 @@ complete -C '/usr/libexec/aws_completer' aws
 # SDKMAN must be at the end
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
 
 
 ############
@@ -326,46 +423,12 @@ function prompt_custom_cached() {
   p10k segment -b 4 -f 7 -t "${truncated_dir}"
 }
 
-# Fuzzy history search
-fzf-history-widget() {
-  local selected_cmd temp_cmd
-
-  temp_cmd=$(fc -rln 1 | tac | fzf +s --height=70% --exact --tac --query "$LBUFFER" \
-    --bind 'enter:accept' \
-    --bind 'right:execute-silent(echo {} > ~/.fzf_right_arrow_cmd)+abort' \
-    --bind 'ctrl-a:execute-silent(echo {} > ~/.fzf_ctrl_a_cmd)+abort' \
-    --bind 'left:execute-silent(echo "$(echo {} | sed "s/[^ ]* *$//")" > ~/.fzf_left_arrow_cmd)+abort' \
-    --bind 'ctrl-c:abort' \
-    --bind 'ctrl-q:execute-silent(echo -n {} | xclip -selection clipboard)+abort'
-    )
-
-  if [[ $? -eq 0 ]]; then
-    BUFFER=$temp_cmd
-    zle accept-line
-
-  elif [[ -f ~/.fzf_right_arrow_cmd ]]; then
-    BUFFER="$(<~/.fzf_right_arrow_cmd) "
-    rm ~/.fzf_right_arrow_cmd
-    CURSOR=$#BUFFER
-    zle redisplay
-
-  elif [[ -f ~/.fzf_ctrl_a_cmd ]]; then
-    BUFFER="$(<~/.fzf_ctrl_a_cmd)"
-    rm ~/.fzf_ctrl_a_cmd
-    CURSOR=0
-    zle redisplay
-
-  elif [[ -f ~/.fzf_left_arrow_cmd ]]; then
-    BUFFER="$(<~/.fzf_left_arrow_cmd)"
-    rm ~/.fzf_left_arrow_cmd
-    CURSOR=$#BUFFER
-    zle redisplay
-
-  else
-    BUFFER=""
-    zle redisplay
-  fi
-}
 
 # Commands to remember
 zoxide jump = zi
+
+async_flush_jobs worker
+
+forgit
+
+ctags -R . 
