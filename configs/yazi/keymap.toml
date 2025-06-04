@@ -34,9 +34,9 @@ run  = "plugin diff"
 desc = "Diff the selected with the hovered file"
 
 [[mgr.prepend_keymap]]
-on = "<C-q>"
-run = "shell -- cat \"$@\" | xclip -selection clipboard"
-desc = "Copy file content to clipboard"
+on   = "t"
+run  = "plugin smart-tab"
+desc = "Create a tab and enter the hovered directory"
 
 [[input.prepend_keymap]]
 on   = "<Esc>"
@@ -44,6 +44,11 @@ run  = "close"
 desc = "Cancel input"
 
 [[mgr.prepend_keymap]]
-on   = "t"
-run  = "plugin smart-tab"
-desc = "Create a tab and enter the hovered directory"
+on = "<C-q>"
+run = "shell -- cat \"$@\" | xclip -selection clipboard"
+desc = "Copy file content to clipboard"
+
+[[mgr.prepend_keymap]]
+on = "<C-x>"
+run = "shell -- ripdrag \"$@\" -x 2>/dev/null & --confirm"
+desc = "Open the file in a GUI menu"
