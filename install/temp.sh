@@ -114,20 +114,24 @@ git clone --depth 1 -- https://github.com/reegnz/jq-zsh-plugin.git ${ZSH_CUSTOM:
 git clone --depth 1 -- https://github.com/MichaelAquilina/zsh-auto-notify.git $ZSH_CUSTOM/plugins/auto-notify
 git clone --depth 1 -- https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab
 git clone --depth 1 -- https://github.com/babarot/enhancd.git $ZSH_CUSTOM/plugins/enhancd
+git clone https://github.com/Freed-Wu/fzf-tab-source.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab-source
+git clone https://github.com/mafredri/zsh-async.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-async
+git clone https://github.com/romkatv/zsh-bench ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-bench
+git clone https://github.com/wfxr/forgit.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/forgit
+
 git clone https://github.com/sigoden/argc-completions.git ~/.config/argc-completions
-git clone https://github.com/romkatv/zsh-bench ~/zsh-bench
 sudo apt-get install -y direnv
 
 # Powerlevel configuration
 sudo curl -o ~/.p10k.zsh https://gist.githubusercontent.com/somnico/b71f23f21f931d6d9c2445719c571ab5/raw 
 
-# Plugin configuration
+# Configure plugins
 sudo curl -o ~/.oh-my-zsh/plugins/dirhistory/dirhistory.plugin.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/dirhistory.plugin.zsh
 sudo curl -o ~/.oh-my-zsh/custom/plugins/fzf-tab/lib/ftb-tmux-popup https://raw.githubusercontent.com/somnico/kali/master/configs/ftb-tmux-popup
-sudo curl -o ~/.oh-my-zsh/plugins/tmux/tmux.only.conf https://raw.githubusercontent.com/somnico/kali/master/configs/tmux.only.conf
+sudo curl -o ~/.tmux.conf https://raw.githubusercontent.com/somnico/kali/master/configs/.tmux.conf
 echo 'export skip_global_compinit=1' >> ~/.zshenv
 mkdir -p ~/.oh-my-zsh/plugins/znap/
-mkdir -p ~/.zsh/cache 
+mkdir -p ~/.zsh/cache
 
 # Keybinds
 sudo curl -o ~/.oh-my-zsh/lib/key-bindings.zsh https://raw.githubusercontent.com/somnico/kali/master/configs/key-bindings.zsh
@@ -136,11 +140,19 @@ sudo curl -o ~/.oh-my-zsh/lib/key-bindings.zsh https://raw.githubusercontent.com
 # Install python
 sudo apt-get install -y python3 python3-dev python3-pip pipx python3-venv python3-setuptools python3-cffi python3-pypandoc git build-essential libssl-dev libffi-dev 
 source ~/.profile
-pipx install wheel poetry uv virtualenv virtualenvwrapper
+pipx install ipython uv poetry virtualenv virtualenvwrapper wheel
 python3 -m pip install --upgrade pip --no-warn-script-location
+
+# Python configuration
+ipython profile create
+echo "c.TerminalIPythonApp.display_banner = False" >> ~/.ipython/profile_default/ipython_config.py
+echo "c.InteractiveShell.colors = 'linux'" >> ~/.ipython/profile_default/ipython_config.py
 
 # Install rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
+
+# Install ruby
+sudo apt-get install -y ruby3.3-dev   
 
 # Install lazy script
 git clone https://github.com/arismelachroinos/lscript.git
@@ -168,7 +180,10 @@ sudo chmod +x pid.sh
 sudo -H pip install -U oletools[full]
 
 # Install network tools
-sudo apt-get install-y  wireguard  
+sudo apt-get install -y wireguard  
+
+# Install database tools
+sudo apt-get install -y sqlite3
 
 # Install encryption tools
 gem install fpm
@@ -181,17 +196,23 @@ curl -LO https://github.com/getsops/sops/releases/download/v3.10.2/sops-v3.10.2.
 mv sops-v3.10.2.linux.amd64 /usr/local/bin/sops
 chmod +x /usr/local/bin/sops
 
+curl -OL "https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.29.0/kubeseal-0.29.0-linux-amd64.tar.gz"
+tar -xvzf kubeseal-0.29.0-linux-amd64.tar.gz kubeseal
+sudo install -m 755 kubeseal /usr/local/bin/kubeseal
+sudo rm -rf kubeseal kubeseal-0.29.0-linux-amd64.tar.gz
+
 # Install container tools
 curl -s https://raw.githubusercontent.com/89luca89/distrobox/main/install | sudo sh
 
 
 # Install helpers
 sudo apt-get install -y nodejs npm snapd
-sudo systemctl enable --now snapd.socket && sudo systemctl enable --now snapd.apparmor
-sudo apt-get install -y bat zoxide lsd eza fzf fzy fd-find ripgrep silversearcher-ag ack rsync mosh
-sudo ln -s $(which fdfind) /usr/bin/fd 
+sudo apt-get install -y zoxide bat lsd eza fzf fzy fd-find ripgrep silversearcher-ag ack broot rsync mosh
 sudo npm install -g tldr zx
-sudo updatedb
+
+git clone https://github.com/eth-p/bat-extras.git
+sudo ./build.sh --install --prefix=/usr/local --minify=lib
+sudo rm -rf bat-extras
 
 # Install televsion
 VER=`curl -s "https://api.github.com/repos/alexpasmantier/television/releases/latest" | grep '"tag_name":' | sed -E 's/.*"tag_name": "([^"]+)".*/\1/'`
@@ -199,9 +220,13 @@ curl -LO https://github.com/alexpasmantier/television/releases/download/$VER/tv-
 sudo dpkg -i tv-$VER-x86_64-unknown-linux-musl.deb
 
 # Configure helpers
+sudo updatedb
 mkdir -p ~/.fzf/shell
-sudo ln -s /usr/share/doc/fzf/examples/key-bindings.zsh ~/.fzf/shell/key-bindings.zsh
-sudo ln -s /usr/share/doc/fzf/examples/completion.zsh ~/.fzf/shell/completion.zsh
+sudo systemctl enable --now snapd.socket 
+sudo systemctl enable --now snapd.apparmor
+sudo ln -s /usr/bin/batcat ~/.local/bin/bat  
+sudo ln -s $(which fdfind) ~/.local/bin/fd
+ 
 
 # Install q
 curl --proto '=https' --tlsv1.2 -sSf "https://desktop-release.q.us-east-1.amazonaws.com/latest/q-x86_64-linux.zip" -o "q.zip"
@@ -286,6 +311,8 @@ mkdir -p ~/.config/icons/
 sudo curl -o ~/.config/icons/index.csv https://raw.githubusercontent.com/somnico/kali/master/images/icons/index.csv
 
 # Install tmux utilities
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
 gem install tmuxinator
 sudo wget https://raw.githubusercontent.com/tmuxinator/tmuxinator/master/completion/tmuxinator.zsh -O /usr/local/share/zsh/site-functions/_tmuxinator
 
@@ -317,11 +344,11 @@ sudo mv sysbox /usr/local/bin/
 
 # Install utilities
 sudo apt-get install -y autoconf pcf2bdf xfonts-75dpi xfonts-base zlib1g-dev libreadline-dev udiskie moreutils ncurses-bin libcurses-perl libncurses-dev libncursesw5-dev
-sudo apt-get install -y sl pv oneko scdoc procps g++ pkg-config libpoppler-glib-dev poppler-utils apt-transport-https ca-certificates software-properties-common
-sudo apt-get install -y libtool libsixel-dev libpng-dev libjpeg-dev libtiff-dev libgraphicsmagick++-dev libturbojpeg-dev libexif-dev libaa-bin libmpv-dev 
+sudo apt-get install -y sl pv oneko scdoc procps g++ pkg-config libpoppler-glib-dev poppler-utils libpoppler-cpp-dev apt-transport-https ca-certificates software-properties-common
+sudo apt-get install -y libtool libsixel-dev libpng-dev libjpeg-dev libtiff-dev libgraphicsmagick++-dev libturbojpeg-dev libexif-dev libaa-bin libmpv-dev
 sudo apt-get install -y libpthread-stubs0-dev libswscale-dev libdeflate-dev librsvg2-dev libcairo-dev libavcodec-dev libavformat-dev libavdevice-dev libavutil-dev
-sudo apt-get install -y expat libxml2-dev libasound2-dev libfreetype6-dev libexpat1-dev libxcb-composite0-dev libharfbuzz-dev libfontconfig1-dev 
-sudo apt-get install -y doctest-dev libgpm-dev libqrcodegen-dev libunistring-dev libfuse2
+sudo apt-get install -y expat libxml2-dev libasound2-dev libfreetype6-dev libexpat1-dev libxcb-composite0-dev libharfbuzz-dev libfontconfig1-dev libqrcodegen-dev
+sudo apt-get install -y doctest-dev libgpm-dev libunistring-dev libfuse2 libgtk-4-dev gtk+-3.0 libxcb-xfixes0-dev libxcb-shape0-dev libxcb-render0-dev libxcb1-dev
 
 # Install build tools
 curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to $HOME/.local/bin
@@ -333,31 +360,55 @@ curl https://get.please.build | bash
 pipx install snakemake
 
 # Install a bunch of stuff
-sudo apt-get install -y fortune-mod cowsay lolcat boxes cmatrix vitetris caca-utils hollywood timg chafa jp2a bsdgames thefuck
-sudo apt-get install -y clusterssh keychain jq yq gawk pandoc httpie texinfo hexyl ffmpeg imagemagick fontforge unicode xdotool xcel xclip trash-cli man-db procs 
-sudo apt-get install -y fastfetch magic-wormhole neomutt soft-serve taskwarrior time googler ddgr buku htop btop iftop duf ansilove aha asciinema gifsicle yt-dlp
+sudo apt-get install -y fortune-mod cowsay lolcat boxes cmatrix vitetris caca-utils hollywood timg chafa jp2a bsdgames thefuck 
+sudo apt-get install -y clusterssh keychain jq yq gawk pandoc httpie texinfo hexyl ffmpeg imagemagick fontforge unicode xdotool xcel xclip trash-cli man-db procs shfmt
+sudo apt-get install -y fastfetch magic-wormhole neomutt soft-serve taskwarrior time googler ddgr buku htop btop iftop duf grc ansilove aha asciinema gifsicle yt-dlp
 
 # Configuration for a bunch of stuff
 mkdir -p ~/.config/btop
-sudo curl -o ~/.config/btop/btop.conf https://raw.githubusercontent.com/somnico/kali/refs/heads/master/configs/btop.conf
+sudo curl -o ~/.config/btop/btop.conf https://raw.githubusercontent.com/somnico/kali/master/configs/btop.conf
 
-# Install browser
-wget "https://www.palemoon.org/download.php?mirror=eu&bits=64&type=linuxgtk3" -O palemoon.tar.xz
-tar -xvf palemoon.tar.xz
-sudo rm -f palemoon.tar.xz
+git clone https://github.com/wofr06/lesspipe.git
+cd lesspipe
+sudo cp lesspipe.sh /usr/local/bin/
+sudo cp lesscomplete /usr/local/bin
+sudo cp _less /usr/share/zsh/site-functions
+sudo cp code2color archive_color vimcolor lesscomplete /usr/local/bin
+cd ..
+sudo rm -rf lesspipe  
+sudo curl -o ~/.lessfilter https://raw.githubusercontent.com/somnico/kali/master/configs/.lessfilter
+chmod +x ~/.lessfilter
 
-pipx install xxh-xxh supervisor percol dooit dooit-extras
 
-cargo install resvg display3d git-delta silicon
+curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
+sudo curl -o ~/.config/atuin/config.toml https://raw.githubusercontent.com/somnico/kali/master/configs/atuin/config.toml
+# inherit blame narrow clutch usual syrup spell silly humble judge leave square because prepare dismiss recycle section follow lawsuit roof twin repair slogan brass
+
+pipx install xxh-xxh supervisor percol dooit dooit-extras pdftotext
+
 cargo install --git https://github.com/asciinema/agg
+cargo install ripdrag grip-grab resvg display3d git-delta silicon
+
+GET=https://github.com/hjson/hjson-go/releases/download/v4.5.0/hjson_v4.5.0_linux_amd64.tar.gz
+curl -sSL $GET | sudo tar -xz -C /usr/local/bin
 
 sudo snap install glow
 sudo snap install ttyd --classic
 
-git clone https://github.com/trapd00r/LS_COLORS.git ~/.local/share/lscolors
+# Install color tools
 wget "https://github.com/sharkdp/vivid/releases/download/v0.8.0/vivid_0.8.0_amd64.deb"
 sudo dpkg -i vivid_0.8.0_amd64.deb
 sudo rm -rf vivid_0.8.0_amd64.deb
+
+wget "https://github.com/sharkdp/pastel/releases/download/v0.8.1/pastel_0.8.1_amd64.deb"
+sudo dpkg -i pastel_0.8.1_amd64.deb
+sudo rm -rf pastel_0.8.1_amd64.deb
+
+git clone https://github.com/trapd00r/LS_COLORS.git ~/.local/share/lscolors
+
+gem install colorls
+
+pipx install colorz pywal
 
 
 curl -s "https://get.sdkman.io" | bash
@@ -375,9 +426,6 @@ sudo rm -rf wkhtmltox_0.12.6.1-2.bullseye_amd64.deb
 
 sudo npm install -g svg-term-cli wipeclean 
 
-curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
-sudo curl -o ~/.config/atuin/config.toml https://raw.githubusercontent.com/somnico/kali/master/configs/config.toml
-# inherit blame narrow clutch usual syrup spell silly humble judge leave square because prepare dismiss recycle section follow lawsuit roof twin repair slogan brass
 
 curl -LO https://github.com/wtfutil/wtf/releases/download/v0.43.0/wtf_0.43.0_linux_amd64.tar.gz
 tar -xzf wtf_0.43.0_linux_amd64.tar.gz
@@ -568,8 +616,7 @@ exec zsh
 # source ~/zsh-syntax-highlighting/zsh-syntax-highlighting.sh' ~/.zshrc
 
 # Docks
-# sudo apt-get install -y cairo-dock
-# sudo apt-get install -y plank
+# sudo apt-get install -y cairo-dock plank
 
 # Greetings
 # fortune | cowsay -f "$(ls /usr/share/cowsay/cows | sort -R | head -1)" | lolcat -a -d 1
@@ -584,9 +631,6 @@ exec zsh
 # columns, ian_jones, twisted
 # ascii, digit, extra, diagonal, alpha, stipple, technical, wide
 # 2, 6, 7, 10, 12, 13, 17, 24
-
-# Display clock
-# while sleep 1;do tput sc;tput cup 0 $(($(tput cols)-29));date;tput rc;done &
 
 # AWS alternative
 # mkdir -p ~/.aws/
@@ -613,6 +657,9 @@ exec zsh
 
 # Blinking
 # echo -e "\e[5mBlinking Text\e[25m" 
+
+# Display clock
+# while sleep 1;do tput sc;tput cup 0 $(($(tput cols)-29));date;tput rc;done &
 
 # Color reference
 # for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$'\n'}; done
