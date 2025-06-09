@@ -1,0 +1,22 @@
+{
+    "colorscheme": "custom",
+    "keymenu": false,
+    "statusline": false,
+    "statusformatl": "$(filename)",
+    "statusformatr": "",
+    "basename": false,
+    "parsecursor": true,
+    "divreverse": false,
+    "divchars": "│─",
+    "scrollbar": true,
+    "scrollbarchar": "▋",
+    "scrollmargin": 5,
+    "autosu": true,
+    "diffgutter": true,
+    "hlsearch": true,
+    "matchbracestyle": "highlight",
+    "rmtrailingws": true,
+    "savecursor": true,
+    "saveundo": true,
+    "multiopen": "tab" 
+}
