@@ -102,10 +102,7 @@ broken_symlink: {foreground: Red}
 broken_path_overlay: {foreground: Default, is_underline: true}
 
 filenames:
-  # Custom filename-based overrides
   work: {icon: {glyph: 📁}}
-  .: { icon: { glyph: 󾋰 } }
-  
+
 extensions:
-  # Custom extension-based overrides
-  # sh: {filename: {foreground: Red}, icon: {glyph: 🦀}}
+  rs: {filename: {foreground: Red}, icon: {glyph: 🦀}}
