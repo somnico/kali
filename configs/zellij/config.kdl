@@ -240,31 +240,18 @@ keybinds clear-defaults=true {
 
 
 themes {
-    darcula {
-        fg 248 248 242
-        bg 41 45 62
-        red 255 85 85
-        green 80 250 123
-        yellow 241 250 140
-        blue 98 114 164
-        magenta 255 121 198
-        orange 255 184 108
-        cyan 139 233 253
-        black 41 45 62
-        white 255 255 255
-    }
     custom {
         text_unselected {
             base 192 202 245
-            background 41 45 62
-            emphasis_0 255 158 100
+            background 0
+            emphasis_0 142 135 122
             emphasis_1 42 195 222
-            emphasis_2 158 206 106
+            emphasis_2 117 123 200
             emphasis_3 187 154 247
         }
         text_selected {
             base 192 202 245
-            background 41 45 62
+            background 0
             emphasis_0 255 158 100
             emphasis_1 42 195 222
             emphasis_2 158 206 106
@@ -272,16 +259,16 @@ themes {
         }
         ribbon_selected {
             base 41 45 62
-            background 158 206 106
-            emphasis_0 249 51 87
-            emphasis_1 255 158 100
+            background 117 123 200
+            emphasis_0 49 51 87
+            emphasis_1 55 158 100
             emphasis_2 187 154 247
             emphasis_3 122 162 247
         }
         ribbon_unselected {
-            base 41 45 62
-            background 169 177 214
-            emphasis_0 249 51 87
+            base 0
+            background 186 187 241
+            emphasis_0 0
             emphasis_1 192 202 245
             emphasis_2 122 162 247
             emphasis_3 187 154 247
@@ -343,7 +330,7 @@ themes {
             emphasis_3 0
         }
         frame_highlight {
-            base 255 158 100
+            base 117 123 200
             background 0
             emphasis_0 187 154 247
             emphasis_1 255 158 100
