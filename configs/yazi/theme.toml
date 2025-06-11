@@ -46,7 +46,7 @@ border_style  = { fg = "#3F4866" }
 
 
 # Highlighting
-syntect_theme = ""
+syntect_theme = "base16-ocean.light"
 
 # : }}}
 
