@@ -10,7 +10,7 @@ sort_reverse   = false
 sort_dir_first = true
 sort_translit  = false
 linemode       = "size"
-show_hidden    = false
+show_hidden    = true
 show_symlink   = true
 scrolloff      = 5
 mouse_events   = [ "click", "scroll", "move", "drag" ]
@@ -19,8 +19,8 @@ title_format   = "Yazi: {cwd}"
 [preview]
 wrap            = "no"
 tab_size        = 2
-max_width       = 600
-max_height      = 900
+max_width       = 2000
+max_height      = 2000
 cache_dir       = ""
 image_delay     = 30
 image_filter    = "triangle"
@@ -32,8 +32,8 @@ ueberzug_offset = [ 0, 0, 0, 0 ]
 [opener]
 edit = [
 	{ run = '${EDITOR:-vi} "$@"', desc = "$EDITOR", block = true, for = "unix" },
-	{ run = 'code %*',    orphan = true, desc = "code",           for = "windows" },
-	{ run = 'code -w %*', block = true,  desc = "code (block)",   for = "windows" },
+	# { run = 'code %*',    orphan = true, desc = "code",           for = "windows" },
+	# { run = 'code -w %*', block = true,  desc = "code (block)",   for = "windows" },
 ]
 open = [
 	{ run = 'xdg-open "$1"',                desc = "Open", for = "linux" },
@@ -88,10 +88,17 @@ image_bound      = [ 0, 0 ]
 suppress_preload = false
 
 [plugin]
+
+prepend_fetchers = [
+  { id = "git", name = "*", run = "git" },
+  { id = "git", name = "*/", run = "git" },
+]
+
 fetchers = [
 	# Mimetype
 	{ id = "mime", name = "*", run = "mime", prio = "high" },
 ]
+
 spotters = [
 	{ name = "*/", run = "folder" },
 	# Code
@@ -106,6 +113,7 @@ spotters = [
 	# Fallback
 	{ name = "*", run = "file" },
 ]
+
 preloaders = [
 	# Image
 	{ mime = "image/{avif,hei?,jxl}", run = "magick" },
@@ -121,8 +129,9 @@ preloaders = [
 ]
 
 prepend_previewers = [
-  { name = "*.csv", run = 'piper -- batcat -p --color=always "$1"' },
-  # { name = "*/", run = 'piper -- eza -TL=3 --color=always --icons=always --group-directories-first --no-quotes "$1"' },
+  { name = "*.csv", run = 'piper -- bat -p --color=always "$1"' },
+  { name = "*.sh", run = 'piper -- bat --style="numbers,changes" --color=always "$1"' },
+#   { name = "*/", run = 'piper -- eza -TL=3 --color=always --icons=always --group-directories-first --no-quotes "$1"' },
 ]
 
 previewers = [
@@ -133,9 +142,9 @@ previewers = [
 	# JSON
 	{ mime = "application/{json,ndjson}", run = "json" },
 	# Image
-	{ mime = "image/{avif,hei?,jxl}", run = "magick" },
-	{ mime = "image/svg+xml", run = "svg" },
-	{ mime = "image/*", run = "image" },
+	# { mime = "image/{avif,hei?,jxl}", run = "magick" },
+	# { mime = "image/svg+xml", run = "svg" },
+	# { mime = "image/*", run = "image" },
 	# Video
 	{ mime = "video/*", run = "video" },
 	# PDF
