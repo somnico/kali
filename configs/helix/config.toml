@@ -1,11 +1,23 @@
 theme = "custom"
 
+# Yazi integration
 [keys.normal]
 C-y = ":sh tmux new-window -n fx '~/.config/helix/yazi-picker-tmux.sh open'"
 C-u = ":sh zellij run -n Yazi -c -f -x 10% -y 10% --width 80% --height 80% -- bash ~/.config/helix/yazi-picker-zellij.sh open"
-# C-y = ":sh zellij run -d left -- bash ~/.config/helix/yazi-picker.sh"
+
+# C-u = ":sh zellij run -d left -- bash ~/.config/helix/yazi-picker-zellij.sh"
 
 # [keys.normal.C-y]
+# y = ":sh tmux new-window -n fx '~/.config/helix/yazi-picker-tmux.sh open"
+# v = ":sh tmux new-window -n fx '~/.config/helix/yazi-picker-tmux.sh vsplit"
+# h = ":sh tmux new-window -n fx '~/.config/helix/yazi-picker-tmux.sh hsplit"
+
+# [keys.normal.C-u]
 # y = ":sh zellij run -n Yazi -c -f -x 10% -y 10% --width 80% --height 80% -- bash ~/.config/helix/yazi-picker-zellij.sh open"
 # v = ":sh zellij run -n Yazi -c -f -x 10% -y 10% --width 80% --height 80% -- bash ~/.config/helix/yazi-picker-zellij.sh vsplit"
 # h = ":sh zellij run -n Yazi -c -f -x 10% -y 10% --width 80% --height 80% -- bash ~/.config/helix/yazi-picker-zellij.sh hsplit"
+
+# REPL runner
+[keys.normal.'\']
+space = [''':pipe-to tmux load-buffer - \; paste-buffer -dpr -t '{right-of}' \; send-keys -t '{right-of}' Enter''']
+'\' = [''':sh tmux send-keys Q/# Space %% Enter O# Escape Escape Nvg.a BSpace BSpace Escape Escape \\ Space uuQ''']
