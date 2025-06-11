@@ -1,0 +1,6 @@
+theme: custom
+animation: full
+response:
+  prettify_json: true
+heading:
+  visible: false
