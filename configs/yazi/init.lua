@@ -1,72 +1,105 @@
--- Plugins
-if os.getenv("NVIM") then
-	require("toggle-pane"):entry("min-preview")
-end
+[[mgr.prepend_keymap]]
+on   = "<Right>"
+run  = "plugin smart-enter"
+desc = "Enter the child directory, or open the file"
 
-require("full-border"):setup {
-	type = ui.Border.ROUNDED,
-}
+[[mgr.prepend_keymap]]
+on   = "b"
+run  = "plugin jump-to-char"
+desc = "Jump to char"
 
-require("smart-enter"):setup {
-	open_multi = true,
-}
+[[mgr.prepend_keymap]]
+on  = "M"
+run = "plugin mount"
+desc = "Mount filesystem"
 
-require("zoxide"):setup {
-	update_db = true,
-}
+[[mgr.prepend_keymap]]
+on   = "F"
+run  = "plugin smart-filter"
+desc = "Smart filter"
 
-th.git = th.git or {}
-th.git.modified = ui.Style():fg("yellow")
-th.git.added = ui.Style():fg("green")
-th.git.untracked = ui.Style():fg("purple")
-th.git.ignored = ui.Style():fg("red")
-th.git.deleted = ui.Style():fg("red")
-th.git.updated = ui.Style():fg("yellow")
+[[mgr.prepend_keymap]]
+on   = [ "c", "m" ]
+run  = "plugin chmod"
+desc = "Chmod on selected files"
 
-th.git.modified_sign = "M"
-th.git.added_sign = "A"
-th.git.untracked_sign = "T"
-th.git.ignored_sign = "I"
-th.git.deleted_sign = "D"
-th.git.updated_sign = "U"
+[[mgr.prepend_keymap]]
+on   = "p"
+run  = "plugin smart-paste"
+desc = "Paste into the hovered directory or CWD"
 
-require("git"):setup()
+[[mgr.prepend_keymap]]
+on   = "<C-d>"
+run  = "plugin diff"
+desc = "Diff the selected with the hovered file"
 
--- require("no-status"):setup()
+[[mgr.prepend_keymap]]
+on   = "t"
+run  = "plugin smart-tab"
+desc = "Create a tab and enter the hovered directory"
 
--- require("folder-rules"):setup()
+[[mgr.prepend_keymap]]
+on   = "T"
+run  = "plugin toggle-pane min-preview"
+desc = "Show or hide the preview pane"
+
+[[mgr.prepend_keymap]]
+on   = "P"
+run  = "plugin toggle-pane max-preview"
+desc = "Maximize or restore the preview pane"
+
+[[mgr.prepend_keymap]]
+on  = "<C-Down>"
+run = "plugin parent-arrow 1"
+desc = "Scroll down in parent directory"
+
+[[mgr.prepend_keymap]]
+on  = "<C-Up>"
+run = "plugin parent-arrow -1"
+desc = "Scroll up in parent directory"
 
 
--- Show symlink in status bar
-Status:children_add(function(self)
-	local h = self._current.hovered
-	if h and h.link_to then
-		return " -> " .. tostring(h.link_to)
-	else
-		return ""
-	end
-end, 3300, Status.LEFT)
+[[input.prepend_keymap]]
+on   = "<Esc>"
+run  = "close"
+desc = "Cancel input"
 
--- Show user and group in status bar
-Status:children_add(function()
-	local h = cx.active.current.hovered
-	if not h or ya.target_family() ~= "unix" then
-		return ""
-	end
+[[mgr.prepend_keymap]]
+on = "<C-q>"
+run = "shell -- cat \"$@\" | xclip -selection clipboard"
+desc = "Copy file content to clipboard"
 
-	return ui.Line {
-		ui.Span(ya.user_name(h.cha.uid) or tostring(h.cha.uid)):fg("magenta"),
-		":",
-		ui.Span(ya.group_name(h.cha.gid) or tostring(h.cha.gid)):fg("magenta"),
-		" ",
-	}
-end, 500, Status.RIGHT)
+[[mgr.prepend_keymap]]
+on = "<C-w>"
+run = "shell -- realpath \"$1\" | xclip -selection clipboard"
+desc = "Copy path to clipboard"
 
--- Show username and hostname in header
-Header:children_add(function()
-	if ya.target_family() ~= "unix" then
-		return ""
-	end
-	-- return ui.Span(ya.user_name() .. "@" .. ya.host_name() .. ":"):fg("blue")
-	return ui.Span("  ")
-end, 500, Header.LEFT)
+[[mgr.prepend_keymap]]
+on = "<C-x>"
+run = "shell -- ripdrag \"$@\" -x 2>/dev/null & --confirm"
+desc = "Open the file in a GUI menu"
+
+
+
+[[mgr.prepend_keymap]]
+on = "<S-Down>"
+run = "seek 1"
+desc = "Seek down 5 units in the preview"
+
+[[mgr.prepend_keymap]]
+on = "<S-Up>"
+run = "seek -1"
+desc = "Seek up 5 units in the preview"
+
+[[mgr.prepend_keymap]]
+on = "<S-PageDown>"
+run = "seek 100%"
+desc = "Seek down a page in the preview"
+
+[[mgr.prepend_keymap]]
+on = "<S-PageUp>"
+run = "seek -100%"
+desc = "Seek up a page in the preview"
+
+
+
