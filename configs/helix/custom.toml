@@ -1,0 +1,6 @@
+inherits = "material_deep_ocean"
+
+"ui.background" = "#292d3e"
+"ui.background.separator" = "#592d3e"
+"ui.gutter" = "#292d3e"
+"ui.gutter.selected" = "#292d3e"
