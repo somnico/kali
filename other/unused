@@ -42,9 +42,13 @@ yes "" | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/i
 git clone -c feature.manyFiles=true --depth=2 https://github.com/spack/spack.git ~/spack  
 
 #Install helpers
+git clone https://github.com/babarot/enhancd ~/.enhancd
+
 curl https://raw.githubusercontent.com/jarun/advcpmv/master/install.sh --create-dirs -o ./advcpmv/install.sh && (cd advcpmv && sh install.sh)
 sudo cp ./advcpmv/adv{cp,mv} /usr/local/bin/
 
+# Install email clients
+sudo snap install thunderbird
 
 # Fix autocomplete freezes
 cd $ZSH_CUSTOM/plugins/zsh-autocomplete
@@ -72,6 +76,13 @@ on = "<C-x>"
 run = "shell -- dragon -x -i -T \"$1\" --confirm"
 desc = "Open the file in a GUI menu"
 
+# Install wallpaper tools
+sudo apt-get install -y variety
+
+wget https://github.com/cheesecakeufo/komorebi/releases/download/v2.1/komorebi-2.1-64-bit.deb
+sudo apt install ./komorebi-2.1-64-bit.deb
+rm komorebi-2.1-64-bit.deb
+
 # Setup AWS CLI
 expect << 'EOF'
 set timeout 10
@@ -93,21 +104,6 @@ send "\r"
 expect eof
 EOF
 
-# Install notcurses
-git clone https://github.com/dankamongmen/notcurses.git
-cd notcurses
-mkdir build
-cd build
-cmake ..
-make
-sudo make install
-sudo ldconfig
-cd ..
-cd cffi
-sudo python3 setup.py build
-sudo python3 setup.py install
-cd ../..
-
 # Install browser
 wget "https://www.palemoon.org/download.php?mirror=eu&bits=64&type=linuxgtk3" -O palemoon.tar.xz
 tar -xvf palemoon.tar.xz
@@ -116,16 +112,25 @@ sudo rm -f palemoon.tar.xz
 # Yazi alternate installs
 sudo snap install yazi --classic --edge
 
+curl -LO https://github.com/sxyazi/yazi/releases/download/v25.4.8/yazi-x86_64-unknown-linux-gnu.zip
+unzip yazi-x86_64-unknown-linux-gnu.zip
+sudo install -m 755 yazi-x86_64-unknown-linux-gnu/yazi /usr/local/bin/
+sudo rm -f yazi-x86_64-unknown-linux-gnu.zip 
+
 # Other file managers
 bash -c "$(curl -sLo- https://superfile.netlify.app/install.sh)"
 sudo apt-get install -y nnn ranger mc lf
 bash <(curl -s https://raw.githubusercontent.com/kamiyaa/joshuto/master/utils/install.sh)
 
+# Install helpers
+git clone --depth 1 https://github.com/skim-rs/skim.git ~/.skim
+~/.skim/install
+mv ~/.skim/bin/sk /usr/local/bin
 
-curl -LO https://github.com/sxyazi/yazi/releases/download/v25.4.8/yazi-x86_64-unknown-linux-gnu.zip
-unzip yazi-x86_64-unknown-linux-gnu.zip
-sudo install -m 755 yazi-x86_64-unknown-linux-gnu/yazi /usr/local/bin/
-sudo rm -f yazi-x86_64-unknown-linux-gnu.zip 
+# Helper configuration
+git clone https://github.com/eza-community/eza-themes.git
+mkdir -p ~/.config/eza
+ln -sf "$(pwd)/eza-themes/themes/default.yml" ~/.config/eza/theme.yml
 
 # Timg manual install
 git clone https://github.com/hzeller/timg.git
@@ -156,6 +161,9 @@ cd ../..
 ### zshrc ###
 #############
 
+# Set default
+chsh -s $(which zsh)
+
 # Updates for Oh My Zsh
 omz update
 zstyle ':omz:update' mode auto
@@ -175,14 +183,35 @@ zstyle :omz:plugins:keychain identities <SSH key filenames in ~/.ssh/> <GPG key 
 plugins=(
   git
   tmux
+  zoxide
   zsh-autocomplete
   fzf-zsh-plugin
   poetry
   poetry-env
   thefuck
   zbell
+  catimg
   k
 )
+
+# Shell integrations
+source ~/.enhancd/init.sh
+source /home/kali/.config/broot/launcher/bash/br
+
+source <(afx init)
+source <(afx completion zsh)
+
+# Aliases
+alias sm="sudo nano +-1"
+alias fd="fdfind"
+alias utf='export LC_ALL=en_US.UTF-8'
+alias pale="palemoon/./palemoon"
+
+alias txs="tmuxinator start"
+alias txo="tmuxinator open"	
+alias txn="tmuxinator new"	
+alias txl="tmuxinator list"
+
 
 # Not needed
 autoload -Uz compinit
@@ -228,11 +257,20 @@ zstyle :bracketed-paste-magic paste-init pasteinit
 zstyle :bracketed-paste-magic paste-finish pastefinish
 
 # Fzf configuration
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+source <(fzf --zsh)
 enable-fzf-tab
 
+mkdir -p ~/.fzf/shell
 sudo ln -s /usr/share/doc/fzf/examples/key-bindings.zsh ~/.fzf/shell/key-bindings.zsh
 sudo ln -s /usr/share/doc/fzf/examples/completion.zsh ~/.fzf/shell/completion.zsh
+
+my-fzf-tab() {
+  functions[compadd]=$functions[-ftb-compadd]
+  zle fzf-tab-complete
+}
+
+zle -N my-fzf-tab
+bindkey "^I" my-fzf-tab
 
 export FZF_DEFAULT_OPTS="--input-border=rounded"
 
@@ -241,8 +279,7 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color=always ${realpat
 zstyle ':completion:*' file-patterns '%p'
 zstyle ':fzf-tab:*' fzf-flags --height ~90%
 
-# Zoxide without omz plugin
-eval "$(zoxide init --cmd cd zsh)"
+
 
 # Recent directories
 autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
@@ -338,11 +375,28 @@ tes() {
 export LS_COLORS="$(vivid generate dracula)"
 export LC_ALL="C"
 
+
+# Variables
+if [[ -n $SSH_CONNECTION ]]; then
+  export VISUAL='vim'
+  export EDITOR='vim'
+  export GIT_EDITOR='vim'
+else
+  export EDITOR="$(which nvim)"
+  export VISUAL="$EDITOR"
+  export GIT_EDITOR="$EDITOR"
+fi
+export BAT_CONFIG_PATH="$HOME/.config/bat/bat.conf"
+
 # Long paths
 hash -d h=/long/useless/path/to/project
 
 # Startup
 echo "kali" | figlet -f fraktur | boxes -d ian_jones -a hcvc -p h6v0 | lolcat -f -a -d 1 -p 5 -F 0.03 -S 110
+lavat -g -c 292D3E -k 474E6B -s 8 -r 10 -R 5 -b 15 
+
+# Purge
+sudo find ~ -name '*Zone.Identifier' -type f -delete 
 
 # AWS autocomplete
 export PATH=/usr/libexec/:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:$PATH
