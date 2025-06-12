@@ -55,7 +55,8 @@
   # automatically hidden when the input line reaches it. Right prompt above the
   # last prompt line gets hidden if it would overlap with left prompt.
 
-  if [[ -n "$TMUX" ]]; then
+  # if [[ -n "$TMUX" || -n "$ZELLIJ_SESSION_NAME" ]]; then
+  if [[ -n "$TMUX" || "$TERM_PROGRAM" == "vscode" ]]; then
     typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=()
   else
     typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
