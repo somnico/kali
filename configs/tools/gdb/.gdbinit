@@ -32,3 +32,6 @@ end
 document init-gef
 Initializes GEF (GDB Enhanced Features)
 end
+
+
+init-peda
