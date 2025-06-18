@@ -1,8 +1,15 @@
 python
 import sys
-sys.path.insert(0, '~/tools/gdb/rizin/venv/lib/python3.13/site-packages')
+import os
+from glob import glob
+
+venv = os.path.expanduser('~/tools/gdb/rizin/venv')
+site_dir_pattern = os.path.join(venv, 'lib', 'python*/site-packages')
+site_dirs = glob(site_dir_pattern)
+sys.path.insert(0, site_dirs[0])
 import rzpipe
 end
+
 
 define init-peda
 source ~/tools/gdb/peda/peda.py
@@ -38,6 +45,3 @@ end
 document init-gef
 Initializes GEF (GDB Enhanced Features)
 end
-
-
-init-peda
