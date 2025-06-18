@@ -1,3 +1,9 @@
+python
+import sys
+sys.path.insert(0, '~/tools/gdb/rizin/venv/lib/python3.13/site-packages')
+import rzpipe
+end
+
 define init-peda
 source ~/tools/gdb/peda/peda.py
 end
