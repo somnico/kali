@@ -3,7 +3,7 @@ import sys
 import os
 from glob import glob
 
-venv = os.path.expanduser('~/tools/gdb/rizin/venv')
+venv = os.path.expanduser('~/tools/rizin/venv')
 site_dir_pattern = os.path.join(venv, 'lib', 'python*/site-packages')
 site_dirs = glob(site_dir_pattern)
 sys.path.insert(0, site_dirs[0])
