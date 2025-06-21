@@ -2,18 +2,47 @@
 ### install ###
 ###############
 
+# Change original sorting file
+sudo sed -i -e "s/<U002E> IGNORE;/<U002E> <RES-1>;/" -e "s/<U005F> IGNORE;/<U005F> <BLK>;/" -e "s/<U0021> IGNORE;/<U0021> <MIN>;/" /usr/share/i18n/locales/iso14651_t1_common
+echo "en_US.UTF-8 UTF-8" | sudo tee -a /etc/locale.gen
+sudo locale-gen
+sudo dpkg-divert --divert /usr/share/i18n/locales/iso14651_t1_common.packaged --no-rename /usr/share/i18n/locales/iso14651_t1_common
+
 # Install plugins
-git clone https://github.com/supercrabtree/k $ZSH_CUSTOM/plugins/k
+git clone https://github.com/supercrabtree/k ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/k
+git clone https://github.com/b0o/zsh-extras ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-extras
 
 # Configure plugins
 sudo curl -o ~/.oh-my-zsh/plugins/tmux/tmux.only.conf https://raw.githubusercontent.com/somnico/kali/master/configs/tmux.only.conf
 
+# Install python
+python3 -m pip install --upgrade pip setuptools wheel --no-warn-script-location
 
 # Shodan workaround
 source ~/.local/share/pipx/venvs/shodan/bin/activate
 sudo pip install --break-system-packages --upgrade setuptools
 pipx install shodan --pip-args="--upgrade setuptools"
 shodan init ...
+
+# Old yara yextend
+sudo apt-get install -y autoconf libarchive-dev libpcre3-dev uuid-dev poppler-utils 
+mkdir -p "$HOME/tools/yara/yextend"
+cd $HOME/tools/yara/
+wget https://github.com/BayshoreNetworks/yextend/archive/refs/tags/1.6.tar.gz
+tar -xvzf 1.6.tar.gz -C yextend --strip-components=1
+rm 1.6.tar.gz
+cd yextend
+pyenv install 3.8.0
+$HOME/.pyenv/versions/3.8.0/bin/python -m venv ~/tools/yara/yextend/venv
+source $HOME/tools/yara/yextend/venv/bin/activate
+pip install nose
+chmod +x build.sh
+./build.sh
+deactivate
+
+# Full openvas installation
+sudo apt-get -y install gvm
+sudo gvm setup
 
 # Install encryption tools
 kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.29.0/controller.yaml
@@ -32,8 +61,10 @@ sudo usermod -aG docker $USER
 sudo apt install -y docker.io
 sudo mount --make-shared /  
 
-# Install go
-sudo apt install -y golang
+# Go alternate install
+wget https://go.dev/dl/go1.24.4.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.22.3.linux-amd64.tar.gz
+rm -rf go1.22.3.linux-amd64.tar.gz
 
 # Install Homebrew
 yes "" | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -386,6 +417,7 @@ else
   export VISUAL="$EDITOR"
   export GIT_EDITOR="$EDITOR"
 fi
+
 export BAT_CONFIG_PATH="$HOME/.config/bat/bat.conf"
 
 # Long paths
@@ -395,14 +427,23 @@ hash -d h=/long/useless/path/to/project
 echo "kali" | figlet -f fraktur | boxes -d ian_jones -a hcvc -p h6v0 | lolcat -f -a -d 1 -p 5 -F 0.03 -S 110
 lavat -g -c 292D3E -k 474E6B -s 8 -r 10 -R 5 -b 15 
 
-# Purge
-sudo find ~ -name '*Zone.Identifier' -type f -delete 
-
 # AWS autocomplete
 export PATH=/usr/libexec/:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:$PATH
 autoload bashcompinit && bashcompinit
 autoload -Uz compinit && compinit
 complete -C '/usr/libexec/aws_completer' aws
+
+# Mamba more robust
+export MAMBA_EXE='/home/kali/.local/bin/micromamba';
+export MAMBA_ROOT_PREFIX='/home/kali/micromamba';
+__mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__mamba_setup"
+else
+    alias micromamba="$MAMBA_EXE" 
+fi
+unset __mamba_setup
+
 
 # SDKMAN must be at the end
 export SDKMAN_DIR="$HOME/.sdkman"
@@ -478,11 +519,126 @@ function prompt_custom_cached() {
 }
 
 
-# Commands to remember
+############################
+### Commands to remember ###
+############################
+
 zoxide jump = zi
-
 async_flush_jobs worker
-
 forgit
-
 ctags -R . 
+
+
+
+###############
+### Various ###
+###############
+
+# Establish SSH connection
+# sudo chmod 400 $HOME/Kali.pem
+# ssh -o StrictHostKeyChecking=no -i Kali.pem kali@51.20.37.35
+# ssh -L 5901:localhost:5901 -N -f -i kali.pem kali@51.20.37.35
+
+# SSH connectivity issues
+# ssh-keygen -f "/mnt/c/Users/nfs/.ssh/known_hosts" -R "51.20.37.35"
+# ssh-keygen -f "/home/nicolafs/.ssh/known_hosts" -R "51.20.37.35"
+# ipconfig /flushdns
+
+# Commands for file sharing
+# Web application instead of Desktop app in Google Credentials
+# rclone config
+# rclone lsd Drive:
+# curl -L -o file.type https://drive.google.com/uc?id=id_here
+
+# Remove VNC settings
+# vncserver -list
+# vncserver -kill :1
+# sudo rm -rf $HOME/.vnc/passwd $HOME/.vnc/xstartup
+# sudo rm -rf /tmp/.X*-lock /tmp/.X11-unix/X*
+# sudo kill -9 $(ps aux | grep '[X]tightvnc' | awk '{print $2}')
+
+# Setup RDP
+# Add inbound RDP rule and reboot
+# sudo apt-get install -y xrdp
+# sudo systemctl enable xrdp
+
+# Setup NX
+# Add inbound custom TCP rule for port 4000 and reboot
+# curl -O https://download.nomachine.com/download/8.10/Linux/nomachine_8.10.1_1_amd64.deb
+# sudo apt-get install -y cups
+# sudo dpkg -i nomachine_*.deb
+
+# More backgrounds
+# mkdir -p /usr/share/backgrounds/windows/
+# sudo curl -o /usr/share/backgrounds/windows/windows-wallpaper-1.jpg https://raw.githubusercontent.com/somnico/kali/master/images/backgrounds/kali-actiniaria.png
+
+# More fonts
+# git clone --depth=1 --branch=master https://github.com/ryanoasis/nerd-fonts.git nerd-fonts
+# ./nerd-fonts/install.sh FiraCode
+# sudo cp -r nerd-fonts/patched-fonts/FiraCode/Regular /usr/share/fonts/truetype/firanerd
+# sudo apt-get install -y fonts-powerline
+
+# Install only one font family 
+# sudo apt-get install -y subversion
+# svn checkout --depth=empty https://github.com/ryanoasis/nerd-fonts/trunk/patched-fonts
+# cd patched-fonts
+# svn update --set-depth=infinity DejaVuSansMono
+# cd ..
+# sudo cp -r patched-fonts/DejaVuSansMono/Regular/DejaVuSansMNerdFontMono-Regular.ttf /usr/share/fonts/truetype/dejavu
+
+# GUI updates
+# xfdesktop -Q && xfdesktop &
+# pkill xfce4-panel && xfce4-panel &
+
+# Individual entries for qterminal 
+# sudo sed -i 's/\(fontFamily=\).*/\1DejaVuSansM Nerd Font Mono/' $HOME/.config/qterminal.org/qterminal.ini
+
+# Change syntax highlighting theme
+# git clone https://github.com/dracula/zsh-syntax-highlighting.git
+# sudo sed -i '/ZSH_THEME="powerlevel10k\/powerlevel10k"/a\
+# \
+# # Set Syntax Highlighting theme\
+# source $HOME/zsh-syntax-highlighting/zsh-syntax-highlighting.sh' $HOME/.zshrc
+
+# Docks
+# sudo apt-get install -y cairo-dock plank
+
+# Greetings
+# fortune | cowsay -f "$(ls /usr/share/cowsay/cows | sort -R | head -1)" | lolcat -a -d 1
+# echo "kali" | figlet -f fraktur | boxes -d twisted -a hcvc -p h6v1 | awk -v cols=$(tput cols) '{ printf "%*s\n", (cols + length) / 2, $0 }' | lolcat -f -a -d 1 -p 5 -F 0.03 -S 30
+# fortune | cowsay -f calvin | boxes -d columns -a c | awk -v cols=$(tput cols) '{ printf "%*s\n", (cols + length) / 2, $0 }' | lolcat -a -d 1 -S 20
+# fm6000 -dog -l 50 -say "$(echo "KALI" | figlet -f big)" | lolcat -a -d 1 -S 19
+# fortune | cowsay -f "$(ls /usr/share/cowsay/cows | sort -R | head -1)" | while IFS= read -r line; do printf "%s" "$line" | while IFS= read -n1 -r char; do printf "%s" "$char"; sleep 0.0001; done; echo; done;
+# neofetch --ascii $HOME/.config/neofetch/custom.txt
+
+# Alternatives
+# 3d_diagonal, Big_Money-ne, Chiseled, cosmike, doubleshorts, Elite, doubleshorts, fraktur, Georgia11, ghost, henry3d, lildevil, larry3d, lineblocks
+# columns, ian_jones, twisted
+# ascii, digit, extra, diagonal, alpha, stipple, technical, wide
+# 2, 6, 7, 10, 12, 13, 17, 24
+
+# AWS alternative
+# mkdir -p $HOME/.aws/
+# sudo curl -L -o $HOME/.aws/config https://drive.google.com/uc?id=
+# sudo curl -L -o $HOME/.aws/credentials https://drive.google.com/uc?id=
+
+# Various 
+# xfconf-query -c xfce4-desktop -p /desktop-icons/gravity --create -t int -s 1
+# xfconf-query -c xsettings -p /Net/PreferredApplications/TextEditor -n -t string -s "org.xfce.mousepad.desktop" 
+# xfdesktop -A  
+
+# Xfconf reference
+# for channel in $( xfconf-query --list | tail --lines=+2 | sort ); do printf -- '\n\e[1;36m%s\e[m\n' "${channel}"; xfconf-query --list --verbose --channel "${channel}"; done
+
+# Keybind reference
+# https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html#Standard-Widgets
+# $HOME/.oh-my-zsh/lib/key-bindings.zsh
+# bindkey 
+# showkey --ascii
+# man ascii
+
+# Consistent gist links
+# gistusercontent/raw or gistusercontent/raw/filename 
+
+# Blinking
+# echo -e "\e[5mBlinking Text\e[25m" 
