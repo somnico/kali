@@ -4,7 +4,8 @@ Process=$1
 if [[ -z $Process ]]; then
 	echo "No process name entered. Usage: $0 <Process name>"
 else
-	PID=$(ps aux | grep [.]\/$Process | head -n 1 | awk '{print $2}')
+	# PID=$(ps aux | grep [.]\/$Process | head -n 1 | awk '{print $2}')
+ 	PID=$(pgrep -f "$Process" | head -n 1)
 	echo $PID
 
 	if [[ -z $PID ]]; then
