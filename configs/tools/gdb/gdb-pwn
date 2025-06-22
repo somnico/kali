@@ -1,0 +1,2 @@
+#!/bin/sh
+exec gdb -q -ex init-pwndbg -ex "set context-ghidra always" -ex "set r2decompiler rizin" -ex "set syntax-highlight-style lightbulb" "$@"
