@@ -45,3 +45,9 @@ end
 document init-gef
 Initializes GEF (GDB Enhanced Features)
 end
+
+
+set context-ghidra always
+set r2decompiler rizin
+set context-sections regs disasm code ghidra stack backtrace expressions threads heap_tracker
+set syntax-highlight-style lightbulb
